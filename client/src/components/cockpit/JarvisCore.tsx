@@ -231,28 +231,40 @@ export default function JarvisCore({
     }
   }, [externalPrompt, processCommand, onPromptConsumed]);
 
-  // ------------------- STT (wake-word) ------------------
+  // ------------------- STT (modo conversa direta) ------------------
+  // Modo B: tudo o que o senhor falar com MIC ON é processado como comando.
+  // Salvaguardas para evitar acionamentos acidentais:
+  //   1. Ignora texto com menos de 2 palavras OU 6 caracteres (filtra ruído)
+  //   2. Ignora se o Jarvis estiver falando (evita auto-disparo do próprio TTS)
+  //   3. Filtra interjeções comuns que vazam do mic (ah, hum, eh, etc.)
+  //   4. Wake-word ainda funciona como atalho explícito
+  const NOISE_PATTERNS = /^(ah|eh|hum|hmm|uhm|tch|ok|sim|não|nao|tudo|opa|ei|alô|alo)\s*[\.\?\!]?$/i;
   const handleSttFinal = useCallback(
     (txt: string) => {
       if (mutedRef.current || processingRef.current) return;
       const trimmed = txt.trim();
       if (!trimmed) return;
-      if (wakeArmedRef.current.isArmed()) {
-        wakeArmedRef.current.disarm();
-        processCommand(trimmed);
+      // Salvaguarda 1: muito curto (provavelmente ruído)
+      const wordCount = trimmed.split(/\s+/).length;
+      if (trimmed.length < 6 && wordCount < 2) return;
+      // Salvaguarda 3: interjeção sem comando real
+      if (NOISE_PATTERNS.test(trimmed)) return;
+      // Wake-word como atalho: se detectada, remove e processa o resto
+      const m = matchWakeWord(trimmed);
+      if (m.matched && m.command) {
+        processCommand(m.command);
         return;
       }
-      const m = matchWakeWord(trimmed);
-      if (!m.matched) return;
-      if (m.command) {
-        processCommand(m.command);
-      } else {
+      if (m.matched && !m.command) {
+        // Só "Jarvis" sem comando: confirma presença
         wakeArmedRef.current.arm();
-        const reply = "Senhor?";
+        const reply = "À disposição, senhor.";
         setConversation((c) => [...c, { role: "jarvis", content: reply }]);
-        setHudState("SPEAKING");
-        speakReply(reply, () => setHudState(mutedRef.current ? "MUTED" : "LISTENING"));
+        speakReply(reply);
+        return;
       }
+      // Modo conversa direta: processa como comando
+      processCommand(trimmed);
     },
     [processCommand, speakReply],
   );
