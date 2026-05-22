@@ -346,3 +346,12 @@ Acoes imediatas:
 - [ ] Validar typecheck
 - [ ] Commit + push
 - [ ] Validar números em produção
+
+
+## F18 — Limpeza do Realizado YTD (Gabinete Fase 1 = unico Closed)
+
+- [ ] Identificar os 4 deals atuais em status Closed na ATIVOS CRM IA
+- [ ] Confirmar qual card representa Gabinete Fase 1 (provavel: Serena - Automacao de Gabinete)
+- [ ] Reclassificar os demais Closed para Negotiation
+- [ ] Atualizar Gabinete Fase 1: Estimated Value = 1580000, Status = Closed
+- [ ] Validar Realizado YTD = R$ 1.580.000 na API e cockpit
