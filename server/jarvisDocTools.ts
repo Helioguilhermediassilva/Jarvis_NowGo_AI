@@ -17,12 +17,18 @@
  *  - Se `confirmedByUser` === true, gera + envia.
  */
 
-import {
-  gerarApresentacao, gerarProposta, gerarContrato, gerarOnePage, gerarPitchDeck,
-  type ApresentacaoInput, type PropostaInput, type ContratoInput, type OnePageInput, type PitchDeckInput,
-  type GeneratedDoc,
+// docGenerators carrega bibliotecas pesadas (pptxgenjs/docx/pdfkit). Importamos
+// apenas tipos estáticos aqui; as funções geradoras são carregadas via dynamic import
+// no momento da execução, mantendo o cold-start do chat-stream rápido.
+import type {
+  ApresentacaoInput, PropostaInput, ContratoInput, OnePageInput, PitchDeckInput,
+  GeneratedDoc,
 } from "./docGenerators.js";
 import { uploadFile, isDriveConfigured, type DriveSubfolder } from "./googleDrive.js";
+
+async function gen() {
+  return await import("./docGenerators.js");
+}
 
 interface ToolHandlerResult {
   content: string;
@@ -230,7 +236,7 @@ export async function executeDocTool(
       autor: "Jarvis NowGo",
       slides: expanded.slides || [],
     };
-    const doc = await gerarApresentacao(input);
+    const doc = await (await gen()).gerarApresentacao(input);
     const out = await publishDoc(doc, "Apresentacoes");
     return {
       content: JSON.stringify({
@@ -270,7 +276,7 @@ export async function executeDocTool(
       cliente,
       contatoCliente: (args.contatoCliente as string) || expanded.contatoCliente,
     };
-    const doc = await gerarProposta(input);
+    const doc = await (await gen()).gerarProposta(input);
     const out = await publishDoc(doc, "Propostas");
     return {
       content: JSON.stringify({
@@ -312,7 +318,7 @@ export async function executeDocTool(
       contratante,
       contratada: (args.contratada as string) || expanded.contratada,
     };
-    const doc = await gerarContrato(input);
+    const doc = await (await gen()).gerarContrato(input);
     const out = await publishDoc(doc, "Contratos");
     return {
       content: JSON.stringify({
@@ -352,7 +358,7 @@ export async function executeDocTool(
       subtitulo: (args.subtitulo as string) || expanded.subtitulo,
       cliente: (args.cliente as string) || expanded.cliente,
     };
-    const doc = await gerarOnePage(input);
+    const doc = await (await gen()).gerarOnePage(input);
     const out = await publishDoc(doc, "OnePages");
     return {
       content: JSON.stringify({
@@ -387,7 +393,7 @@ export async function executeDocTool(
       `Empresa: ${empresa}\nOneliner: ${oneliner}\nBriefing: ${briefing}`,
     );
     const input: PitchDeckInput = { ...expanded, empresa, oneliner };
-    const doc = await gerarPitchDeck(input);
+    const doc = await (await gen()).gerarPitchDeck(input);
     const out = await publishDoc(doc, "PitchDecks");
     return {
       content: JSON.stringify({
