@@ -190,7 +190,7 @@ export const BRAIN_TOOLS = [
               "Humano",
               "Agente Executivo",
               "Agente Comercial",
-              "Agente Governo/FAP",
+              "Agente Governo-FAP",
               "Agente Saúde",
               "Agente Financeiro",
               "Agente Operacional",
@@ -414,7 +414,9 @@ export async function executeBrainTool(
       };
     }
     try {
-      const out = await criarTarefa({ ...args, confirmedByUser: true } as CriarTarefaInput);
+      const normalized = { ...args };
+      if (normalized.executor === "Agente Governo-FAP") normalized.executor = "Agente Governo/FAP";
+      const out = await criarTarefa({ ...normalized, confirmedByUser: true } as CriarTarefaInput);
       return {
         content: JSON.stringify({
           ok: true,

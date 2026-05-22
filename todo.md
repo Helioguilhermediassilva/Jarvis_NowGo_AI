@@ -32,3 +32,23 @@
 - [ ] Tool `sun_regenerar_relatorio` (regenera Plano SUN)
 - [ ] Tool `sun_status_missao`
 - [ ] Persona do Jarvis: copiloto de gestão NowGo Holding (sistema prompt blindado)
+
+## F5 — Integração Google Drive (NowGo Sovereign Stack)
+- [ ] Criar Service Account no Google Cloud com escopo Drive (Domain-wide Delegation se aplicável)
+- [ ] Compartilhar pasta raiz "Arquivos_NowGo_AI/" do Drive da NowGo com a Service Account
+- [ ] Subpastas: Apresentacoes/, Propostas/, Contratos/, OnePages/, PitchDecks/
+- [ ] Adicionar segredo GOOGLE_DRIVE_SA_KEY no Vercel (JSON da service account)
+- [ ] Criar server/googleDrive.ts: helpers ensureFolder, uploadFile, listFiles, getShareLink
+- [ ] Endpoint /api/drive/test que valida credenciais e lista a pasta raiz
+- [ ] Indexar todo arquivo gerado como Documento no Brain (com link Drive + pageId)
+
+## F6 — Geração de documentos por voz (Apresentações, Propostas, Contratos, One-Pages, Pitch Decks)
+- [ ] Tool jarvis.criar_apresentacao (PPTX, 10-25 slides com identidade NowGo, executada via SUN)
+- [ ] Tool jarvis.criar_proposta_comercial (DOCX, capa+sumário+escopo+entregáveis+cronograma+investimento+CTA)
+- [ ] Tool jarvis.criar_contrato (DOCX, MSA/SOW/NDA com cláusulas-padrão NowGo + variáveis)
+- [ ] Tool jarvis.criar_one_page (PDF/PNG executive summary 1 página com identidade NowGo)
+- [ ] Tool jarvis.criar_pitch_deck (PPTX, problem/solution/market/traction/team/ask)
+- [ ] Cada tool segue protocolo preview→confirma→executa
+- [ ] Templates Master NowGo (capa, paleta, logo, fontes) — definir junto com o Hélio
+- [ ] Resultado: arquivo no Drive + link compartilhado + indexação no Brain + frase falada de confirmação
+- [ ] Painel "Arquivos NowGo" no Cockpit (lista os últimos 10 documentos gerados, abre por clique/voz)
