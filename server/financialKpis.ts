@@ -64,6 +64,15 @@ export interface FinancialKpis {
   /** Perspectiva ponderada (forecast end-of-year): realizado + Σ(valor × prob_estágio) */
   perspectivaBrl: number;
 
+  /** MRR — Receita Recorrente Mensal (soma de MRRs dos ativos não-Lost) em R$ */
+  mrrTotalBrl: number;
+
+  /** ARR — Receita Recorrente Anual (MRR × 12) em R$ */
+  arrTotalBrl: number;
+
+  /** Quantidade de deals com receita recorrente */
+  dealsComRecorrencia: number;
+
   /** % atingido da meta com base no realizado YTD */
   pctMetaAtingida: number;
 
@@ -161,6 +170,10 @@ export interface CalcularKpisInput {
   metaAnualOverrideBrl?: number;
   /** Data de referência para "novas oportunidades do mês". Default: hoje. */
   hoje?: Date;
+  /** Totais de receita recorrente (vem da ATIVOS CRM IA). */
+  mrrTotalBrl?: number;
+  arrTotalBrl?: number;
+  dealsComRecorrencia?: number;
 }
 
 export function calcularKpis(input: CalcularKpisInput): FinancialKpis {
@@ -257,6 +270,9 @@ export function calcularKpis(input: CalcularKpisInput): FinancialKpis {
     realizadoYtdBrl: realizadoYtd,
     pipelineAbertoBrl: pipelineAberto,
     perspectivaBrl: perspectivaTotal,
+    mrrTotalBrl: input.mrrTotalBrl ?? 0,
+    arrTotalBrl: input.arrTotalBrl ?? (input.mrrTotalBrl ?? 0) * 12,
+    dealsComRecorrencia: input.dealsComRecorrencia ?? 0,
     pctMetaAtingida: meta > 0 ? (realizadoYtd / meta) * 100 : 0,
     pctMetaPerspectiva: meta > 0 ? (perspectivaTotal / meta) * 100 : 0,
     faltaParaMetaBrl: faltaParaMeta,

@@ -231,3 +231,108 @@ Decisão arquitetural confirmada em 22/mai/2026:
 ### Sincronização
 - [ ] Toda mutação dispara `cockpit:refresh`
 - [ ] Cache TTL ≤ 30s para garantir reflexo de mudanças no Notion
+
+
+## F15 — Diagnóstico e Melhoria de UX Conversacional
+
+Reportado pelo founder em 22/mai/2026:
+- Jarvis está demorando para responder
+- Às vezes parece não entender o que o usuário falou
+- Responde algo "dentro do raciocínio dele", como se não tivesse ouvido a pergunta
+
+### Diagnóstico
+- [ ] Inspecionar pipeline de voz (qual STT, qual modelo, latência média)
+- [ ] Inspecionar pipeline de chat (modelo xAI usado, system prompt size, tools count)
+- [ ] Inspecionar VAD (Voice Activity Detection): timeouts, threshold de silêncio
+- [ ] Medir latência ponta-a-ponta (clique → STT → LLM primeiro token → TTS → reprodução)
+
+### Correções
+- [ ] Adicionar exibição da transcrição STT na tela (você vê o que o Jarvis ouviu)
+- [ ] Adicionar indicador visual "pensando..." com timer de latência
+- [ ] Avaliar troca de modelo xAI para mais rápido em conversação leve (grok-4-fast?)
+- [ ] Reduzir o tamanho do system prompt se for o caso
+- [ ] Otimizar VAD para não cortar a fala antes do fim
+- [ ] Permitir interromper o Jarvis falando (barge-in) caso ainda não esteja implementado
+
+### Validação
+- [ ] Testar 10 turnos seguidos com cronômetro
+- [ ] Confirmar com o founder que latência percebida diminuiu
+
+
+## F16 — Classificador SUN + Sincronização ATIVOS CRM IA
+
+Objetivo: tornar o cockpit fiel ao filtro determinístico SUN aplicado sobre a database `ATIVOS CRM IA` no Notion. O cockpit reflete apenas a saída do classificador, não os ativos brutos. Carregamentos do cockpit forçam refresh dos dados do Brain.
+
+### Arquitetura
+- ATIVOS CRM IA (Notion) é a fonte única de oportunidades (em BRL, founder converte no Notion)
+- Cada linha tem um campo Classificação SUN (Select: MISSÃO ATIVA, RADAR, PAUSADA, DESCARTADA)
+- Classificador automático em server/sunClassifier.ts aplica as 5 perguntas para casos óbvios
+- Casos limítrofes recebem flag `Revisar = true` e aparecem em painel dedicado para revisão humana
+- Cockpit lê apenas Classificação SUN = MISSÃO ATIVA para Pipeline / Realizado / Perspectiva / Top 5 Deal Rooms
+- Cache: bypass no page-load do cockpit (?fresh=1); 30s nos polling internos
+
+### Backend (Notion + classificador)
+- [ ] Descobrir database ID de ATIVOS CRM IA via API (search Notion ou env var)
+- [ ] Inspecionar schema atual e mapear campos (Status, Valor BRL, Cliente, Estágio)
+- [ ] Adicionar campo Classificação SUN (Select 4 opções) via Notion API (capability update_database_schema)
+- [ ] Adicionar campo Revisar SUN (Checkbox) via Notion API
+- [ ] Seed inicial: importar ~60 classificações dos PDFs como ground-truth
+- [ ] Implementar server/sunClassifier.ts com as 5 perguntas-filtro
+- [ ] Implementar regras determinísticas para casos óbvios
+- [ ] Implementar fallback Revisar = true para casos limítrofes
+- [ ] Vitest cobrindo as 5 perguntas com casos do PDF
+
+### Backend (cache e fonte de verdade)
+- [ ] Adicionar parametro ?fresh=1 em /api/brain/status (bypass cache)
+- [ ] Cockpit dispara fetch com fresh=1 no page-load
+- [ ] Refatorar server/financialKpis.ts para usar ATIVOS CRM IA filtrado por MISSÃO ATIVA
+- [ ] Refatorar server/brainQueries.ts.listarTopDealRooms para usar mesma fonte
+- [ ] Refatorar server/brainQueries.ts.listarMissoesAtivas para enxergar 3 missões SUN canônicas
+
+### Frontend
+- [ ] Painel "Revisar Classificação SUN" no cockpit (visível ao founder/superadmin)
+- [ ] Cada linha do painel oferece 4 botões para classificar manualmente
+- [ ] Após classificar, oportunidade some do painel e entra no cockpit principal
+
+### Validação
+- [ ] Testar carregamento do cockpit reflete o Notion atual
+- [ ] Testar mudança no Notion (mover oportunidade de Negotiation → Closed) atualiza Realizado em ≤30s
+- [ ] Testar reclassificação SUN move oportunidade entre painéis
+- [ ] Validar com founder os totais (Pipeline, Realizado, Perspectiva)
+
+
+## F16 — Refinamento (ATIVOS CRM IA como fonte humana, Pipeline/Opportunities como visão SUN processada)
+
+Fluxo correto descoberto após inspecao do NowGo Brain:
+- ATIVOS CRM IA (1041e87b1609806faf78e9102e86e231) e a fonte editavel pelo founder
+- Pipeline / Opportunities (ba81237b7bec4b00984b39b628615e6b, filha do NowGo Brain) e a visao processada pelo SUN Controller
+- Cockpit le da Pipeline / Opportunities (ja classificada e scored)
+
+Acoes imediatas:
+- [ ] Listar todas as linhas atuais da ATIVOS CRM IA via MCP Notion
+- [ ] Converter Estimated Value de USD para BRL (cotacao 5.20) em cada linha via notion-update-page
+- [ ] Mudar format da coluna Estimated Value de dollar para real via notion-update-data-source
+- [ ] Adicionar campo Mission (Select: Missao 1 GDF / Missao 2 Infra / Missao 3 Health-Voice) na Pipeline/Opportunities
+- [ ] Adicionar campo Classificacao SUN (Select: MISSAO ATIVA / RADAR / PAUSADA / DESCARTADA) na Pipeline/Opportunities
+- [ ] Adicionar campo Estimated Value BRL (number, BRL) na Pipeline/Opportunities
+- [ ] Adicionar campo Source CRM ID (text) na Pipeline/Opportunities (link de volta para ATIVOS CRM IA)
+- [ ] Implementar server/sunClassifier.ts (5 perguntas-filtro do SUN Plan)
+- [ ] Implementar server/sunSync.ts (ATIVOS CRM IA -> Pipeline/Opportunities)
+- [ ] Endpoint /api/sun/sync com botao manual + auto-sync 5min
+- [ ] Seed: importar ~60 classificacoes do SUN_Execution_Controller PDF como ground-truth
+- [ ] Refatorar server/financialKpis.ts para usar Pipeline/Opportunities filtrada por Classificacao SUN = MISSAO ATIVA
+- [ ] Refatorar server/brainQueries.ts.listarTopDealRooms para mesma fonte
+- [ ] Cache bypass no page-load do cockpit (?fresh=1)
+- [ ] Painel Revisar Classificacao SUN no cockpit
+- [ ] Botao Sync agora no cockpit
+- [ ] Vitest cobrindo classificador e sincronizacao
+
+## F17 — Receita Recorrente (MRR / ARR)
+
+- [x] Trocar formato Estimated Value de dollar para real (BRL) na ATIVOS CRM IA
+- [ ] Marcar duplicata Celina Leao - GDF como Lost (mantem FAP-DF)
+- [ ] Adicionar coluna MRR (number, format real) na ATIVOS CRM IA
+- [ ] Adicionar coluna ARR (formula MRR*12, format real) na ATIVOS CRM IA
+- [ ] Preencher Triad com MRR = 3500
+- [ ] Replicar MRR/ARR na Pipeline/Opportunities
+- [ ] Cockpit: card dedicado Receita Recorrente (MRR total, ARR total, deals com recorrencia)

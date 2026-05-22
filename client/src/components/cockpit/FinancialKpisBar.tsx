@@ -43,6 +43,9 @@ interface FinancialKpis {
   realizadoYtdBrl: number;
   pipelineAbertoBrl: number;
   perspectivaBrl: number;
+  mrrTotalBrl: number;
+  arrTotalBrl: number;
+  dealsComRecorrencia: number;
   pctMetaAtingida: number;
   pctMetaPerspectiva: number;
   faltaParaMetaBrl: number;
@@ -227,6 +230,38 @@ export default function FinancialKpisBar() {
         <MissionMicro id={1} kpi={kpis.porMissao[1]} color="#00d4ff" />
         <MissionMicro id={2} kpi={kpis.porMissao[2]} color="#00ffaa" />
         <MissionMicro id={3} kpi={kpis.porMissao[3]} color="#bb88ff" />
+      </div>
+
+      {/* Linha 3: Receita Recorrente (MRR / ARR) */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 12,
+        }}
+      >
+        <KpiCard
+          label="MRR — Receita Recorrente Mensal"
+          value={formatBrlCompact(kpis.mrrTotalBrl)}
+          accent="#ff88dd"
+          sub={`${kpis.dealsComRecorrencia} deals com recorrência`}
+        />
+        <KpiCard
+          label="ARR — Receita Recorrente Anual"
+          value={formatBrlCompact(kpis.arrTotalBrl)}
+          accent="#ff88dd"
+          sub="MRR × 12 (forecast 12 meses)"
+        />
+        <KpiCard
+          label="Recorrência vs Meta"
+          value={
+            kpis.metaAnualBrl > 0
+              ? `${((kpis.arrTotalBrl / kpis.metaAnualBrl) * 100).toFixed(1).replace(".", ",")}%`
+              : "—"
+          }
+          accent={C.ACC}
+          sub={`do ARR sobre a meta ${kpis.ano}`}
+        />
       </div>
     </div>
   );

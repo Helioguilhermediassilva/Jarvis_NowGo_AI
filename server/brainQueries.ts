@@ -378,3 +378,128 @@ export async function listarBloqueiosCriticos(): Promise<TarefaResumo[]> {
   });
   return r.results.map(mapTarefa);
 }
+
+
+// ---------------------------------------------------------------------------
+// ATIVOS CRM IA — fonte editável humana (founder edita direto no Notion)
+// ---------------------------------------------------------------------------
+
+export interface AtivoCrmResumo {
+  id: string;
+  company: string;
+  status: string | null;        // Lead / Qualified / Proposal 👀 / Negotiation / Closed 💪 / Lost
+  priority: string | null;      // Low / Medium / High
+  estimatedValueBrl: number | null; // já em BRL (formato real)
+  mrrBrl: number | null;            // receita recorrente mensal (BRL)
+  arrBrl: number | null;            // receita recorrente anual (formula)
+  type: string | null;
+  email: string | null;
+  phone: string | null;
+  expectedClose: string | null;
+  lastContact: string | null;
+}
+
+function mapAtivoCrm(page: any): AtivoCrmResumo {
+  const p = page.properties ?? {};
+  const props = BRAIN_PROPS.ativosCrmIa;
+  return {
+    id: page.id,
+    company: readTitle(p[props.title]),
+    status: readSelect(p[props.status]),
+    priority: readSelect(p[props.priority]),
+    estimatedValueBrl: readNumber(p[props.estimatedValue]),
+    mrrBrl: readNumber(p[props.mrr]),
+    // ARR é fórmula no Notion (number) — usamos readFormula
+    arrBrl: (() => {
+      const v = readFormula(p[props.arr]);
+      return typeof v === "number" ? v : null;
+    })(),
+    type: readRichText(p[props.type]) || null,
+    email: p[props.email]?.email ?? null,
+    phone: p[props.phone]?.phone_number ?? null,
+    expectedClose: readDate(p[props.expectedClose]),
+    lastContact: readDate(p[props.lastContact]),
+  };
+}
+
+/**
+ * Lista todos os ativos da ATIVOS CRM IA, com paginação automática.
+ * Excluindo lixeira (Notion já filtra automaticamente).
+ */
+export async function listarAtivosCrmIa(opts?: { onlyActive?: boolean }): Promise<AtivoCrmResumo[]> {
+  const onlyActive = opts?.onlyActive ?? false;
+  const all: AtivoCrmResumo[] = [];
+  let cursor: string | undefined = undefined;
+  let pages = 0;
+  do {
+    const r: any = await queryDatabase(BRAIN_DATABASES.ativosCrmIa.id, {
+      page_size: 100,
+      start_cursor: cursor,
+    });
+    for (const page of r.results ?? []) {
+      all.push(mapAtivoCrm(page));
+    }
+    cursor = r.has_more ? r.next_cursor : undefined;
+    pages += 1;
+    if (pages > 20) break; // safety guard
+  } while (cursor);
+
+  if (onlyActive) {
+    return all.filter((a) => a.status !== "Lost" && a.status !== "Closed 💪");
+  }
+  return all;
+}
+
+/**
+ * Totaliza MRR e ARR da carteira ATIVOS CRM IA (apenas deals não Lost).
+ */
+export interface RecurringRevenueTotals {
+  mrrTotalBrl: number;
+  arrTotalBrl: number;
+  dealsComRecorrencia: number;
+  totalAtivos: number;
+  porStatus: Record<string, { mrr: number; arr: number; count: number }>;
+  topRecorrencia: Array<{ company: string; mrr: number; arr: number; status: string | null }>;
+}
+
+export function calcularMrrArrTotals(ativos: AtivoCrmResumo[]): RecurringRevenueTotals {
+  let mrrTotal = 0;
+  let arrTotal = 0;
+  let dealsComRecorrencia = 0;
+  const porStatus: Record<string, { mrr: number; arr: number; count: number }> = {};
+  const top: Array<{ company: string; mrr: number; arr: number; status: string | null }> = [];
+
+  for (const a of ativos) {
+    // exclui Lost
+    if (a.status === "Lost") continue;
+    const mrr = a.mrrBrl ?? 0;
+    if (mrr > 0) {
+      mrrTotal += mrr;
+      arrTotal += a.arrBrl ?? mrr * 12;
+      dealsComRecorrencia += 1;
+      top.push({
+        company: a.company,
+        mrr,
+        arr: a.arrBrl ?? mrr * 12,
+        status: a.status,
+      });
+
+      const key = a.status ?? "—";
+      if (!porStatus[key]) porStatus[key] = { mrr: 0, arr: 0, count: 0 };
+      porStatus[key].mrr += mrr;
+      porStatus[key].arr += a.arrBrl ?? mrr * 12;
+      porStatus[key].count += 1;
+    }
+  }
+
+  top.sort((a, b) => b.mrr - a.mrr);
+
+  return {
+    mrrTotalBrl: mrrTotal,
+    arrTotalBrl: arrTotal,
+    dealsComRecorrencia,
+    totalAtivos: ativos.filter((a) => a.status !== "Lost").length,
+    porStatus,
+    topRecorrencia: top.slice(0, 10),
+  };
+}

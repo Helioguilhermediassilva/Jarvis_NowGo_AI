@@ -240,7 +240,9 @@ export const BRAIN_PROPS = {
     type: "Type",
     added: "Added",
     phone: "Phone",
-    estimatedValue: "Estimated Value",
+    estimatedValue: "Estimated Value", // agora em BRL (real)
+    mrr: "MRR",                          // receita recorrente mensal (BRL)
+    arr: "ARR",                          // receita recorrente anual (formula = MRR * 12)
     email: "Email",
     lastContact: "Last Contact",
   },
