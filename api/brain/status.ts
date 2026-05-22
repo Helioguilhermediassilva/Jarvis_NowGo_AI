@@ -139,6 +139,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return res.status(500).json({ error: "brain_status_failed", message });
+    const stack = err instanceof Error ? (err.stack ?? "").slice(0, 1500) : null;
+    // @ts-expect-error tipos do NotionError
+    const notionStatus = err?.status ?? null;
+    // @ts-expect-error tipos do NotionError
+    const notionBody = err?.bodyText ? String(err.bodyText).slice(0, 800) : null;
+    console.error("[brain/status]", message, stack);
+    return res.status(500).json({
+      error: "brain_status_failed",
+      message,
+      notionStatus,
+      notionBody,
+      stack,
+    });
   }
 }
