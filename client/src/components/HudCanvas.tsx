@@ -267,7 +267,8 @@ export default function HudCanvas({ state, muted }: HudCanvasProps) {
 
       // Central orb
       const orbR = fw * 0.27 * a.scale;
-      const oc = curMuted ? [200, 0, 50] : [0, 60, 110];
+      // MIC OFF: violeta NowGo (#bb88ff = 187,136,255). MIC ON: cyan profundo.
+      const oc = curMuted ? [187, 136, 255] : [0, 60, 110];
       for (let i = 8; i > 0; i--) {
         const r2 = orbR * (i / 8);
         const frc = i / 8;

@@ -142,3 +142,14 @@
 - [ ] `client/src/components/cockpit/RevenueGauge.tsx` (gauge meta 2026)
 - [ ] `client/src/components/cockpit/RevenueSparkline.tsx` (sparkline 12 meses)
 - [ ] Inserir no `Cockpit.tsx` entre `SunMissionsBar` e o grid principal
+
+
+## Correções e ajustes (22/mai/2026)
+
+- [ ] Cor MIC OFF do JarvisCore: trocar vermelho (#ff3355) por violeta NowGo (#bb88ff)
+- [ ] Re-skin landing `/welcome` no padrão visual de www.nowgoai.com
+  - [ ] Visitar nowgoai.com e extrair paleta, tipografia, hierarquia, blocos
+  - [ ] Reconstruir Welcome.tsx mantendo todo o conteúdo já aprovado
+  - [ ] Garantir contraste, espaçamentos e legibilidade total
+
+- [ ] Garantir 100% de responsividade em todas as páginas (mobile, tablet, desktop, ultra-wide) — landing, cockpit e Revenue Cockpit
