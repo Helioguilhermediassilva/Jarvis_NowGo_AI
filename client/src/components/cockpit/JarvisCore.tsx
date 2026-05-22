@@ -260,7 +260,8 @@ export default function JarvisCore({
         wakeArmedRef.current.arm();
         const reply = "À disposição, senhor.";
         setConversation((c) => [...c, { role: "jarvis", content: reply }]);
-        speakReply(reply);
+        setHudState("SPEAKING");
+        speakReply(reply, () => setHudState(mutedRef.current ? "MUTED" : "LISTENING"));
         return;
       }
       // Modo conversa direta: processa como comando
