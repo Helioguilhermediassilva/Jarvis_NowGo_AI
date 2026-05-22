@@ -231,10 +231,15 @@ export function calcularKpis(input: CalcularKpisInput): FinancialKpis {
       if (estagio === "Negociação") negociacoes += 1;
     }
 
-    // novas oportunidades = criadas no mês corrente E em estágio Lead
-    if (estagio === "Lead" && opp.proximoFollowUp) {
+    // novas oportunidades = qualquer deal CRIADO no mês corrente em estágio inicial
+    // (Lead, Qualificado ou Proposta). Usa dataCriacao (campo Added do Notion)
+    // como fonte da verdade; fallback para proximoFollowUp se ausente.
+    const dataRefStr = (opp as any).dataCriacao ?? opp.proximoFollowUp;
+    const isEarlyStage =
+      estagio === "Lead" || estagio === "Qualificado" || estagio === "Proposta";
+    if (isEarlyStage && dataRefStr) {
       try {
-        const dt = new Date(opp.proximoFollowUp);
+        const dt = new Date(dataRefStr);
         if (
           dt.getUTCMonth() === mesCorrente &&
           dt.getUTCFullYear() === anoCorrente

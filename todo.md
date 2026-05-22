@@ -355,3 +355,10 @@ Acoes imediatas:
 - [ ] Reclassificar os demais Closed para Negotiation
 - [ ] Atualizar Gabinete Fase 1: Estimated Value = 1580000, Status = Closed
 - [ ] Validar Realizado YTD = R$ 1.580.000 na API e cockpit
+
+
+## F19 — Novas oportunidades Saúde (via Christiano Vinuales)
+
+- [ ] Criar card HDIA (Hospital Dia) na ATIVOS CRM IA — Qualified — contato Christiano Vinuales +55 61 99459-5052
+- [ ] Criar card IA Saúde RN na ATIVOS CRM IA — Lead — mesmo contato, reunião próxima semana
+- [ ] Validar no cockpit (contagem +2 deals em pipeline aberto)

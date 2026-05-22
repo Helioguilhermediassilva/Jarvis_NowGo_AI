@@ -98,6 +98,8 @@ export interface OportunidadeResumo {
   impactoEstrategico: string | null;
   empresaIds: number;              // só contagem; nomes vêm via outra query se precisar
   projetoIds: number;
+  /** Data de criação do registro (ISO yyyy-mm-dd). Usado pelo contador de novas oportunidades do mês. */
+  dataCriacao?: string | null;
 }
 
 function mapOportunidade(page: any): OportunidadeResumo {
@@ -397,6 +399,8 @@ export interface AtivoCrmResumo {
   phone: string | null;
   expectedClose: string | null;
   lastContact: string | null;
+  /** Data de criação do registro no Notion (campo Added) — ISO yyyy-mm-dd. */
+  addedAt: string | null;
 }
 
 function mapAtivoCrm(page: any): AtivoCrmResumo {
@@ -419,6 +423,17 @@ function mapAtivoCrm(page: any): AtivoCrmResumo {
     phone: p[props.phone]?.phone_number ?? null,
     expectedClose: readDate(p[props.expectedClose]),
     lastContact: readDate(p[props.lastContact]),
+    // Campo "Added" é created_time → vem como ISO string em p[props.added]
+    addedAt: (() => {
+      const raw = p[(BRAIN_PROPS.ativosCrmIa as any).added];
+      if (!raw) return null;
+      // created_time vem como { created_time: "2026-05-22T..." }
+      if (typeof raw === "object" && "created_time" in raw)
+        return (raw as any).created_time?.slice(0, 10) ?? null;
+      if (typeof raw === "object" && "date" in raw)
+        return readDate(raw) ?? null;
+      return null;
+    })(),
   };
 }
 
@@ -548,6 +563,7 @@ export function ativoCrmToOportunidade(a: AtivoCrmResumo): OportunidadeResumo {
     impactoEstrategico: null,
     empresaIds: 0,
     projetoIds: 0,
+    dataCriacao: a.addedAt ?? null,
   };
 }
 
