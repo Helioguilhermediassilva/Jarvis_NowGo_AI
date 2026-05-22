@@ -199,3 +199,35 @@ Princípio: cada elemento operacional é editável por 3 canais simultâneos. No
 - [ ] `leitor`: GET only (read-only no cockpit)
 - [ ] `operador`: CRUD em opps, deals e missões; NÃO edita metas
 - [ ] `superadmin`: tudo, inclusive resetar overrides
+
+
+## F14.2 — Missões + Top 5 Deal Rooms (decisão: caminho 2 — reuso)
+
+Decisão arquitetural confirmada em 22/mai/2026:
+- Top 5 Deal Rooms = ranking automático top-5 das oportunidades ativas (estágio ≠ Fechado) por score
+- Missões SUN = reuso da database `📁 Projetos` filtrando por `Vertical = "Missão SUN"`
+- Encerramento de deal = mudança de estágio para Fechado-Ganho/Perdido → próximo refresh recalcula → animação suave do 6º subindo
+- Override opcional: campo `Pinar Top 5 = true` no Notion para destacar fora do ranking
+
+### Backend
+- [ ] `server/brainQueries.ts`: helper `listarTopDealRooms(5)` (top 5 ativos por score, exclui fechados)
+- [ ] `server/brainQueries.ts`: helper `listarMissoesAtivas()` (Projetos com Vertical=Missão SUN, status=Ativo)
+- [ ] `server/brainMutations.ts`: `criarMissao`, `atualizarMissao`, `arquivarMissao` (reusam Projetos)
+- [ ] `api/brain/deal-rooms.ts`: endpoint GET (lista top 5 atual)
+- [ ] `api/brain/missions.ts`: endpoint GET/POST/PATCH/DELETE com RBAC
+
+### UI Frontend
+- [ ] `BrainDealRoomsLive.tsx`: painel com 5 cards reativos a `cockpit:refresh` + polling 30s
+- [ ] `BrainMissionsBar.tsx`: barra de missões CRUD (substitui SunMissionsBar hardcoded)
+- [ ] Toggle Snapshot/Live em ambos os painéis (mesmo padrão do Pipeline)
+- [ ] Animação de reordenação quando ranking muda (FLIP/transform)
+- [ ] Validação: máximo 5 missões ativas
+
+### Voz (JarvisCore tools)
+- [ ] `brain_criar_missao` (com preview→confirma)
+- [ ] `brain_atualizar_missao` (preview→confirma)
+- [ ] `brain_arquivar_missao` (preview→confirma)
+
+### Sincronização
+- [ ] Toda mutação dispara `cockpit:refresh`
+- [ ] Cache TTL ≤ 30s para garantir reflexo de mudanças no Notion

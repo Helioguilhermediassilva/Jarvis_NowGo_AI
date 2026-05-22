@@ -95,6 +95,35 @@ export interface ArquivarOportunidadeInput {
   confirmedByUser: true;
 }
 
+export interface CriarMissaoInput {
+  nome: string;                               // ex.: "Apolo — GDF Smart City"
+  status?: "Ativo" | "Em andamento" | "Pausado" | "Concluído" | "Cancelado";
+  scorePrioridade?: number;                   // 0-100
+  proximoMarco?: string;                      // texto livre
+  dataProximoMarco?: string;                  // ISO yyyy-mm-dd
+  valorContrato?: number;                     // BRL
+  notas?: string;
+  confirmedByUser: true;
+}
+
+export interface AtualizarMissaoInput {
+  pageId: string;
+  nome?: string;
+  status?: "Ativo" | "Em andamento" | "Pausado" | "Concluído" | "Cancelado";
+  scorePrioridade?: number;
+  proximoMarco?: string;
+  dataProximoMarco?: string;
+  valorContrato?: number;
+  notas?: string;
+  confirmedByUser: true;
+}
+
+export interface ArquivarMissaoInput {
+  pageId: string;
+  motivo?: string;
+  confirmedByUser: true;
+}
+
 export interface CriarTarefaInput {
   nome: string;
   prioridade: "P0 - Crítica" | "P1 - Alta" | "P2 - Média" | "P3 - Baixa";
@@ -168,6 +197,126 @@ export async function criarOportunidade(
       ? `${res.properties[p.idOportunidade].unique_id.prefix ?? ""}-${res.properties[p.idOportunidade].unique_id.number}`
       : null,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Missões SUN — CRUD via reuso da database 📁 Projetos com Vertical=Missão SUN
+// ---------------------------------------------------------------------------
+
+export async function criarMissao(
+  input: CriarMissaoInput,
+): Promise<{ pageId: string; idHumano: string | null }> {
+  if (!input.confirmedByUser) {
+    throw new Error("criarMissao requer confirmedByUser=true");
+  }
+  if (!input.nome || input.nome.trim().length === 0) {
+    throw new Error("Nome da missão é obrigatório.");
+  }
+
+  const p = BRAIN_PROPS.projetos;
+  const properties: Record<string, unknown> = {
+    [p.title]: propTitle(input.nome.trim()),
+    [p.vertical]: propSelect("Missão SUN"),
+    [p.status]: propSelect(input.status ?? "Ativo"),
+  };
+  if (typeof input.scorePrioridade === "number")
+    properties[p.scorePrioridade] = propNumber(input.scorePrioridade);
+  if (input.proximoMarco)
+    properties[p.proximoMarco] = propRichText(input.proximoMarco);
+  if (input.dataProximoMarco)
+    properties[p.dataProximoMarco] = propDate(input.dataProximoMarco);
+  if (typeof input.valorContrato === "number")
+    properties[p.valorContrato] = propNumber(input.valorContrato);
+  if (input.notas) properties[p.notas] = propRichText(input.notas);
+
+  const res = await createPage(BRAIN_DATABASES.projetos.id, properties);
+  clearCache();
+  return {
+    pageId: res.id,
+    idHumano: res.properties?.[p.idProjeto]?.unique_id
+      ? `${res.properties[p.idProjeto].unique_id.prefix ?? ""}-${res.properties[p.idProjeto].unique_id.number}`
+      : null,
+  };
+}
+
+export async function atualizarMissao(
+  input: AtualizarMissaoInput,
+): Promise<{ pageId: string; updatedFields: string[] }> {
+  if (!input.confirmedByUser) {
+    throw new Error("atualizarMissao requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+
+  const p = BRAIN_PROPS.projetos;
+  const properties: Record<string, unknown> = {};
+  const updated: string[] = [];
+
+  if (input.nome) {
+    properties[p.title] = propTitle(input.nome.trim());
+    updated.push("nome");
+  }
+  if (input.status) {
+    properties[p.status] = propSelect(input.status);
+    updated.push("status");
+  }
+  if (typeof input.scorePrioridade === "number") {
+    properties[p.scorePrioridade] = propNumber(input.scorePrioridade);
+    updated.push("scorePrioridade");
+  }
+  if (input.proximoMarco !== undefined) {
+    properties[p.proximoMarco] = propRichText(input.proximoMarco);
+    updated.push("proximoMarco");
+  }
+  if (input.dataProximoMarco) {
+    properties[p.dataProximoMarco] = propDate(input.dataProximoMarco);
+    updated.push("dataProximoMarco");
+  }
+  if (typeof input.valorContrato === "number") {
+    properties[p.valorContrato] = propNumber(input.valorContrato);
+    updated.push("valorContrato");
+  }
+  if (input.notas !== undefined) {
+    properties[p.notas] = propRichText(input.notas);
+    updated.push("notas");
+  }
+
+  if (updated.length === 0) {
+    throw new Error("Nenhum campo fornecido para atualizar.");
+  }
+
+  await updatePage(input.pageId, properties);
+  clearCache();
+  return { pageId: input.pageId, updatedFields: updated };
+}
+
+export async function arquivarMissao(
+  input: ArquivarMissaoInput,
+): Promise<{ pageId: string }> {
+  if (!input.confirmedByUser) {
+    throw new Error("arquivarMissao requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+
+  if (input.motivo && input.motivo.trim().length > 0) {
+    const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+    try {
+      await updatePage(input.pageId, {
+        [BRAIN_PROPS.projetos.notas]: propRichText(
+          `[Arquivada em ${stamp}] ${input.motivo.trim()}`,
+        ),
+      });
+    } catch {
+      // não bloqueia
+    }
+  }
+
+  await archivePage(input.pageId);
+  clearCache();
+  return { pageId: input.pageId };
 }
 
 // ---------------------------------------------------------------------------

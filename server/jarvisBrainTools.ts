@@ -30,11 +30,17 @@ import {
   criarTarefa,
   criarOportunidade,
   arquivarOportunidade,
+  criarMissao,
+  atualizarMissao,
+  arquivarMissao,
   type AtualizarOportunidadeInput,
   type RegistrarAtaInput,
   type CriarTarefaInput,
   type CriarOportunidadeInput,
   type ArquivarOportunidadeInput,
+  type CriarMissaoInput,
+  type AtualizarMissaoInput,
+  type ArquivarMissaoInput,
 } from "./brainMutations.js";
 import { PIPELINE_STAGES } from "./brainSchema.js";
 
@@ -159,6 +165,68 @@ export const BRAIN_TOOLS = [
           pageId: { type: "string", description: "ID interno (use brain_buscar_oportunidade antes)." },
           motivo: { type: "string", description: "Motivo do arquivamento (registrado em Notas)." },
           confirmedByUser: { type: "boolean", description: "true SOMENTE após confirmação verbal." },
+        },
+        required: ["pageId"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_criar_missao",
+      description:
+        "Cria uma nova Missão SUN no Brain (máximo 5 ativas). PROTOCOLO DE CONFIRMAÇÃO: primeira chamada com confirmedByUser=false retorna preview; após 'sim' verbal, re-emita com confirmedByUser=true. Use quando o usuário mencionar nova missão, projeto estratégico ou frente de trabalho prioritária.",
+      parameters: {
+        type: "object",
+        properties: {
+          nome: { type: "string", description: "Título da missão (ex.: 'Apolo — GDF Smart City')." },
+          status: { type: "string", enum: ["Ativo", "Em andamento", "Pausado", "Concluído", "Cancelado"], description: "Default: Ativo." },
+          scorePrioridade: { type: "number", description: "Prioridade 0-100." },
+          proximoMarco: { type: "string", description: "Texto livre do próximo marco." },
+          dataProximoMarco: { type: "string", description: "Data ISO yyyy-mm-dd do próximo marco." },
+          valorContrato: { type: "number", description: "Valor do contrato em BRL." },
+          notas: { type: "string" },
+          confirmedByUser: { type: "boolean" },
+        },
+        required: ["nome"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_atualizar_missao",
+      description:
+        "Atualiza uma Missão SUN existente. PROTOCOLO DE CONFIRMAÇÃO obrigatório. Use brain_buscar_oportunidade para localizar pageId NÃO — missões não aparecem lá; peça ao usuário o nome exato e use a listagem de missões ativas do contexto inicial.",
+      parameters: {
+        type: "object",
+        properties: {
+          pageId: { type: "string", description: "ID interno da missão." },
+          nome: { type: "string" },
+          status: { type: "string", enum: ["Ativo", "Em andamento", "Pausado", "Concluído", "Cancelado"] },
+          scorePrioridade: { type: "number" },
+          proximoMarco: { type: "string" },
+          dataProximoMarco: { type: "string" },
+          valorContrato: { type: "number" },
+          notas: { type: "string" },
+          confirmedByUser: { type: "boolean" },
+        },
+        required: ["pageId"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_arquivar_missao",
+      description:
+        "Arquiva (encerra) uma Missão SUN. PROTOCOLO DE CONFIRMAÇÃO obrigatório. Motivo é registrado em Notas para auditoria.",
+      parameters: {
+        type: "object",
+        properties: {
+          pageId: { type: "string" },
+          motivo: { type: "string" },
+          confirmedByUser: { type: "boolean" },
         },
         required: ["pageId"],
       },
@@ -367,6 +435,125 @@ export async function executeBrainTool(
   }
 
   // ----- ESCRITAS (preview→confirma) -----
+  // ----- MISSÕES SUN (preview → confirma) -----
+  if (name === "brain_criar_missao") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.nome) {
+      return { content: JSON.stringify({ error: "nome obrigatório" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview da nova Missão SUN. Recite ao usuário e peça confirmação verbal antes de re-emitir.",
+          nome: args.nome,
+          status: args.status ?? "Ativo",
+          scorePrioridade: args.scorePrioridade ?? null,
+          proximoMarco: args.proximoMarco ?? null,
+          dataProximoMarco: args.dataProximoMarco ?? null,
+          valorContrato: args.valorContrato ?? null,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await criarMissao({
+        ...args,
+        confirmedByUser: true,
+      } as CriarMissaoInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: `Missão '${args.nome}' criada no Brain${out.idHumano ? " (" + out.idHumano + ")" : ""}.`,
+          pageId: out.pageId,
+          idHumano: out.idHumano,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  if (name === "brain_atualizar_missao") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.pageId) {
+      return { content: JSON.stringify({ error: "pageId obrigatório" }), mutated: false };
+    }
+    const fields: string[] = [];
+    if (args.nome) fields.push(`nome=${args.nome}`);
+    if (args.status) fields.push(`status=${args.status}`);
+    if (args.scorePrioridade !== undefined) fields.push(`score=${args.scorePrioridade}`);
+    if (args.proximoMarco !== undefined) fields.push("proximoMarco=...");
+    if (args.dataProximoMarco) fields.push(`dataProximoMarco=${args.dataProximoMarco}`);
+    if (args.valorContrato !== undefined) fields.push(`valorContrato=${args.valorContrato}`);
+    if (args.notas !== undefined) fields.push("notas=...");
+
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview da atualização de missão. Recite e peça confirmação.",
+          pageId: args.pageId,
+          camposParaAtualizar: fields,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await atualizarMissao({
+        ...args,
+        confirmedByUser: true,
+      } as AtualizarMissaoInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: "Missão atualizada.",
+          pageId: out.pageId,
+          updatedFields: out.updatedFields,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  if (name === "brain_arquivar_missao") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.pageId) {
+      return { content: JSON.stringify({ error: "pageId obrigatório" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview do arquivamento de missão. Recite e peça confirmação.",
+          pageId: args.pageId,
+          motivo: args.motivo ?? null,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await arquivarMissao({
+        pageId: String(args.pageId),
+        motivo: args.motivo ? String(args.motivo) : undefined,
+        confirmedByUser: true,
+      } as ArquivarMissaoInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: "Missão arquivada.",
+          pageId: out.pageId,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
   if (name === "brain_criar_oportunidade") {
     const confirmed = args.confirmedByUser === true;
     if (!args.nome) {

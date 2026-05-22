@@ -257,6 +257,40 @@ function mapProjeto(page: any): ProjetoResumo {
 }
 
 /**
+ * Top N "Deal Rooms" — oportunidades ativas (não fechadas e não arquivadas)
+ * com maior Score, considerando o ranking automaticamente atualizado a cada
+ * mudança de estágio. Quando uma oportunidade do top é movida para
+ * Fechado-Ganho/Perdido, a próxima de maior score sobe para o slot vago.
+ */
+export async function listarTopDealRooms(limit = 5): Promise<OportunidadeResumo[]> {
+  return listarTopPorScore(limit);
+}
+
+/**
+ * Lista missões SUN ativas — reuso da database `📁 Projetos` filtrando por
+ * `Vertical = "Missão SUN"` e status ativo. Limite máximo de 5.
+ */
+export async function listarMissoesAtivas(): Promise<ProjetoResumo[]> {
+  const props = BRAIN_PROPS.projetos;
+  const r = await queryDatabase(BRAIN_DATABASES.projetos.id, {
+    filter: {
+      and: [
+        { property: props.vertical, select: { equals: "Missão SUN" } },
+        {
+          or: [
+            { property: props.status, select: { equals: "Ativo" } },
+            { property: props.status, select: { equals: "Em andamento" } },
+          ],
+        },
+      ],
+    },
+    sorts: [{ property: props.scorePrioridade, direction: "descending" }],
+    page_size: 5,
+  });
+  return r.results.map(mapProjeto);
+}
+
+/**
  * Lista projetos ativos (status = Ativo), ordenados por Score Prioridade desc.
  */
 export async function listarProjetosAtivos(limit = 10): Promise<ProjetoResumo[]> {

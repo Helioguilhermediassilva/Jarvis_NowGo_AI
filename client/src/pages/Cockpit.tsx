@@ -5,7 +5,7 @@ import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
 import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
 import UserManagementDrawer from "@/components/cockpit/UserManagementDrawer";
 import PipelineLeftColumn from "@/components/cockpit/PipelineLeftColumn";
-import SunControlPanel from "@/components/cockpit/SunControlPanel";
+import ControlPanelRightColumn from "@/components/cockpit/ControlPanelRightColumn";
 import JarvisCore from "@/components/cockpit/JarvisCore";
 import SetupOverlay, {
   loadPrefs,
@@ -423,7 +423,7 @@ export default function Cockpit() {
           {/* Direita — Controle operacional */}
           <div style={{ minHeight: 0 }}>
             {sun ? (
-              <SunControlPanel
+              <ControlPanelRightColumn
                 dealRooms={sun.snapshot.dealRooms}
                 rituais={sun.snapshot.rituais}
                 proximos7Dias={sun.snapshot.proximos7Dias}
