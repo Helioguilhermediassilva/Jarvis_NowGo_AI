@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
+import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
 import SunPipelinePanel from "@/components/cockpit/SunPipelinePanel";
 import SunControlPanel from "@/components/cockpit/SunControlPanel";
 import JarvisCore from "@/components/cockpit/JarvisCore";
@@ -331,6 +332,11 @@ export default function Cockpit() {
             <SunMissionsBar missions={sun.snapshot.missoes} onAsk={onAskMission} />
           </section>
         )}
+
+        {/* Faixa do Revenue Cockpit — KPIs financeiros NowGo */}
+        <section style={{ padding: "0 24px 14px" }}>
+          <FinancialKpisBar />
+        </section>
 
         {/* Grid principal */}
         <main style={mainStyle()}>
