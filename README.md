@@ -166,12 +166,14 @@ Todas as credenciais são armazenadas como segredos criptografados na borda da N
 
 | Variável | Função | Status |
 |---|---|---|
-| `NOTION_API_KEY` | Chave de acesso ao NowGo Brain | Obrigatória |
-| `XAI_API_KEY` | Chave do NowGo Cognition (motor cognitivo) | Obrigatória |
-| `ELEVENLABS_API_KEY` | Chave do NowGo Voice (síntese vocal clonada) | Obrigatória |
-| `GOOGLE_DRIVE_SA_KEY` | Chave da Service Account do NowGo Vault | Opcional (sem ela, *fallback* para *download* direto) |
+| `NOWGO_BRAIN_KEY` | Chave de acesso ao NowGo Brain | Obrigatória |
+| `NOWGO_COGNITION_KEY` | Chave do NowGo Cognition (motor cognitivo) | Obrigatória |
+| `NOWGO_VOICE_KEY` | Chave do NowGo Voice (síntese vocal clonada) | Obrigatória |
+| `NOWGO_VAULT_KEY` | Chave do NowGo Vault (arquivos corporativos) | Opcional (sem ela, *fallback* para *download* direto) |
 
-A configuração da chave do NowGo Vault é feita em duas etapas: criar uma Service Account no console corporativo do domínio NowGo, baixar o JSON e armazená-lo como segredo `GOOGLE_DRIVE_SA_KEY`; depois compartilhar a pasta-raiz `Arquivos_NowGo_AI/` do Drive corporativo da Holding com o e-mail da Service Account, atribuindo permissão de *Editor*. Quando o segredo está ausente, o cockpit continua funcional e os documentos gerados são entregues por *download* direto.
+Os nomes acima são os identificadores **canonicos** da NowGo Sovereign Stack. Em deploys legados, variáveis com nomes anteriores ainda são aceitas como *fallback* temporário até a migração completa.
+
+A configuração da chave do NowGo Vault é feita em duas etapas: provisionar uma identidade de serviço no console corporativo do domínio NowGo, exportar o segredo correspondente e armazená-lo como `NOWGO_VAULT_KEY`; depois compartilhar a pasta-raiz `Arquivos_NowGo_AI/` do domínio corporativo da Holding com a identidade gerada, atribuindo permissão de *Editor*. Quando o segredo está ausente, o cockpit continua funcional e os documentos gerados são entregues por *download* direto.
 
 ---
 
