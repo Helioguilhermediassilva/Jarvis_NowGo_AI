@@ -4,6 +4,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { getCachedSentiment, setCachedSentiment } from "./grokProxy.js";
 import { BRAIN_TOOLS, executeBrainTool } from "./jarvisBrainTools.js";
+import { DOC_TOOLS, executeDocTool } from "./jarvisDocTools.js";
 
 export const JARVIS_SYSTEM_PROMPT = `Você é o J.A.R.V.I.S. — copiloto operacional do Senhor Hélio Guilherme, founder da NowGo Holding. Personalidade do mordomo digital refinado e leal, versão brasileira.
 
@@ -210,6 +211,11 @@ async function executeJarvisTool(name: string, args: Record<string, unknown>): P
     if (brainResult.mutated) BRAIN_MUTATION_FLAG.last = Date.now();
     return brainResult.content;
   }
+  // Despacha para as tools de geração de documento (DocTools).
+  const docResult = await executeDocTool(name, args);
+  if (docResult) {
+    return docResult.content;
+  }
   return JSON.stringify({ error: `Tool desconhecida: ${name}` });
 }
 
@@ -222,7 +228,7 @@ export function consumeBrainMutationSince(ts: number): boolean {
 }
 
 // Conjunto final de tools expostas ao LLM = legacy DF + tools do Brain.
-const JARVIS_TOOLS = [...LEGACY_DF_TOOLS, ...BRAIN_TOOLS];
+const JARVIS_TOOLS = [...LEGACY_DF_TOOLS, ...BRAIN_TOOLS, ...DOC_TOOLS];
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
