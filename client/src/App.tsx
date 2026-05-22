@@ -4,12 +4,16 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import Home from "@/pages/Home";
+import Cockpit from "@/pages/Cockpit";
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      {/* Cockpit interno NowGo (rota raiz) */}
+      <Route path={"/"} component={Cockpit} />
+      {/* Jarvis cívico (legado, preservado em /civic) */}
+      <Route path={"/civic"} component={Home} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
