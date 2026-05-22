@@ -11,12 +11,23 @@
  *   - Rodapé: "NowGo Holding · NowGo Sovereign Stack · CONFIDENCIAL"
  */
 
-import PptxGenJS from "pptxgenjs";
-import {
+// Compatibilidade ESM/CJS no runtime serverless do Vercel:
+// pptxgenjs e docx expõem ESM (.es.js / .mjs) que internamente usam `import`
+// statements; em alguns runtimes Node esses arquivos são avaliados como CJS
+// e disparam "Cannot use import statement outside a module".
+// Forçamos a versão CJS via createRequire para garantir compatibilidade total.
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+/* eslint-disable @typescript-eslint/no-var-requires */
+const PptxGenJS: any = require("pptxgenjs");
+const {
   Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType,
   PageBreak, Footer, Header,
-} from "docx";
-import PDFDocument from "pdfkit";
+} = require("docx") as typeof import("docx");
+const PDFDocument: any = require("pdfkit");
+/* eslint-enable @typescript-eslint/no-var-requires */
+// Tipos ainda vêm dos pacotes ESM (apenas em compile-time)
+import type { Paragraph as DocxParagraph } from "docx";
 
 // -------- Paleta NowGo --------
 const NOWGO_CYAN = "00D4FF";
@@ -258,7 +269,7 @@ export interface ContratoInput {
 
 export async function gerarContrato(input: ContratoInput): Promise<GeneratedDoc> {
   const contratada = input.contratada || "NowGo AI Holding LTDA";
-  const clausulas: Paragraph[] = [];
+  const clausulas: DocxParagraph[] = [];
   input.clausulas.forEach((c, idx) => {
     clausulas.push(
       new Paragraph({
