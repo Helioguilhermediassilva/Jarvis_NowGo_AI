@@ -10,13 +10,13 @@
  *    documento Tipo=Ata, Status=Aprovado) — feito por separado em brainAudit.ts.
  */
 
-import { createPage, updatePage, clearCache } from "./notionBrain";
+import { createPage, updatePage, clearCache } from "./notionBrain.js";
 import {
   BRAIN_DATABASES,
   BRAIN_PROPS,
   PIPELINE_STAGES,
   type PipelineStage,
-} from "./brainSchema";
+} from "./brainSchema.js";
 
 // ---------------------------------------------------------------------------
 // Builders de propriedade (helpers de baixo nível)

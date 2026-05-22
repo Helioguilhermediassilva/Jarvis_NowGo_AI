@@ -7,14 +7,14 @@
  * usuário final — apenas o nome humano da oportunidade/projeto/etc.
  */
 
-import { queryDatabase } from "./notionBrain";
+import { queryDatabase } from "./notionBrain.js";
 import {
   BRAIN_DATABASES,
   BRAIN_PROPS,
   PIPELINE_HOT_STAGES,
   PIPELINE_ACTIVE_STAGES,
   type PipelineStage,
-} from "./brainSchema";
+} from "./brainSchema.js";
 
 // ---------------------------------------------------------------------------
 // Helpers de extração de propriedades do payload Notion

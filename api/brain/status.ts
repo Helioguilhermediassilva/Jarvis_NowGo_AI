@@ -17,7 +17,7 @@ import {
   listarBloqueiosCriticos,
   type OportunidadeResumo,
   type TarefaResumo,
-} from "../../server/brainQueries";
+} from "../../server/brainQueries.js";
 
 function authorize(req: VercelRequest): boolean {
   const expected = process.env.JARVIS_COCKPIT_SECRET;
