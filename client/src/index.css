@@ -154,3 +154,19 @@
     }
   }
 }
+
+/* Cockpit Jarvis NowGo — animações cinematográficas */
+@keyframes ticker {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes cockpit-card-enter {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Cockpit precisa rolar (overflow vertical) — sobrescreve overflow:hidden global */
+body.cockpit-active {
+  overflow: auto;
+}

@@ -21,3 +21,14 @@
 - [ ] Vitest para `/api/sun/plan`
 - [ ] Vitest para tools de Brain integradas ao chat
 - [ ] Deploy + smoke test produção
+
+## F4 — Pesquisas + tools de Brain + acionamento do SUN
+
+- [ ] Habilitar Grok Live Search no proxy server quando o usuário pedir fato externo/cotação/notícia
+- [ ] Tool `pesquisa_externa` que aciona Live Search do Grok com query refinada
+- [ ] Tools de leitura Brain: brain_oportunidades_quentes, brain_top_score, brain_bloqueios_criticos
+- [ ] Tools de escrita preview→confirma: brain_atualizar_oportunidade, brain_registrar_ata, brain_criar_tarefa
+- [ ] Tool `sun_executar_missao` (dispara SUN/Manus para tarefas longas em background)
+- [ ] Tool `sun_regenerar_relatorio` (regenera Plano SUN)
+- [ ] Tool `sun_status_missao`
+- [ ] Persona do Jarvis: copiloto de gestão NowGo Holding (sistema prompt blindado)

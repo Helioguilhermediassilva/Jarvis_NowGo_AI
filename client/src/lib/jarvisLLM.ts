@@ -21,6 +21,8 @@ export interface JarvisChatOptions {
   attachments?: AttachmentRef[];
   /** Como o JARVIS deve tratar o usuário. Injetado como system message extra. */
   honorific?: Honorific;
+  /** Contexto adicional do cockpit (Plano SUN, Brain) para injetar no system prompt. */
+  extraSystemContext?: string;
   signal?: AbortSignal;
 }
 
@@ -48,12 +50,12 @@ export interface JarvisChatStreamOptions extends JarvisChatOptions, JarvisStream
  * disparando callbacks granulares. Resolve com a resposta final.
  */
 export async function jarvisChatStream(opts: JarvisChatStreamOptions): Promise<string> {
-  const { history, userMessage, attachments, honorific, signal, onDelta, onToolStart, onToolEnd, onDone, onError } = opts;
+  const { history, userMessage, attachments, honorific, extraSystemContext, signal, onDelta, onToolStart, onToolEnd, onDone, onError } = opts;
   const resp = await fetch("/api/jarvis/chat/stream", {
     method: "POST",
     signal,
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify({ history, userMessage, attachments, honorific }),
+    body: JSON.stringify({ history, userMessage, attachments, honorific, extraSystemContext }),
   });
   if (!resp.ok || !resp.body) {
     const text = await resp.text().catch(() => "");

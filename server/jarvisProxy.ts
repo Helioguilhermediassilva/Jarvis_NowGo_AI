@@ -294,6 +294,19 @@ interface ChatPayload {
   userMessage?: string;
   attachments?: AttachmentRef[];
   honorific?: "senhor" | "senhora";
+  /** Contexto extra do cockpit (Plano SUN, status do Brain) injetado no system prompt. */
+  extraSystemContext?: string;
+}
+
+/** Mensagem de system com contexto fornecido pelo cockpit (SUN, Brain). */
+function cockpitContextSystemMessage(extra: string | undefined): { role: "system"; content: string } | null {
+  if (!extra || typeof extra !== "string") return null;
+  const trimmed = extra.trim();
+  if (!trimmed) return null;
+  return {
+    role: "system",
+    content: trimmed.slice(0, 16000),
+  };
 }
 
 /** Mensagem complementar de system com a preferência de tratamento. */
@@ -392,9 +405,11 @@ export async function handleJarvisChat(req: IncomingMessage, res: ServerResponse
     prefetchedSystemMsg = await prefetchBriefingContext(intent);
   }
 
+  const cockpitCtxMsg = cockpitContextSystemMessage(payload.extraSystemContext);
   const messages: Array<Record<string, unknown>> = [
     { role: "system", content: JARVIS_SYSTEM_PROMPT },
     ...(honorificMsg ? [honorificMsg] : []),
+    ...(cockpitCtxMsg ? [cockpitCtxMsg] : []),
     ...(prefetchedSystemMsg ? [prefetchedSystemMsg] : []),
     ...cleanedHistory,
     userTurn,
@@ -655,9 +670,11 @@ export async function handleJarvisChatStream(req: IncomingMessage, res: ServerRe
     sseWrite(res, { type: "tool_end", names: prefetchToolNames });
   }
 
+  const cockpitCtxMsg = cockpitContextSystemMessage(payload.extraSystemContext);
   const messages: Array<Record<string, unknown>> = [
     { role: "system", content: JARVIS_SYSTEM_PROMPT },
     ...(honorificMsg ? [honorificMsg] : []),
+    ...(cockpitCtxMsg ? [cockpitCtxMsg] : []),
     ...(prefetchedSystemMsg ? [prefetchedSystemMsg] : []),
     ...cleanedHistory,
     userTurn,
