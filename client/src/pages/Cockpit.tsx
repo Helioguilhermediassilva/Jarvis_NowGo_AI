@@ -26,13 +26,6 @@ interface BrainData {
   };
 }
 
-function greeting(now: Date): string {
-  const h = now.getHours();
-  if (h < 12) return "Bom dia, Senhor Hélio";
-  if (h < 18) return "Boa tarde, Senhor Hélio";
-  return "Boa noite, Senhor Hélio";
-}
-
 function useClock(): { time: string; date: string } {
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
@@ -74,7 +67,6 @@ function useClock(): { time: string; date: string } {
  * direita Controle Operacional) com faixa superior de Missões Ativas.
  */
 export default function Cockpit() {
-  const [now] = useState(() => new Date());
   const { time, date } = useClock();
 
   // -------------- Setup gate (1º acesso) --------------
@@ -86,6 +78,14 @@ export default function Cockpit() {
     }
   });
   const [, setPrefs] = useState<JarvisPrefs>(() => loadPrefs() ?? DEFAULT_PREFS);
+
+  // Permite scroll vertical da página (sobrescreve overflow:hidden global).
+  useEffect(() => {
+    document.body.classList.add("cockpit-active");
+    return () => {
+      document.body.classList.remove("cockpit-active");
+    };
+  }, []);
 
   // -------------- Dados Brain + SUN --------------
   const [brain, setBrain] = useState<BrainData | null>(null);
@@ -253,19 +253,37 @@ export default function Cockpit() {
                 marginBottom: 4,
               }}
             >
-              NOWGO JARVIS AI · COCKPIT INTERNO · {sun ? `SUN v${sun.snapshot.versao}` : "..."}
+              NOWGO JARVIS AI · COCKPIT INTERNO
             </div>
-            <h1
+            <div
               style={{
-                fontSize: 22,
-                color: "#d8f8ff",
-                fontWeight: 600,
-                margin: 0,
-                letterSpacing: 0.3,
+                display: "flex",
+                alignItems: "baseline",
+                gap: 14,
               }}
             >
-              {greeting(now)}
-            </h1>
+              <h1
+                style={{
+                  fontSize: 18,
+                  color: "#00d4ff",
+                  fontWeight: 700,
+                  margin: 0,
+                  letterSpacing: 1.4,
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                }}
+              >
+                NOWGO HOLDING
+              </h1>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "#5ab8cc",
+                  letterSpacing: 1,
+                }}
+              >
+                {sun ? `SUN v${sun.snapshot.versao} · ${sun.stats.totalOportunidades} oportunidades · ${sun.stats.totalMissoesAtivas} missões ativas · ${sun.stats.totalDealRooms} deal rooms` : "Sincronizando contexto..."}
+              </span>
+            </div>
           </div>
           <div style={{ textAlign: "right" }}>
             <div
@@ -456,7 +474,6 @@ function pageStyle(): React.CSSProperties {
     background: "#00060a",
     color: "#d8f8ff",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    overflow: "hidden",
   };
 }
 
@@ -477,8 +494,8 @@ function mainStyle(): React.CSSProperties {
     gridTemplateColumns: "minmax(260px, 1fr) minmax(420px, 1.6fr) minmax(280px, 1fr)",
     gap: 14,
     padding: "0 24px 14px",
-    height: "calc(100vh - 320px)",
-    minHeight: 540,
+    minHeight: 720,
+    height: "min(calc(100vh - 240px), 900px)",
   };
 }
 
