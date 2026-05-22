@@ -142,12 +142,32 @@ export default function JarvisCore({
               next[liveIdx] = { role: "jarvis", content: buf };
               return next;
             });
-            // Detecta fim de sentença (.,!?,;) e dispara TTS imediato
-            // para acelerar a resposta percebida.
+            // Detecta o primeiro "ponto natural de fala" e dispara TTS imediato.
+            // Para o primeiro chunk: aceitamos vírgulas + 25+ chars OU pontuação forte
+            // OU 60+ chars contendo qualquer pausa natural. Reduz drasticamente a
+            // latência percebida da primeira frase.
             const tail = buf.slice(spokenPos);
-            const sentenceEnd = tail.search(/[.!?](\s|$)/);
-            if (sentenceEnd >= 0) {
-              const absoluteEnd = spokenPos + sentenceEnd + 1;
+            const isFirstChunk = spokenPos === 0;
+            // Pontuação forte (.!?) sempre quebra.
+            let cutAt = -1;
+            const strongMatch = tail.search(/[.!?](\s|$)/);
+            if (strongMatch >= 0) {
+              cutAt = strongMatch + 1;
+            } else if (isFirstChunk) {
+              // Para a primeira frase, aceitar vírgula+25 OU 60+chars com pausa.
+              const commaMatch = tail.search(/,(\s)/);
+              if (commaMatch >= 25) {
+                cutAt = commaMatch + 1;
+              } else if (tail.length >= 60) {
+                const anyPause = tail.search(/[,;:](\s)/);
+                if (anyPause >= 0) cutAt = anyPause + 1;
+              }
+            } else {
+              const semiMatch = tail.search(/[;:](\s)/);
+              if (semiMatch >= 30) cutAt = semiMatch + 1;
+            }
+            if (cutAt > 0) {
+              const absoluteEnd = spokenPos + cutAt;
               speakUpTo(absoluteEnd);
             }
           },
@@ -369,17 +389,17 @@ export default function JarvisCore({
               top: 12,
               right: 12,
               background: muted
-                ? "rgba(80,0,20,0.55)"
+                ? "linear-gradient(135deg, rgba(170,80,255,0.25), rgba(170,80,255,0.08))"
                 : "linear-gradient(135deg, rgba(0,255,136,0.25), rgba(0,255,136,0.08))",
-              border: `1px solid ${muted ? C.RED : "#00ff88"}`,
-              color: muted ? C.RED : "#00ff88",
+              border: `1px solid ${muted ? "#aa50ff" : "#00ff88"}`,
+              color: muted ? "#d8a6ff" : "#00ff88",
               padding: "6px 12px",
               borderRadius: 6,
               fontSize: 10,
               letterSpacing: 1.4,
               cursor: "pointer",
               fontWeight: 800,
-              boxShadow: muted ? "none" : "0 0 12px rgba(0,255,136,0.45)",
+              boxShadow: muted ? "0 0 10px rgba(170,80,255,0.4)" : "0 0 12px rgba(0,255,136,0.45)",
             }}
           >
             {muted ? "MIC OFF" : "MIC ON"}
