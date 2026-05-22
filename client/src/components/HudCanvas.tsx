@@ -9,7 +9,7 @@ const C = {
   ACC: "#ff6b00",
   ACC2: "#ffcc00",
   GREEN: "#00ff88",
-  MUTED_C: "#ff3366",
+  MUTED_C: "#d8a6ff",
   BORDER_B: "#1a5c7a",
 };
 
