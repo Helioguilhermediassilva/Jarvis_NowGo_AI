@@ -412,7 +412,7 @@ export default function Welcome() {
       <section className="nowgo-hero">
         <div className="nowgo-container nowgo-hero-inner">
           <span className="nowgo-badge">
-            ★ Official NVIDIA Partner · DPI · JICA · BCG · Top 50 Global
+            ★ NVIDIA Partner Expert · DPI · JICA · BCG · Top 50 Global
           </span>
           <h1 className="nowgo-h1">
             AI Native Company.
