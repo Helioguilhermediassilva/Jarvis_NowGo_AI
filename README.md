@@ -1,213 +1,237 @@
-# JARVIS — Assistente Operacional do Distrito Federal
+# Jarvis NowGo AI — Cockpit Interno da NowGo Holding
 
-> **Just A Rather Very Intelligent System.** Uma interface conversacional, com voz clonada e HUD em estética *heads-up display*, que fala português brasileiro, lê dados abertos do Distrito Federal em tempo real e escuta o que está sendo dito sobre a cidade no X (antigo Twitter).
+> **Confidencial — uso interno NowGo Holding.**
+> Este repositório implementa o cockpit operacional do *founder* e o copiloto conversacional **J.A.R.V.I.S.**, suportado pela **NowGo Sovereign Stack**.
 
-**Autoria e desenvolvimento:** [NowGo AI](https://nowgo.ai)
-**Licença:** Proprietário — todos os direitos reservados à NowGo AI.
-
----
-
-## Visão geral
-
-O JARVIS é um cockpit conversacional pensado para tomadores de decisão do Distrito Federal — em particular o Palácio do Buriti, secretarias e gabinetes parlamentares — que precisam de respostas rápidas, fundamentadas em dados oficiais, sobre o que está acontecendo na cidade. O usuário fala (ou digita) em português brasileiro, o sistema entende a intenção, consulta as bases conectadas, agrega o que está sendo dito nas redes sobre o tema e responde em voz natural enquanto a interface ainda está renderizando o texto.
-
-Quatro elementos estruturais sustentam o produto:
-
-1. **Voz clonada de alta fidelidade**, gerada pela [ElevenLabs](https://elevenlabs.io/), reproduzida via *streaming* de áudio MP3 e cacheada em IndexedDB para frases curtas frequentes (latência percebida próxima de zero em respostas como “Sim, senhor.”).
-2. **Reconhecimento de fala contínuo** com modo opcional de *wake-word* (“Ei JARVIS”), construído sobre a Web Speech API do navegador e tolerante a variações de transcrição (“jarves”, “jarvez”, “hey jarvis”).
-3. **Pipeline duplo de dados**: um lado consulta o portal oficial **dados.df.gov.br** (CKAN); outro lado consulta o **X em tempo real** através do **Grok da xAI** com a ferramenta server-side `x_search`. O servidor decide qual lado acionar — ou ambos em paralelo — conforme o tipo de pergunta.
-4. **HUD em vermelho/âmbar/ciano** inspirado em interfaces de cockpit, com painel central de diálogo, painel lateral de *Briefing Social DF* e relógio de Brasília.
-
-A pessoa que utiliza o sistema escolhe na inicialização como deseja ser tratada — **Senhor** ou **Senhora** — e essa preferência viaja em todas as chamadas ao modelo, garantindo concordância de gênero coerente em todas as respostas.
+O **Jarvis NowGo AI** é a interface única através da qual o *founder* da NowGo Holding conversa em tempo real com o portfólio inteiro da empresa. A tela principal funde, num único campo de visão cinematográfico, três camadas operacionais que antes viviam em ferramentas separadas: o **Plano Operacional SUN** (controlador estratégico assíncrono), o **NowGo Brain** (CRM e base canônica de oportunidades, projetos, atas e tarefas) e o **núcleo conversacional Jarvis**, que ouve, fala com a voz clonada do *founder* e executa ações reais no Brain a partir de comandos de voz. Tudo é alimentado pela **NowGo Sovereign Stack**, a infraestrutura cognitiva proprietária da NowGo que abstrai modelos de linguagem, síntese de voz, busca em tempo real, base de conhecimento e armazenamento documental sob uma única camada interna.
 
 ---
 
-## Arquitetura
+## Visão de Produto
 
-A aplicação é um *single-page* React 19 servido como estático, com funções *serverless* expostas em `/api/*`. Tudo compila no Vercel sem servidor dedicado.
+A NowGo Holding opera com um portfólio de mais de cem oportunidades distribuídas entre governo, saúde, infraestrutura soberana e parcerias internacionais. O risco operacional não está mais na falta de oportunidades, e sim na **dispersão da atenção do *founder***. O Jarvis NowGo AI nasce para resolver essa dispersão: ele é simultaneamente um **escudo**, que afasta tudo que não pertence à missão ativa, e um **acelerador**, que executa em segundos tarefas que antes consumiam horas — atualizar o CRM, registrar uma ata de reunião, redigir uma proposta comercial, montar um pitch deck, classificar uma oportunidade segundo o blueprint NowGo, ou disparar uma varredura assíncrona do portfólio.
 
-| Camada | Tecnologia | Função |
+A experiência foi desenhada para fazer o *founder* sentir que dirige uma operação inteligente em tempo real, e não que opera planilhas. O cockpit abre fullscreen com o núcleo Jarvis pulsando ao centro, as três Missões Ativas em destaque na faixa superior, o pipeline classificado pelo SUN à esquerda e o painel de controle operacional (Deal Rooms, cadência, plano dos próximos sete dias, agenda a remover) à direita. Toda a informação visível na tela é a verdade canônica do dia: prioridades vêm do Brain, classificações vêm do SUN, e ambas se atualizam automaticamente sempre que o Jarvis executa uma ação.
+
+---
+
+## Arquitetura — NowGo Sovereign Stack
+
+A NowGo Sovereign Stack é a abstração interna que sustenta toda a inteligência do Jarvis. O sistema é organizado em sete camadas, todas operadas em nome da NowGo Holding e expostas internamente como serviços nomeados.
+
+| Camada | Função interna | Nomeação NowGo |
 |---|---|---|
-| Frontend | React 19 + TypeScript + Vite 7 + Tailwind 4 + shadcn/ui | HUD, painéis, captura de microfone, *streaming* de áudio |
-| Backend serverless | TypeScript em `api/*.ts` (Vercel Functions, Node 20) | Proxy para CKAN, Grok e ElevenLabs; orquestração de *tool calling* |
-| LLM (chat principal) | Grok da xAI — `grok-4.3` via Chat Completions API | Diálogo, *tool calling*, tratamento de gênero |
-| LLM (sentimento social) | Grok da xAI — `grok-4.20-0309-non-reasoning` via Responses API | Briefing do X em tempo real com tool nativa `x_search` |
-| Voz (síntese) | ElevenLabs — voz clonada *Hélio Guilherme* (`F1W6zKJWyDQD3yKJc4A6`) | TTS MP3 *streaming* + cache IndexedDB |
-| Voz (reconhecimento) | Web Speech API nativa do Chrome/Edge | STT contínuo, sem dependência de SDK externo |
-| Dados oficiais | CKAN do portal `dados.df.gov.br` | Datasets do GDF (saúde, segurança, educação, transporte, transparência) |
-| Sentimento social | API `live_search` do Grok (tool `x_search`) | Reclamações e elogios do X sobre Brasília, últimos 3 dias |
+| Cognição | Raciocínio em linguagem natural, *tool-calling*, redação extensa, expansão de briefings em documentos | NowGo Cognition |
+| Voz | Síntese vocal com a voz clonada do *founder* e reconhecimento de fala em português brasileiro com *wake-word* | NowGo Voice |
+| Brain | Base canônica de oportunidades, projetos, contatos, atas, tarefas, riscos e relatórios SUN | NowGo Brain |
+| Controlador assíncrono | Agente que regenera o Plano Operacional, executa pesquisas profundas e redatoria longa em background | NowGo SUN |
+| Pesquisa em tempo real | Busca web e em redes sociais com janela temporal e filtros por idioma | NowGo Discovery |
+| Documentos | Geração de apresentações, propostas, contratos, *one-pages* e *pitch decks* com identidade visual NowGo | NowGo Studio |
+| Arquivos | Armazenamento dedicado da pasta `Arquivos_NowGo_AI/` no domínio Drive corporativo da Holding | NowGo Vault |
 
-O fluxo de uma pergunta como *“Faça um briefing de saúde no DF”*:
-
-1. O navegador captura a fala, transcreve via Web Speech API e envia o texto ao endpoint **`/api/jarvis/chat/stream`**.
-2. Antes de invocar o modelo, o servidor roda `detectBriefingIntent`. Se o pedido casa um padrão de *briefing* + um dos cinco tópicos suportados, o servidor dispara em paralelo (`Promise.all`) as duas *tools* — `buscar_dados_df` (CKAN) e `sentimento_social_df` (Grok) — e injeta os resultados como uma segunda mensagem `system` antes de chamar o LLM. Isso elimina rodadas extras de *tool calling* e corta a latência aproximadamente pela metade.
-3. O modelo responde já com tudo em mãos. A resposta é retransmitida em SSE como uma sequência de `delta`, `tool_start`, `tool_end` e `done` para o frontend, que atualiza o log incrementalmente — primeiro *byte* visível em torno de **400 ms**.
-4. Quando o modelo finaliza, o frontend pede o áudio em `/api/jarvis/tts`. Frases curtas previamente vistas tocam direto do IndexedDB; frases novas tocam via `MediaSource` com latência mínima.
-
----
-
-## Bases de dados conectadas
-
-### CKAN — `dados.df.gov.br`
-
-O **portal oficial de dados abertos do Distrito Federal** é a única fonte estatística reconhecida pelo JARVIS para questões factuais sobre o GDF. Cinco grupos do CKAN estão pré-mapeados como tópicos de primeira classe na heurística de intenção e na *tool* `buscar_dados_df`:
-
-| Tópico | Grupo CKAN | Cobertura típica |
-|---|---|---|
-| Saúde | `saude` | Atendimentos da SES-DF, leitos, vigilância epidemiológica |
-| Segurança | `seguranca` | Boletins da PCDF, ocorrências da PMDF, dados do CIODF |
-| Educação | `educacao` | Matrículas, IDEB regional, infraestrutura escolar |
-| Transporte | `transporte` | DFTrans, BRT/Metrô, frota, estatísticas de mobilidade |
-| Transparência | `transparencia` | Execução orçamentária, contratos, servidores |
-
-A *tool* `buscar_dados_df` consulta o endpoint `package_search` do CKAN, devolvendo metadados, descrição, periodicidade e *recursos* (links de download em CSV, JSON, XLSX). O JARVIS retorna ao usuário uma síntese verbal e indica explicitamente os datasets que sustentam a afirmação, evitando alucinações: nada é dito como “fato oficial” sem rastreabilidade.
-
-### X (antigo Twitter) — via Grok
-
-O JARVIS não fala com o X diretamente; **toda inteligência social vem do Grok**. A ferramenta `x_search` é uma capacidade *server-side* nativa da Responses API da xAI: o modelo recebe permissão para consultar postagens do X dentro de uma janela temporal e devolve, na própria resposta, um resumo já analisado pelo Grok. O JARVIS configura essa janela para **os últimos 3 dias** (`from_date` dinâmico) — três dias é suficiente para captar o pulso do momento sem deixar o modelo trabalhar com material velho.
-
-A *tool* `sentimento_social_df` separa o que o Grok devolve em três blocos estruturados — **reclamações**, **elogios** e **mentions emergentes** — e cacheia o resultado por chave normalizada (sem acentos, sem *stopwords* portuguesas, tópico ordenado). Isso significa que “saúde no DF”, “Saúde no Distrito Federal” e “saude DF” caem todos no mesmo *bucket* de cache, com TTL de poucos minutos.
-
----
-
-## Modelo de IA — Grok da xAI
-
-O JARVIS opera com **dois modelos do Grok** em paralelo, cada um otimizado para o seu papel:
-
-| Papel | Modelo | Endpoint | Por quê |
-|---|---|---|---|
-| Chat principal e *tool calling* | `grok-4.3` | `POST https://api.x.ai/v1/chat/completions` | Modelo *flagship* atual da xAI (após a retirada de `grok-3`/`grok-4` em maio de 2026). Suporta `tool_choice: auto` e *streaming* SSE, essenciais para a orquestração das tools customizadas `buscar_dados_df` e `sentimento_social_df`. |
-| Sentimento social | `grok-4.20-0309-non-reasoning` | `POST https://api.x.ai/v1/responses` | Combina a tool nativa `x_search` da Responses API com modo *non-reasoning*. Responde em 3 a 5 s — contra 17 a 22 s do modo *reasoning* — sem perda perceptível de qualidade para um briefing operacional. |
-
-Parâmetros comuns:
-
-| Parâmetro | Valor |
-|---|---|
-| *Tools* nativas | `x_search` (X em tempo real, `from_date` últimos 3 dias) |
-| *Tools* customizadas | `buscar_dados_df` (CKAN do GDF), `sentimento_social_df` (sentimento agregado do X) |
-| Janela de contexto | até 256k tokens |
-| Idioma de resposta | Português brasileiro (forçado no *system prompt*) |
-| Tratamento | Senhor / Senhora (escolhido pelo usuário, injetado como segunda *system message*) |
-
-A mesma chave `XAI_API_KEY` autentica **os dois usos** — não há necessidade de cadastrar credenciais separadas. A chave fica como variável de ambiente apenas no servidor; nunca é exposta ao cliente.
-
----
-
-## Voz — ElevenLabs
-
-A voz do JARVIS foi clonada a partir do timbre de **Hélio Guilherme** com a ferramenta de *Voice Cloning* da ElevenLabs e reside no ID `F1W6zKJWyDQD3yKJc4A6`. O servidor faz proxy entre o frontend e o endpoint `text-to-speech/{voiceId}/stream`, devolvendo um *stream* de MP3 que o frontend toca via `MediaSource` para reduzir o *time-to-first-byte* sonoro.
-
-A chave da ElevenLabs fica como `ELEVENLABS_API_KEY`. O *cache de áudio TTS* (módulo `client/src/lib/ttsAudioCache.ts`) persiste localmente até 60 frases curtas (até 80 caracteres cada), indexadas por SHA-256 do texto normalizado + voice ID. Em uso real isso elimina completamente a latência de frases recorrentes do mordomo (“Sim, senhor.”, “Compreendido.”, “Imediatamente.”, “Pois não, senhora.”).
-
----
-
-## Linha do tempo do desenvolvimento
-
-| Marco | Entrega |
-|---|---|
-| **Versão 0.1** | Esqueleto React + HUD em ciano, captura de microfone, integração inicial com Grok via *Chat Completions* |
-| **Versão 0.2** | Voz clonada na ElevenLabs e integrada via *streaming* MP3 + `MediaSource` |
-| **Versão 0.3** | *Tool calling* customizado: `buscar_dados_df` ligada ao CKAN do GDF; primeiros painéis laterais com datasets reais |
-| **Versão 0.4** | *Tool* `sentimento_social_df` com `x_search` da xAI; painel **Briefing Social DF** mostrando reclamações e elogios reais |
-| **Versão 0.5 (otimização do Grok)** | Migração de `grok-4.3` (*reasoning*) para `grok-4.20-0309-non-reasoning`; `from_date` dinâmico nos últimos 3 dias; latência de briefing combinado caiu de 22-32 s para ~14 s |
-| **Versão 0.6 (cache e SSE)** | Cache compartilhado de sentimento entre painel direto e *tool* do JARVIS, com chave normalizada (acentos, *stopwords*, ordem); endpoint `/api/jarvis/chat/stream` com SSE entregando *deltas* em ~400 ms |
-| **Versão 0.7 (cache de áudio TTS)** | IndexedDB com LRU de 60 entradas para frases curtas; áudio repetido toca sem TTFB |
-| **Versão 0.8 (wake-word + tratamento)** | Modo opcional “Ei JARVIS” para ativação por voz; preferência de tratamento Senhor/Senhora persistida em `localStorage` e propagada ao LLM |
-| **Versão 1.0** | Pré-busca paralela de *tools* para *briefings* combinados (1 rodada única em vez de 2); briefing combinado a frio em ~11 s; suíte de testes Vitest cobrindo `wakeWord`, `briefingIntent`, `ttsAudioCache`, `jarvisChatStream`, integração com CKAN, ElevenLabs e xAI |
-| **Versão 1.0.1 (deploy Vercel)** | Sanitização completa do código (autoria NowGo AI, sem referências a outros projetos), opção *Neutro* removida do *SetupOverlay* (apenas Senhor/Senhora), 7 funções serverless em `api/`, `vercel.json` configurado, README em pt-BR. Unificação da credencial: `XAI_API_KEY` passou a cobrir tanto o chat principal (modelo `grok-4.3`) quanto o sentimento social, eliminando a necessidade de variáveis duplicadas no Vercel. |
-
-Linhas de comentário, *system prompt* e branding inteiros foram revisados para refletir a autoria **NowGo AI** — a versão pública do código não contém referências a outros nomes de projeto.
-
----
-
-## Estrutura de pastas
+Em runtime, o Jarvis é o **maestro síncrono** que roteia para essas camadas. O **SUN** é o **controlador assíncrono** que pode executar tarefas longas em background sem bloquear a conversa. Os dois lados conversam através do Brain, que serve como memória compartilhada e fila de eventos.
 
 ```
-.
-├── api/                      # Funções serverless do Vercel
+        +------------------------------------------------+
+        |              COCKPIT (browser)                 |
+        |   HUD pulsante + chat de voz + 3 colunas       |
+        +-------------------+----------------------------+
+                            |
+                            v
+        +------------------------------------------------+
+        |  J.A.R.V.I.S. (maestro sincrono)               |
+        |  - Conversa em tempo real (NowGo Voice)        |
+        |  - Tool-calling (NowGo Cognition)              |
+        |  - Aciona Brain, SUN, Studio, Discovery        |
+        +-------------------+----------------------------+
+                            |
+       +--------+-----------+----------+---------+--------+
+       |        |           |          |         |        |
+       v        v           v          v         v        v
+    Brain    SUN async   Discovery   Studio    Vault    Voice
+   (CRM)   (controlador)  (pesquisa) (docs)   (Drive)  (TTS/STT)
+```
+
+---
+
+## Cockpit — A Tela Cinematográfica
+
+O cockpit foi desenhado em três zonas verticais sobre uma estética de centro de comando: nebulosa cosmic-blue como fundo, anel orbital ciano girando devagar atrás do núcleo Jarvis, *wireframe* geodésico sutil e tipografia mono tabular para os números do dia.
+
+A **faixa superior** apresenta as três Missões Ativas — atualmente *GDF Plataforma Pública Integrada*, *Infraestrutura Soberana e Credibilidade Técnica* e *Health/Voice Replicável* — cada uma com seu *glow* lateral colorido, oportunidades vinculadas, critérios de ativação e ação operacional vigente. A regra **3+1** do SUN, que limita o portfólio a três missões ativas e o foco do *founder* a uma única missão por vez, é exibida como *guardrail* permanente: se uma quarta missão tentar entrar, o Jarvis recita a regra e exige decisão sobre qual pausar.
+
+A **coluna esquerda** apresenta o pipeline classificado pelo SUN, dividido em duas abas: o portfólio geral, com cerca de cem oportunidades em estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA, e o dossiê GDF 2036, com trinta e quatro oportunidades específicas para o ciclo de governo. Cada linha exibe um selo colorido pelo status SUN, o cliente, o estágio Brain, a ação operacional vinculante e um botão para o Jarvis ler em voz alta a posição daquela oportunidade.
+
+A **zona central** é ocupada pelo núcleo Jarvis. Um *canvas* HUD pulsa a 0,8 Hz quando ocioso e vibra com a forma de onda da voz quando ele fala. Abaixo do *canvas*, o *stream* de conversa exibe as últimas trocas em estilo terminal cyberpunk, com bolhas em ciano para o *founder* e em azul-marinho para o Jarvis. A *drop zone* multimodal aceita PDF, DOCX, JPG, PNG e MP3 arrastados — o Jarvis transcreve áudio, extrai texto de documentos e usa o conteúdo como contexto da conversa imediatamente seguinte. Um botão de microfone gigante captura voz com *wake-word* "Ei Jarvis" em português brasileiro.
+
+A **coluna direita** é o painel de controle operacional. Reúne, de cima para baixo, os cinco Deal Rooms prioritários (com risco, próximo passo e *owner*), os cinco rituais de cadência mínima (frequência, *owner*, saída esperada), o plano dos próximos sete dias em formato de *timeline* horizontal e a lista vermelha de itens a remover imediatamente da agenda do *founder*. Tudo é fonte da verdade SUN — não há reinterpretação no caminho.
+
+Por fim, um **ticker animado** roda no rodapé com o **Comando Final SUN**, recitando como mantra a diretriz do controlador: *"Nada novo entra na agenda ativa até que um dos cinco Deal Rooms avance, seja pausado ou seja descartado. O founder deve ser protegido como ativo estratégico, não usado como sistema operacional humano da empresa."*
+
+---
+
+## Capacidades por Voz
+
+O Jarvis ouve em português brasileiro com *wake-word* "Ei Jarvis", interpreta intenções com NowGo Cognition, executa ações no NowGo Brain e responde com a voz clonada do *founder* via NowGo Voice. Toda ação que altera dados segue o protocolo **preview → confirma → grava**: o Jarvis primeiro descreve o que vai fazer, espera confirmação verbal ou textual, e só então executa. Quando a tarefa é longa demais para uma fala, ele aciona o SUN como *job* assíncrono e devolve o controle imediatamente, prometendo notificar quando o resultado estiver pronto.
+
+### Leitura do portfólio
+
+O Jarvis acessa o NowGo Brain para responder em segundos perguntas como *"qual minha Missão 1?"*, *"lista as três oportunidades quentes"*, *"qual o status do GDF/FAP-DF Fase 3?"*, *"tem follow-up atrasado?"* ou *"o que está bloqueado hoje?"*. Cada resposta cita o número da oportunidade no Brain, o estágio atual, o *score*, o último contato e a ação operacional definida pelo SUN.
+
+### Atualização do CRM por voz
+
+Comandos como *"atualize o GDF Fase 3 para fechado-ganho"*, *"marque o Hospital de Base como em proposta"*, *"registre uma ata da reunião de hoje com o Onion sobre a Missão 2"* ou *"crie uma tarefa para preparar o briefing do Aristhides até quinta"* disparam mutações reais no Brain. O Jarvis mostra um *preview* falado, espera confirmação e grava. O cockpit detecta a mutação automaticamente via evento *server-sent* `brain_mutated` e refresca os painéis em tempo real, sem necessidade de F5.
+
+### Geração documental por voz
+
+Cinco famílias de documentos podem ser produzidas a partir de um briefing falado de poucas frases, com o NowGo Cognition expandindo o conteúdo, o NowGo Studio aplicando a identidade visual NowGo e o NowGo Vault armazenando o resultado na pasta `Arquivos_NowGo_AI/` do Drive corporativo.
+
+| Família | Formato | Uso típico |
+|---|---|---|
+| Apresentação institucional | PPTX | Reuniões executivas, *kickoff* de projeto, *update* de board |
+| Proposta comercial | DOCX | Propostas para órgãos públicos, *enterprise* e parceiros estratégicos |
+| Contrato preliminar (MSA, SOW, NDA) | DOCX | Versão preliminar para revisão jurídica obrigatória antes de assinatura |
+| One-page executivo | PDF | Resumo de uma página para CEOs, governadores e conselhos antes de reunião |
+| Pitch deck | PPTX | Apresentações a investidores, parceiros estratégicos e oportunidades de aceleração |
+
+A pasta-raiz `Arquivos_NowGo_AI/` é organizada automaticamente em subpastas (`Apresentacoes/`, `Propostas/`, `Contratos/`, `OnePages/`, `PitchDecks/`, `AtasReunioes/`, `Briefings/`). Quando a credencial do NowGo Vault não está configurada, os documentos são entregues como *download* direto via *fallback* em `data:` base64, garantindo que a operação nunca trave.
+
+### Pesquisa em tempo real
+
+Quando o *founder* pergunta sobre um fato externo recente — uma notícia, uma cotação, uma decisão de governo, um lançamento concorrente — o Jarvis aciona o NowGo Discovery, que realiza busca web e em redes sociais em tempo real com janela temporal configurável e devolve uma síntese factual com fontes citadas.
+
+### Acionamento do SUN
+
+Tarefas longas — regenerar o Plano Operacional completo, varredura profunda de oportunidades em um setor inteiro, redigir um documento extenso a partir de múltiplas fontes — são despachadas como *job* assíncrono ao NowGo SUN. O Jarvis devolve o controle ao *founder* imediatamente e notifica quando o resultado está disponível no Brain ou no Vault.
+
+---
+
+## Plano Operacional SUN
+
+O Plano Operacional SUN é a fonte autoritativa que classifica todo o portfólio da NowGo. A versão **v1.0** (22 de maio de 2026) está materializada como dado servido pelo *endpoint* `/api/sun/plan` e contém: três Missões Ativas com critérios de ativação e ação operacional vigente; cerca de cem oportunidades classificadas entre os estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA e DESCARTADA AGORA, cada uma com a ação operacional vinculante; trinta e quatro oportunidades GDF 2036 cobrindo o ciclo de governo do Distrito Federal; cinco Deal Rooms prioritários com risco, próximo passo e *owner* atribuído; cinco rituais de cadência mínima (Standup Diário, Deal Room Weekly, Pulse Founder, Revisão SUN, Health Check Pipeline); plano de execução dos próximos sete dias dia a dia; lista de remoção imediata da agenda do *founder*; e o Comando Final SUN exibido como ticker permanente no cockpit.
+
+O plano é regenerado periodicamente pelo NowGo SUN a partir do estado atual do Brain e dos *frameworks* operacionais NowGo. Em versão futura, a cadência será configurável (sob demanda, semanal ou em gatilhos definidos pelo *founder*) e cada nova versão é versionada no Brain com *diff* automático contra a anterior, permitindo navegação histórica.
+
+---
+
+## Estrutura do Repositório
+
+```
+Jarvis_NowGo_AI/
+├── api/                              ← Funções serverless (entrypoints HTTP)
+│   ├── brain/
+│   │   ├── status.ts                 ← Snapshot Brain (prioridades, atenção, aceleração)
+│   │   └── diag.ts                   ← Diagnóstico de credenciais (apenas debug)
+│   ├── sun/
+│   │   └── plan.ts                   ← Snapshot completo do Plano Operacional SUN
 │   ├── jarvis/
-│   │   ├── chat.ts           # POST /api/jarvis/chat       (resposta única)
-│   │   ├── chat/stream.ts    # POST /api/jarvis/chat/stream (SSE)
-│   │   └── tts.ts            # POST /api/jarvis/tts        (proxy ElevenLabs)
-│   ├── df/
-│   │   ├── topics.ts         # GET  /api/df/topics
-│   │   ├── search.ts         # GET  /api/df/search
-│   │   └── dataset.ts        # GET  /api/df/dataset
-│   └── grok/
-│       └── sentiment.ts      # POST /api/grok/sentiment
-├── client/                   # Aplicação React (Vite)
-│   ├── index.html
-│   └── src/
-│       ├── components/       # SetupOverlay, painéis, HUD shell
-│       ├── hooks/            # useElevenLabsTTS, useSpeechRecognition
-│       ├── lib/              # jarvisLLM, ttsAudioCache, wakeWord
-│       └── pages/Home.tsx    # Cockpit principal
-├── server/                   # Handlers Node compartilhados (importados pelas funções)
-│   ├── jarvisProxy.ts        # /api/jarvis/* — chat, stream, tts, system prompt
-│   ├── grokProxy.ts          # /api/grok/sentiment + cache compartilhado
-│   ├── dfDataProxy.ts        # /api/df/*    — CKAN do GDF
-│   ├── dfSources.ts          # Constantes dos grupos CKAN suportados
-│   └── *.test.ts             # Suíte Vitest (unitária e de integração)
-├── shared/                   # Tipos compartilhados client/server
-├── vercel.json               # Build, rewrites SPA, framework=null
-├── vite.config.ts            # Build do frontend + proxy /api em dev
-├── vitest.config.ts          # Ambientes node/happy-dom por glob
-└── package.json
+│   │   ├── chat.ts                   ← Chat síncrono com tool-calling
+│   │   ├── chat/stream.ts            ← Chat com streaming SSE
+│   │   └── tts.ts                    ← Síntese de voz NowGo
+│   └── drive/
+│       └── test.ts                   ← Validação de credenciais NowGo Vault
+├── server/                           ← Lógica de negócio reutilizável
+│   ├── jarvisProxy.ts                ← Maestro: tool-calling, system prompt, dispatcher
+│   ├── jarvisBrainTools.ts           ← Tools de leitura/escrita do NowGo Brain
+│   ├── jarvisDocTools.ts             ← Tools de geração documental NowGo Studio
+│   ├── docGenerators.ts              ← Geradores PPTX, DOCX, PDF com identidade NowGo
+│   ├── googleDrive.ts                ← Cliente NowGo Vault (Drive corporativo)
+│   ├── notionBrain.ts                ← Cliente do NowGo Brain
+│   ├── brainQueries.ts               ← Consultas canônicas do Brain
+│   ├── brainMutations.ts             ← Mutações com protocolo preview→confirma→grava
+│   ├── brainSchema.ts                ← Schemas e validações
+│   ├── sunPlan.ts                    ← Snapshot v1.0 do Plano SUN servido por /api/sun/plan
+│   └── grokProxy.ts                  ← Cliente NowGo Cognition + cache
+├── client/                           ← Frontend do cockpit
+│   ├── src/
+│   │   ├── pages/
+│   │   │   └── Cockpit.tsx           ← Tela principal cinematográfica
+│   │   ├── components/cockpit/
+│   │   │   ├── SunMissionsBar.tsx    ← Faixa superior com 3 Missões Ativas
+│   │   │   ├── SunPipelinePanel.tsx  ← Coluna esquerda — pipeline classificado
+│   │   │   ├── SunControlPanel.tsx   ← Coluna direita — Deal Rooms, cadência, 7 dias
+│   │   │   └── JarvisCore.tsx        ← Núcleo central com HUD + voz + multimodal
+│   │   ├── hooks/                    ← STT pt-BR, TTS NowGo, wake-word
+│   │   └── lib/
+│   │       ├── jarvisLLM.ts          ← Cliente do chat-stream
+│   │       └── sunTypes.ts           ← Tipos compartilhados frontend
+└── README.md
 ```
 
 ---
 
-## Variáveis de ambiente
+## Variáveis de Ambiente
 
-Todas confidenciais — devem ser cadastradas no painel do Vercel (em *Project Settings → Environment Variables*) e nunca *commitadas*.
+Todas as credenciais são armazenadas como segredos criptografados na borda da NowGo Sovereign Stack. Os nomes abaixo são os identificadores internos.
 
-| Nome | Onde é usada | Obrigatória? |
+| Variável | Função | Status |
 |---|---|---|
-| `XAI_API_KEY` | Servidor — chamadas ao Grok, **tanto no chat principal (`grok-4.3` via Chat Completions) quanto no sentimento social (`grok-4.20-0309-non-reasoning` via Responses + `x_search`)** | **Sim** |
-| `ELEVENLABS_API_KEY` | Servidor — *streaming* TTS da voz clonada | **Sim** |
-| `LLM_API_URL` | Servidor — base URL alternativa para um *gateway* de LLM próprio. Quando ausente, o JARVIS chama `https://api.x.ai` diretamente | Não |
-| `LLM_API_KEY` | Servidor — chave do *gateway* citado acima. Quando ausente, o JARVIS reaproveita automaticamente `XAI_API_KEY` | Não |
+| `NOTION_API_KEY` | Chave de acesso ao NowGo Brain | Obrigatória |
+| `XAI_API_KEY` | Chave do NowGo Cognition (motor cognitivo) | Obrigatória |
+| `ELEVENLABS_API_KEY` | Chave do NowGo Voice (síntese vocal clonada) | Obrigatória |
+| `GOOGLE_DRIVE_SA_KEY` | Chave da Service Account do NowGo Vault | Opcional (sem ela, *fallback* para *download* direto) |
 
-> Em produção, o JARVIS funciona com **apenas duas variáveis**: `XAI_API_KEY` e `ELEVENLABS_API_KEY`. O par `LLM_API_URL` / `LLM_API_KEY` só é útil para quem quiser intermediar o tráfego do Grok por um *gateway* corporativo ou cache externo.
-
----
-
-## Como rodar localmente
-
-Pré-requisitos: Node 20+, pnpm 10+.
-
-```bash
-pnpm install
-cp .env.example .env.local      # preencher XAI_API_KEY e ELEVENLABS_API_KEY
-pnpm dev                        # http://localhost:5173
-```
-
-Em desenvolvimento, o `vite.config.ts` faz *proxy* das rotas `/api/*` para handlers in-process — não é necessário rodar um servidor Express separado. O hot-reload funciona normalmente para frontend e *handlers*.
-
-Para rodar a suíte de testes:
-
-```bash
-pnpm test         # unitários + integração (CKAN, xAI, ElevenLabs)
-pnpm check        # tsc --noEmit (apenas types)
-pnpm build        # build de produção em ./dist
-```
+A configuração da chave do NowGo Vault é feita em duas etapas: criar uma Service Account no console corporativo do domínio NowGo, baixar o JSON e armazená-lo como segredo `GOOGLE_DRIVE_SA_KEY`; depois compartilhar a pasta-raiz `Arquivos_NowGo_AI/` do Drive corporativo da Holding com o e-mail da Service Account, atribuindo permissão de *Editor*. Quando o segredo está ausente, o cockpit continua funcional e os documentos gerados são entregues por *download* direto.
 
 ---
 
-## Como publicar no Vercel
+## Endpoints Operacionais
 
-1. **Importe o repositório** em <https://vercel.com/new> escolhendo `Helioguilhermediassilva/Javis`.
-2. Em *Build & Development Settings*, deixe que o Vercel detecte o `vercel.json` automaticamente. O `buildCommand` é `pnpm build`, o `outputDirectory` é `dist`, e a *Framework Preset* deve ficar como **Other**.
-3. Em *Environment Variables*, cadastre `XAI_API_KEY` e `ELEVENLABS_API_KEY` (escolha *Production* e *Preview*).
-4. Clique em **Deploy**. O Vercel publicará o frontend como estático e cada arquivo dentro de `api/` como uma função *serverless* Node 20.
-5. Para domínio próprio (ex.: `jarvis.nowgo.ai`), use o painel *Domains* do projeto. O Vercel cuida do certificado TLS automaticamente.
-
-> **Limites importantes do plano gratuito:** funções *serverless* têm execução máxima de 60 s no plano Hobby. As rotas pesadas (`/api/jarvis/chat`, `/api/jarvis/chat/stream`, `/api/jarvis/tts`, `/api/grok/sentiment`) já estão configuradas com `maxDuration: 60`, suficiente para *briefings* combinados em condições normais. Em produção sob carga, recomendamos o plano Pro ou um *gateway* dedicado.
+| Endpoint | Método | Função |
+|---|---|---|
+| `/api/sun/plan` | `GET` | Snapshot completo do Plano Operacional SUN (versão atual + dados estruturados) |
+| `/api/brain/status` | `GET` | Prioridades, pontos de atenção e padrões de aceleração extraídos do Brain |
+| `/api/jarvis/chat` | `POST` | Chat síncrono com *tool-calling* (uso programático) |
+| `/api/jarvis/chat/stream` | `POST` | Chat com *streaming* SSE para a UI do cockpit |
+| `/api/jarvis/tts` | `POST` | Síntese de voz NowGo (voz clonada do *founder*) |
+| `/api/drive/test` | `GET` | Diagnóstico de credenciais do NowGo Vault |
 
 ---
 
-## Notas finais
+## Fluxos Críticos
 
-Este projeto foi concebido, prototipado e codificado pela **NowGo AI**. A personalidade do assistente — incluindo o nome J.A.R.V.I.S., o tom mordomístico e a estética HUD — é uma referência cultural ao universo *Homem de Ferro*; nenhum direito autoral é reivindicado sobre essa inspiração. Todo o código de aplicação, prompts, integrações e *bindings* com APIs públicas é de autoria da NowGo AI.
+### Fluxo conversacional com mutação no Brain
 
-Para questões comerciais, parcerias com governos e secretarias, ou licenciamento, contate a equipe da NowGo AI.
+> *"Jarvis, marque o GDF/FAP-DF Fase 3 como fechado-ganho com valor de R$ 2,5 milhões e prazo de seis meses."*
+
+O Jarvis identifica a oportunidade no Brain pelo nome, dispara a tool `brain_atualizar_oportunidade` em modo *preview*, recita verbalmente os campos a serem alterados e pede confirmação. Após o "confirmo" do *founder*, executa a mutação real, emite o evento SSE `brain_mutated`, e o cockpit re-busca `/api/brain/status` e `/api/sun/plan` para refletir o novo estado em tempo real. A confirmação verbal final do Jarvis cita o número da página atualizada e o *timestamp*.
+
+### Fluxo de geração documental por voz
+
+> *"Jarvis, prepare uma proposta comercial para o Hospital de Base baseada na Missão 3, com investimento estimado de R$ 800 mil e prazo de quatro meses."*
+
+O Jarvis cita o briefing reconhecido em forma resumida, pede confirmação e, ao receber o "sim", dispara a tool `criar_proposta_comercial`. O NowGo Cognition expande o briefing em uma proposta DOCX completa (sumário executivo, escopo, entregáveis, cronograma, investimento, próximos passos), o NowGo Studio aplica a identidade visual NowGo e o NowGo Vault armazena o arquivo em `Arquivos_NowGo_AI/Propostas/2026-05-22-hospital-de-base-proposta.docx`. O Jarvis recita o nome do arquivo e oferece ler o sumário executivo em voz alta.
+
+### Fluxo de regeneração do SUN
+
+> *"Jarvis, regenere o Plano Operacional SUN com base no estado atual do Brain."*
+
+O Jarvis aciona o NowGo SUN como *job* assíncrono, devolve o controle imediatamente e segue conversando. Ao final da execução (poucos minutos depois), o SUN escreve a nova versão `v1.x` no Brain com *diff* automático contra a versão anterior, e o Jarvis interrompe educadamente a conversa em curso para recitar as principais mudanças.
+
+---
+
+## Segurança e Governança
+
+Toda a operação do Jarvis é confidencial e restrita à NowGo Holding, e segue as seguintes cláusulas de governança.
+
+A **persona é blindada**: o Jarvis nunca revela fornecedores externos. Quando perguntado sobre infraestrutura, responde sempre em termos da NowGo Sovereign Stack. Caso o *founder* peça explicitamente, ele apenas confirma que a *stack* é proprietária e que detalhes de implementação são sigilosos.
+
+Toda **mutação exige confirmação obrigatória**: ações que alteram o Brain ou produzem documento exigem confirmação verbal antes da execução. Não há mutação silenciosa. Cada mutação no Brain registra autor, *timestamp* e prompt original que disparou a ação, permitindo auditoria e rastreabilidade completa.
+
+A **voz clonada tem uso restrito**: a voz clonada do *founder* é utilizada exclusivamente neste cockpit interno. A chave do NowGo Voice é segredo criptografado e não é exposta ao *frontend*.
+
+Toda saída de **contrato é preliminar**: documentos jurídicos gerados pelo NowGo Studio são marcados como *preliminares* e exigem revisão jurídica antes de qualquer assinatura. O Jarvis recita explicitamente esse aviso ao final da geração.
+
+---
+
+## Roadmap
+
+A próxima fase da plataforma contempla três expansões. A primeira é o **NowGo SUN automatizado em cadência configurável**, com regeneração periódica do Plano Operacional sem comando manual e gatilhos definidos pelo *founder* (semanal, diário ou eventos específicos no Brain). A segunda é a **integração definitiva do NowGo Vault**, com a Service Account do Drive corporativo configurada e a pasta `Arquivos_NowGo_AI/` operando como repositório oficial de documentos da Holding. A terceira é o **modo embedded full-duplex**, em que o cockpit roda em hardware proprietário NowGo (resultado da parceria estratégica com a NVIDIA) com mais de cento e vinte bilhões de parâmetros pré-treinados localmente, garantindo soberania cognitiva e latência mínima.
+
+---
+
+## Identidade Institucional
+
+O Jarvis NowGo AI é **propriedade intelectual da NowGo Holding**. Todo o código, identidade visual, *prompts* operacionais, *frameworks* de classificação e capacidades cognitivas aqui implementadas são de uso exclusivo interno da Holding e seus *stakeholders* autorizados. A distribuição, *fork* ou cópia parcial deste repositório é vedada sem autorização formal escrita.
+
+> **NowGo Holding · NowGo Sovereign Stack · CONFIDENCIAL**
