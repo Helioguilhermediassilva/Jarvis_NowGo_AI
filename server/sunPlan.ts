@@ -27,7 +27,7 @@ export interface SunOpportunity {
   nome: string;
   classificacao: SunClass;
   acao: string;
-  contexto?: "portfolio" | "gdf_2036";
+  contexto?: "portfolio" | "smart_city_2036";
 }
 
 export interface SunMission {
@@ -108,17 +108,17 @@ export interface SunSnapshot {
 const MISSIONS: SunMission[] = [
   {
     id: 1,
-    nome: "GDF Plataforma Pública Integrada",
+    nome: "Smart City Plataforma Pública Integrada",
     oportunidadesAgrupadas: [
-      "GDF Cidades Inteligentes",
-      "NowGo Brain GDF 2036",
+      "Smart City Cidades Inteligentes",
+      "NowGo Brain Smart City 2036",
       "DPI soberana",
       "Saúde Digna/Zero Corredor",
       "DF-Goiás compensação regional",
       "Quatro Novas Cidades Inteligentes",
     ],
     porqueAtivaAgora:
-      "Concentra a tese pública de maior alavancagem e evita que o GDF vire carteira fragmentada de projetos.",
+      "Concentra a tese pública de maior alavancagem e evita que o programa Smart City vire carteira fragmentada de projetos.",
     limiteOperacional:
       "Um programa integrado, uma narrativa, um owner e uma proposta de piloto de 90 dias.",
     criterios: {
@@ -140,7 +140,7 @@ const MISSIONS: SunMission[] = [
     porqueAtivaAgora:
       "Consolida credibilidade técnica, soberania operacional, edge/HPC e capacidade de co-sell sem criar produto novo agora.",
     limiteOperacional:
-      "Só avançar se houver reunião com decisão, PoC ou papel explícito em GDF, energia ou saúde.",
+      "Só avançar se houver reunião com decisão, PoC ou papel explícito em Smart City, energia ou saúde.",
     criterios: {
       reduzComplexidade: "Sim, se limitar NVIDIA/Energia a uma tese de infraestrutura.",
       reduzFounderOverload: "Sim, se reuniões tiverem briefing e decisão esperada.",
@@ -176,14 +176,14 @@ const MISSIONS: SunMission[] = [
 
 const OPS_PORTFOLIO: SunOpportunity[] = [
   // ---- Missão Ativa ----
-  { nome: "GDF Cidades Inteligentes", classificacao: "MISSAO_ATIVA", acao: "Conduzir como peça do programa GDF integrado." },
+  { nome: "Smart City Cidades Inteligentes", classificacao: "MISSAO_ATIVA", acao: "Conduzir como peça do programa Smart City integrado." },
   { nome: "Hospital 100% IA (Joás)", classificacao: "MISSAO_ATIVA", acao: "Deal Room 3; aprovar fase 1 e impedir escopo hospitalar amplo demais." },
   { nome: "WLM — NowGo Voice + Produto", classificacao: "MISSAO_ATIVA", acao: "Deal Room 4; fechar exclusividade por vertical e primeira unidade." },
 
   // ---- Radar ----
   { nome: "Google.org Impact Challenge", classificacao: "RADAR", acao: "Submeter apenas se houver material reaproveitável; não virar missão paralela." },
   { nome: "Richmond Global Delta", classificacao: "RADAR", acao: "Manter contato com próxima decisão clara; sem founder follow-up manual contínuo." },
-  { nome: "Parceiro internacional de plataformas — Brasília Fase 1", classificacao: "RADAR", acao: "Aguardar janela; usar material GDF pronto, sem novo projeto." },
+  { nome: "Parceiro internacional de plataformas — Brasília Fase 1", classificacao: "RADAR", acao: "Aguardar janela; usar material Smart City pronto, sem novo projeto." },
   { nome: "Vila Rica + Biocardios ARR", classificacao: "RADAR", acao: "Manter como próximo candidato health após Joás/WLM; não ativar em paralelo." },
   { nome: "Grupo Joás — 6 empresas", classificacao: "RADAR", acao: "Só ativar após cronograma por ondas; evitar onboarding simultâneo." },
   { nome: "Joint Partnership", classificacao: "RADAR", acao: "Exigir estrutura jurídica simples e cooperativa-piloto antes de avançar." },
@@ -192,26 +192,26 @@ const OPS_PORTFOLIO: SunOpportunity[] = [
   { nome: "Ideas Lab 2026 — 22 empresas", classificacao: "RADAR", acao: "Selecionar Top 5; nunca onboarding massivo." },
   { nome: "Min. Saúde/DataSUS", classificacao: "RADAR", acao: "Manter em cadência leve; ciclo político longo." },
   { nome: "Grupo Maya — CRM R$708K", classificacao: "RADAR", acao: "Só avançar se virar módulo de inteligência operacional, não CRM sob medida." },
-  { nome: "GDF/CODHAB Habitação", classificacao: "RADAR", acao: "Incorporar ao programa GDF apenas após sponsor e modalidade." },
+  { nome: "Smart City/CODHAB Habitação", classificacao: "RADAR", acao: "Incorporar ao programa Smart City apenas após sponsor e modalidade." },
   { nome: "AlmaViva/Tivit Itália-BR", classificacao: "RADAR", acao: "Conectar a missão ativa se houver caso de uso conjunto." },
   { nome: "Claranet PT & BR", classificacao: "RADAR", acao: "Não abrir frente Portugal sem playbook." },
   { nome: "Ericsson", classificacao: "RADAR", acao: "Avançar apenas com NDA + piloto técnico conectado à Missão 2." },
   { nome: "Hospital Coimbra PT", classificacao: "RADAR", acao: "Manter em Portugal/saúde futuro; não competir com Joás/WLM." },
   { nome: "Antifraude & Biometria Voz", classificacao: "RADAR", acao: "Só ativar com arquitetura validada e caso de uso claro." },
   { nome: "WLM Hidrogênio Verde", classificacao: "RADAR", acao: "Pode conectar à Missão 2, mas sem abrir frente técnica agora." },
-  { nome: "GDF/FAP Fase 3", classificacao: "RADAR", acao: "Incorporar somente ao Deal Room GDF." },
+  { nome: "Smart City/FAP Fase 3", classificacao: "RADAR", acao: "Incorporar somente ao Deal Room Smart City." },
   { nome: "TSH Company", classificacao: "RADAR", acao: "Exigir N1/N2 e proposta técnica simples." },
   { nome: "ISH Institucional SP Marcus", classificacao: "RADAR", acao: "Discovery leve; sem founder direto." },
   { nome: "Instituição SP Marcus", classificacao: "RADAR", acao: "Agrupar com ISH Institucional; evitar duplicidade." },
   { nome: "Bluefields — Canal", classificacao: "RADAR", acao: "Exigir 3 leads qualificados e SLA de canal." },
-  { nome: "Gov SP Tarcísio", classificacao: "RADAR", acao: "Manter como oportunidade pública futura; não competir com GDF." },
+  { nome: "Gov SP Tarcísio", classificacao: "RADAR", acao: "Manter como oportunidade pública futura; não competir com Smart City." },
   { nome: "AI Factory RN", classificacao: "RADAR", acao: "Conectar à Missão 2 apenas se houver contrato/infra real." },
   { nome: "Lenovo Europa", classificacao: "RADAR", acao: "Manter como distribuição futura; ativar só com papel em Missão 2." },
   { nome: "MFG Law FIDC", classificacao: "RADAR", acao: "Alto compliance; avançar só com proposta formal e owner jurídico." },
   { nome: "Lusíadas Enterprise PT", classificacao: "RADAR", acao: "Portugal/saúde futuro; não ativar em paralelo." },
-  { nome: "Automação Gabinete Serena", classificacao: "RADAR", acao: "Pode virar módulo gov, mas não competir com GDF Top 5." },
+  { nome: "Automação Gabinete Serena", classificacao: "RADAR", acao: "Pode virar módulo gov, mas não competir com Smart City Top 5." },
   { nome: "Sabin Diagnóstico", classificacao: "RADAR", acao: "Reunião inovação leve; sem escopo clínico novo agora." },
-  { nome: "ISH/Vision Cyber", classificacao: "RADAR", acao: "Conectar a cibersegurança da Missão 2/GDF se houver use case." },
+  { nome: "ISH/Vision Cyber", classificacao: "RADAR", acao: "Conectar a cibersegurança da Missão 2/Smart City se houver use case." },
   { nome: "Gestão Contratos", classificacao: "RADAR", acao: "Pode virar módulo operacional; exigir primeira vertical." },
   { nome: "Bluefields Co-marketing", classificacao: "RADAR", acao: "Só se entregar leads concretos." },
 
@@ -258,18 +258,18 @@ const OPS_PORTFOLIO: SunOpportunity[] = [
 ];
 
 // ============================================================================
-// Oportunidades GDF 2036 — 34 frentes
+// Oportunidades Smart City 2036 — 34 frentes
 // ============================================================================
 
-const OPS_GDF2036: SunOpportunity[] = [
-  { nome: "NowGo Brain GDF 2036 — sala de situação executiva", classificacao: "MISSAO_ATIVA", acao: "Núcleo do Deal Room GDF; preparar demo conceitual simples." },
+const OPS_SMART_CITY_2036: SunOpportunity[] = [
+  { nome: "NowGo Brain Smart City 2036 — sala de situação executiva", classificacao: "MISSAO_ATIVA", acao: "Núcleo do Deal Room Smart City; preparar demo conceitual simples." },
   { nome: "DPI soberana e interoperabilidade entre secretarias", classificacao: "MISSAO_ATIVA", acao: "Nota técnica e checklist LGPD/auditoria; sem implementação pesada." },
   { nome: "Saúde Digna / Zero Corredor / leitos em tempo real", classificacao: "MISSAO_ATIVA", acao: "Escolher hospital/rede piloto e dados mínimos." },
   { nome: "DF-Goiás e compensação regional baseada em dados", classificacao: "MISSAO_ATIVA", acao: "Matriz de fluxo, origem, custo e volume." },
   { nome: "Quatro novas cidades inteligentes", classificacao: "MISSAO_ATIVA", acao: "One-page de masterplan digital mínimo." },
   { nome: "AI Workers para trabalho repetitivo no setor público", classificacao: "RADAR", acao: "Mapear 5 processos, mas não construir workers agora." },
   { nome: "Inteligência fiscal, gastos públicos e arrecadação", classificacao: "RADAR", acao: "Manter como módulo futuro de controle." },
-  { nome: "Captação internacional e gestão de projetos financiados", classificacao: "RADAR", acao: "Usar como suporte ao GDF, não missão separada." },
+  { nome: "Captação internacional e gestão de projetos financiados", classificacao: "RADAR", acao: "Usar como suporte ao Smart City, não missão separada." },
   { nome: "Cerrado Vivo — inteligência climática", classificacao: "RADAR", acao: "Possível dashboard futuro; não competir com Top 5." },
   { nome: "Mobilidade limpa e otimização de rotas", classificacao: "RADAR", acao: "Entrar depois da camada NowGo Brain/DPI." },
   { nome: "Solar distribuída, eficiência energética e água inteligente", classificacao: "PAUSADA", acao: "Aguardar dados e parceiro setorial." },
@@ -281,19 +281,19 @@ const OPS_GDF2036: SunOpportunity[] = [
   { nome: "FIB-DF, saúde mental e bem-estar", classificacao: "RADAR_CONDICIONADO", acao: "Só com human-in-the-loop e rede clínica." },
   { nome: "Associações recreativas, esportivas e culturais", classificacao: "PAUSADA", acao: "Não executar como obras/eventos; apenas módulo territorial futuro." },
   { nome: "Capital Olímpica", classificacao: "PAUSADA", acao: "Plataforma futura de talentos; não agora." },
-  { nome: "Urbanismo intergeracional", classificacao: "PAUSADA", acao: "Relevante, mas posterior ao core GDF." },
+  { nome: "Urbanismo intergeracional", classificacao: "PAUSADA", acao: "Relevante, mas posterior ao core Smart City." },
   { nome: "Acolhimento familiar hospitalar e abandono de idosos", classificacao: "PAUSADA", acao: "Sensível; aguardar governança de saúde." },
   { nome: "Centro de Acolhimento para Mulheres Vulneráveis", classificacao: "PAUSADA", acao: "Alto impacto, mas exige rede e salvaguardas." },
   { nome: "Fundo Soberano MPE e inclusão produtiva", classificacao: "RADAR", acao: "Futuro módulo de capital/impacto." },
   { nome: "Educação integral e currículo do cidadão completo", classificacao: "RADAR", acao: "Futuro módulo de talentos; não abrir agora." },
-  { nome: "Fellows GDF 2036", classificacao: "RADAR", acao: "Pode apoiar adoção após sponsor GDF." },
+  { nome: "Fellows Smart City 2036", classificacao: "RADAR", acao: "Pode apoiar adoção após sponsor Smart City." },
   { nome: "Resíduos inteligentes e lixo em energia", classificacao: "PAUSADA", acao: "Precisa de pré-viabilidade e parceiro." },
   { nome: "Cadeia soberana de hardware de IA", classificacao: "PAUSADA", acao: "Decenal e intensiva em capital; risco de foco." },
   { nome: "P&D biomédico com IA", classificacao: "PAUSADA", acao: "Exige governança clínica e dados." },
   { nome: "Fazendas verticais e IA agrícola", classificacao: "DESCARTADA_AGORA", acao: "Manter fora da execução imediata; só com parceiro setorial." },
   { nome: "Hub Global de Arte, Cultura e Eventos", classificacao: "DESCARTADA_AGORA", acao: "Alto risco de operação de eventos sem plataforma." },
   { nome: "Articulação institucional federal e captação regulatória", classificacao: "RADAR", acao: "Suporte às missões, não frente própria." },
-  { nome: "Cooperação DF-SP-ES em soberania nacional de dados", classificacao: "RADAR", acao: "Potencial alto, mas após prova GDF." },
+  { nome: "Cooperação DF-SP-ES em soberania nacional de dados", classificacao: "RADAR", acao: "Potencial alto, mas após prova Smart City." },
   { nome: "Capital das Águas e saúde inteligente", classificacao: "RADAR", acao: "Futuro módulo territorial/água/saúde." },
   { nome: "Roadmap integrado 2026–2036 e PMO de execução", classificacao: "RADAR", acao: "Pode virar PMO depois; agora, não criar estrutura pesada." },
 ];
@@ -305,10 +305,10 @@ const OPS_GDF2036: SunOpportunity[] = [
 const DEAL_ROOMS: SunDealRoom[] = [
   {
     id: "DR1",
-    nome: "GDF — Plataforma Pública Integrada",
+    nome: "Smart City — Plataforma Pública Integrada",
     missao: 1,
     sponsor: "Governo do DF — gabinete + secretarias-chave",
-    stakeholders: "GDF, FAP, jurídico/procurement, parceiros técnicos",
+    stakeholders: "GDF, FAP, jurídico/procurement, parceiros técnicos (cliente: Governo do DF)",
     status: "Decision pending",
     risco: "Alto risco de dispersão em 34 frentes",
     proximoPasso: "Preparar proposta única de piloto 90 dias",
@@ -320,7 +320,7 @@ const DEAL_ROOMS: SunDealRoom[] = [
     nome: "NVIDIA — Infraestrutura Soberana",
     missao: 2,
     sponsor: "NVIDIA LATAM",
-    stakeholders: "NVAITC, parceiros de energia, GDF Infra",
+    stakeholders: "NVAITC, parceiros de energia, Smart City Infra",
     status: "Discovery técnica",
     risco: "Reunião sem decisão clara",
     proximoPasso: "Briefing único com pauta de decisão objetiva",
@@ -392,7 +392,7 @@ const RITUALS: SunRitual[] = [
     duracao: "30 minutos",
     owner: "Government Lead",
     saidaObrigatoria:
-      "GDF: sponsor, instrumento, barreira jurídica, dados mínimos e próximo ato formal.",
+      "Smart City (cliente GDF): sponsor, instrumento, barreira jurídica, dados mínimos e próximo ato formal.",
   },
   {
     nome: "Follow-up SLA",
@@ -421,7 +421,7 @@ const NEXT_7_DAYS: SunDayAction[] = [
   { dia: 1, acao: "Nomear owners dos 5 Deal Rooms", owner: "Founder + Ops Lead", saida: "Dono por Deal Room." },
   { dia: 2, acao: "Preencher os 5 Deal Rooms mínimos", owner: "Owners", saida: "Contexto centralizado." },
   { dia: 2, acao: "Criar matriz Ativa/Radar/Pausada/Descartada", owner: "Ops Lead", saida: "Pipeline limpo." },
-  { dia: 3, acao: "Finalizar one-page GDF integrado", owner: "Government Lead", saida: "Material para sponsor/procurement." },
+  { dia: 3, acao: "Finalizar one-page Smart City integrado", owner: "Government Lead", saida: "Material para sponsor/procurement." },
   { dia: 3, acao: "Finalizar briefing NVIDIA/Infra", owner: "Partner Lead", saida: "Agenda com decisão esperada." },
   { dia: 4, acao: "Finalizar proposta fase 1 Joás", owner: "Health Lead", saida: "Escopo mínimo health." },
   { dia: 4, acao: "Finalizar term sheet WLM", owner: "Revenue Lead", saida: "Base de negociação." },
@@ -472,7 +472,7 @@ export const SUN_SNAPSHOT_V1: SunSnapshot = {
   missoes: MISSIONS,
   oportunidades: [
     ...OPS_PORTFOLIO.map((o) => ({ ...o, contexto: "portfolio" as const })),
-    ...OPS_GDF2036.map((o) => ({ ...o, contexto: "gdf_2036" as const })),
+    ...OPS_SMART_CITY_2036.map((o) => ({ ...o, contexto: "smart_city_2036" as const })),
   ],
   dealRooms: DEAL_ROOMS,
   rituais: RITUALS,

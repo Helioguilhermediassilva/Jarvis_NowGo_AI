@@ -17,7 +17,7 @@ export interface SunOpportunity {
   nome: string;
   classificacao: SunClass;
   acao: string;
-  contexto?: "portfolio" | "gdf_2036";
+  contexto?: "portfolio" | "smart_city_2036";
 }
 
 export interface SunMission {

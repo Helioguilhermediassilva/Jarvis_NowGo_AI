@@ -10,11 +10,11 @@ interface Props {
   onAsk?: (op: SunOpportunity) => void;
 }
 
-type Tab = "portfolio" | "gdf_2036";
+type Tab = "portfolio" | "smart_city_2036";
 
 const TAB_LABELS: Record<Tab, string> = {
   portfolio: "Portfólio",
-  gdf_2036: "GDF 2036",
+  smart_city_2036: "Smart City 2036",
 };
 
 // Ordem de classe na lista (Ativa primeiro, depois Radar, etc.)
@@ -29,7 +29,7 @@ const CLASS_ORDER: SunClass[] = [
 
 /**
  * Painel esquerdo do cockpit — matriz Ativa/Radar/Pausada/Descartada
- * com tabs (Portfólio vs GDF 2036), busca instantânea e filtro por classe.
+ * com tabs (Portfólio vs Smart City 2036), busca instantânea e filtro por classe.
  */
 export default function SunPipelinePanel({ oportunidades, onAsk }: Props) {
   const [tab, setTab] = useState<Tab>("portfolio");
