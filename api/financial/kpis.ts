@@ -30,36 +30,20 @@ import { getConfigNumber } from "../../server/nowgoConfigsStore.js";
 
 export default async function handler(_req: any, res: any) {
   try {
-    // Lê em paralelo:
-    //   1) todos os ativos da ATIVOS CRM IA (fonte primária — founder edita aqui)
-    //   2) até 100 oportunidades do pipeline canônico (Brain) — complementar
-    const [ativos, oppsBrain] = await Promise.all([
-      listarAtivosCrmIa().catch((e) => {
-        console.warn(
-          "[/api/financial/kpis] ATIVOS CRM IA indisponível:",
-          (e as Error).message,
-        );
-        return [];
-      }),
-      listarTopPorScore(100).catch((e) => {
-        console.warn(
-          "[/api/financial/kpis] Brain pipeline canônico indisponível:",
-          (e as Error).message,
-        );
-        return [];
-      }),
-    ]);
-
-    // Converte ATIVOS CRM IA → forma canônica e mescla com Brain.
-    // Se houver duplicidade entre as duas bases, ATIVOS prevalece (fonte do founder).
+    // ATIVOS CRM IA = única fonte da verdade do funil.
+    // O pipeline canônico (Brain) ficará reativado quando o SUN Sync estiver
+    // implementado (fase 3): nessa altura ele só conterá oportunidades JÁ
+    // promovidas pelo classificador, evitando double-count.
+    const ativos = await listarAtivosCrmIa().catch((e) => {
+      console.warn(
+        "[/api/financial/kpis] ATIVOS CRM IA indisponível:",
+        (e as Error).message,
+      );
+      return [];
+    });
+    const oppsBrain: any[] = []; // mantido só para o campo sources
     const oppsAtivos = ativos.map(ativoCrmToOportunidade);
-    const nomesAtivos = new Set(oppsAtivos.map((o) => o.nome.trim().toLowerCase()));
-    const oppsMesclado = [
-      ...oppsAtivos,
-      ...oppsBrain.filter(
-        (o) => !nomesAtivos.has((o.nome || "").trim().toLowerCase()),
-      ),
-    ];
+    const oppsMesclado = oppsAtivos;
 
     // Calcula totais de receita recorrente
     const recurring = calcularMrrArrTotals(ativos);
