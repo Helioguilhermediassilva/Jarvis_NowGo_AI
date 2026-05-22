@@ -58,9 +58,9 @@ Em runtime, o Jarvis é o **maestro síncrono** que roteia para essas camadas. O
 
 O cockpit foi desenhado em três zonas verticais sobre uma estética de centro de comando: nebulosa cosmic-blue como fundo, anel orbital ciano girando devagar atrás do núcleo Jarvis, *wireframe* geodésico sutil e tipografia mono tabular para os números do dia.
 
-A **faixa superior** apresenta as três Missões Ativas — atualmente *GDF Plataforma Pública Integrada*, *Infraestrutura Soberana e Credibilidade Técnica* e *Health/Voice Replicável* — cada uma com seu *glow* lateral colorido, oportunidades vinculadas, critérios de ativação e ação operacional vigente. A regra **3+1** do SUN, que limita o portfólio a três missões ativas e o foco do *founder* a uma única missão por vez, é exibida como *guardrail* permanente: se uma quarta missão tentar entrar, o Jarvis recita a regra e exige decisão sobre qual pausar.
+A **faixa superior** apresenta as três Missões Ativas vigentes do portfólio — designadas internamente como *Missão 1*, *Missão 2* e *Missão 3*, cada uma representando um vetor estratégico distinto da Holding (plataforma pública integrada, infraestrutura soberana e replicabilidade vertical) — cada uma com seu *glow* lateral colorido, oportunidades vinculadas, critérios de ativação e ação operacional vigente. A regra **3+1** do SUN, que limita o portfólio a três missões ativas e o foco do *founder* a uma única missão por vez, é exibida como *guardrail* permanente: se uma quarta missão tentar entrar, o Jarvis recita a regra e exige decisão sobre qual pausar.
 
-A **coluna esquerda** apresenta o pipeline classificado pelo SUN, dividido em duas abas: o portfólio geral, com cerca de cem oportunidades em estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA, e o dossiê GDF 2036, com trinta e quatro oportunidades específicas para o ciclo de governo. Cada linha exibe um selo colorido pelo status SUN, o cliente, o estágio Brain, a ação operacional vinculante e um botão para o Jarvis ler em voz alta a posição daquela oportunidade.
+A **coluna esquerda** apresenta o pipeline classificado pelo SUN, dividido em duas abas: o portfólio geral, com cerca de cem oportunidades em estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA, e o dossiê de oportunidades vinculadas ao ciclo de governo, com trinta e quatro entradas específicas para o horizonte 2036. Cada linha exibe um selo colorido pelo status SUN, o nome do cliente, o estágio Brain, a ação operacional vinculante e um botão para o Jarvis ler em voz alta a posição daquela oportunidade.
 
 A **zona central** é ocupada pelo núcleo Jarvis. Um *canvas* HUD pulsa a 0,8 Hz quando ocioso e vibra com a forma de onda da voz quando ele fala. Abaixo do *canvas*, o *stream* de conversa exibe as últimas trocas em estilo terminal cyberpunk, com bolhas em ciano para o *founder* e em azul-marinho para o Jarvis. A *drop zone* multimodal aceita PDF, DOCX, JPG, PNG e MP3 arrastados — o Jarvis transcreve áudio, extrai texto de documentos e usa o conteúdo como contexto da conversa imediatamente seguinte. Um botão de microfone gigante captura voz com *wake-word* "Ei Jarvis" em português brasileiro.
 
@@ -76,11 +76,11 @@ O Jarvis ouve em português brasileiro com *wake-word* "Ei Jarvis", interpreta i
 
 ### Leitura do portfólio
 
-O Jarvis acessa o NowGo Brain para responder em segundos perguntas como *"qual minha Missão 1?"*, *"lista as três oportunidades quentes"*, *"qual o status do GDF/FAP-DF Fase 3?"*, *"tem follow-up atrasado?"* ou *"o que está bloqueado hoje?"*. Cada resposta cita o número da oportunidade no Brain, o estágio atual, o *score*, o último contato e a ação operacional definida pelo SUN.
+O Jarvis acessa o NowGo Brain para responder em segundos perguntas como *"qual minha Missão 1?"*, *"lista as três oportunidades quentes"*, *"qual o status da oportunidade prioritária do trimestre?"*, *"tem follow-up atrasado?"* ou *"o que está bloqueado hoje?"*. Cada resposta cita o número da oportunidade no Brain, o estágio atual, o *score*, o último contato e a ação operacional definida pelo SUN.
 
 ### Atualização do CRM por voz
 
-Comandos como *"atualize o GDF Fase 3 para fechado-ganho"*, *"marque o Hospital de Base como em proposta"*, *"registre uma ata da reunião de hoje com o Onion sobre a Missão 2"* ou *"crie uma tarefa para preparar o briefing do Aristhides até quinta"* disparam mutações reais no Brain. O Jarvis mostra um *preview* falado, espera confirmação e grava. O cockpit detecta a mutação automaticamente via evento *server-sent* `brain_mutated` e refresca os painéis em tempo real, sem necessidade de F5.
+Comandos como *"atualize a oportunidade prioritária para fechado-ganho"*, *"marque a oportunidade vertical Saúde como em proposta"*, *"registre uma ata da reunião de hoje com o parceiro estratégico da Missão 2"* ou *"crie uma tarefa para preparar o briefing executivo até quinta-feira"* disparam mutações reais no Brain. O Jarvis mostra um *preview* falado, espera confirmação e grava. O cockpit detecta a mutação automaticamente via evento *server-sent* `brain_mutated` e refresca os painéis em tempo real, sem necessidade de F5.
 
 ### Geração documental por voz
 
@@ -108,7 +108,7 @@ Tarefas longas — regenerar o Plano Operacional completo, varredura profunda de
 
 ## Plano Operacional SUN
 
-O Plano Operacional SUN é a fonte autoritativa que classifica todo o portfólio da NowGo. A versão **v1.0** (22 de maio de 2026) está materializada como dado servido pelo *endpoint* `/api/sun/plan` e contém: três Missões Ativas com critérios de ativação e ação operacional vigente; cerca de cem oportunidades classificadas entre os estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA e DESCARTADA AGORA, cada uma com a ação operacional vinculante; trinta e quatro oportunidades GDF 2036 cobrindo o ciclo de governo do Distrito Federal; cinco Deal Rooms prioritários com risco, próximo passo e *owner* atribuído; cinco rituais de cadência mínima (Standup Diário, Deal Room Weekly, Pulse Founder, Revisão SUN, Health Check Pipeline); plano de execução dos próximos sete dias dia a dia; lista de remoção imediata da agenda do *founder*; e o Comando Final SUN exibido como ticker permanente no cockpit.
+O Plano Operacional SUN é a fonte autoritativa que classifica todo o portfólio da NowGo. A versão **v1.0** (22 de maio de 2026) está materializada como dado servido pelo *endpoint* `/api/sun/plan` e contém: três Missões Ativas com critérios de ativação e ação operacional vigente; cerca de cem oportunidades classificadas entre os estados RADAR, RADAR CONDICIONADO, PAUSADA, DESCARTADA e DESCARTADA AGORA, cada uma com a ação operacional vinculante; trinta e quatro oportunidades vinculadas ao ciclo de governo no horizonte 2036; cinco Deal Rooms prioritários com risco, próximo passo e *owner* atribuído; cinco rituais de cadência mínima (Standup Diário, Deal Room Weekly, Pulse Founder, Revisão SUN, Health Check Pipeline); plano de execução dos próximos sete dias dia a dia; lista de remoção imediata da agenda do *founder*; e o Comando Final SUN exibido como ticker permanente no cockpit.
 
 O plano é regenerado periodicamente pelo NowGo SUN a partir do estado atual do Brain e dos *frameworks* operacionais NowGo. Em versão futura, a cadência será configurável (sob demanda, semanal ou em gatilhos definidos pelo *founder*) e cada nova versão é versionada no Brain com *diff* automático contra a anterior, permitindo navegação histórica.
 
@@ -194,15 +194,15 @@ A configuração da chave do NowGo Vault é feita em duas etapas: provisionar um
 
 ### Fluxo conversacional com mutação no Brain
 
-> *"Jarvis, marque o GDF/FAP-DF Fase 3 como fechado-ganho com valor de R$ 2,5 milhões e prazo de seis meses."*
+> *"Jarvis, marque a oportunidade prioritária da Missão 1 como fechado-ganho com valor de R$ 2,5 milhões e prazo de seis meses."*
 
 O Jarvis identifica a oportunidade no Brain pelo nome, dispara a tool `brain_atualizar_oportunidade` em modo *preview*, recita verbalmente os campos a serem alterados e pede confirmação. Após o "confirmo" do *founder*, executa a mutação real, emite o evento SSE `brain_mutated`, e o cockpit re-busca `/api/brain/status` e `/api/sun/plan` para refletir o novo estado em tempo real. A confirmação verbal final do Jarvis cita o número da página atualizada e o *timestamp*.
 
 ### Fluxo de geração documental por voz
 
-> *"Jarvis, prepare uma proposta comercial para o Hospital de Base baseada na Missão 3, com investimento estimado de R$ 800 mil e prazo de quatro meses."*
+> *"Jarvis, prepare uma proposta comercial para a oportunidade-piloto da Missão 3, com investimento estimado de R$ 800 mil e prazo de quatro meses."*
 
-O Jarvis cita o briefing reconhecido em forma resumida, pede confirmação e, ao receber o "sim", dispara a tool `criar_proposta_comercial`. O NowGo Cognition expande o briefing em uma proposta DOCX completa (sumário executivo, escopo, entregáveis, cronograma, investimento, próximos passos), o NowGo Studio aplica a identidade visual NowGo e o NowGo Vault armazena o arquivo em `Arquivos_NowGo_AI/Propostas/2026-05-22-hospital-de-base-proposta.docx`. O Jarvis recita o nome do arquivo e oferece ler o sumário executivo em voz alta.
+O Jarvis cita o briefing reconhecido em forma resumida, pede confirmação e, ao receber o "sim", dispara a tool `criar_proposta_comercial`. O NowGo Cognition expande o briefing em uma proposta DOCX completa (sumário executivo, escopo, entregáveis, cronograma, investimento, próximos passos), o NowGo Studio aplica a identidade visual NowGo e o NowGo Vault armazena o arquivo em `Arquivos_NowGo_AI/Propostas/2026-05-22-missao-3-proposta-piloto.docx`. O Jarvis recita o nome do arquivo e oferece ler o sumário executivo em voz alta.
 
 ### Fluxo de regeneração do SUN
 
@@ -228,7 +228,7 @@ Toda saída de **contrato é preliminar**: documentos jurídicos gerados pelo No
 
 ## Roadmap
 
-A próxima fase da plataforma contempla três expansões. A primeira é o **NowGo SUN automatizado em cadência configurável**, com regeneração periódica do Plano Operacional sem comando manual e gatilhos definidos pelo *founder* (semanal, diário ou eventos específicos no Brain). A segunda é a **integração definitiva do NowGo Vault**, com a Service Account do Drive corporativo configurada e a pasta `Arquivos_NowGo_AI/` operando como repositório oficial de documentos da Holding. A terceira é o **modo embedded full-duplex**, em que o cockpit roda em hardware proprietário NowGo (resultado da parceria estratégica com a NVIDIA) com mais de cento e vinte bilhões de parâmetros pré-treinados localmente, garantindo soberania cognitiva e latência mínima.
+A próxima fase da plataforma contempla três expansões. A primeira é o **NowGo SUN automatizado em cadência configurável**, com regeneração periódica do Plano Operacional sem comando manual e gatilhos definidos pelo *founder* (semanal, diário ou eventos específicos no Brain). A segunda é a **integração definitiva do NowGo Vault**, com a identidade de serviço do domínio corporativo configurada e a pasta `Arquivos_NowGo_AI/` operando como repositório oficial de documentos da Holding. A terceira é o **modo embedded full-duplex**, em que o cockpit roda em hardware proprietário NowGo, resultado de parceria estratégica de infraestrutura, com mais de cento e vinte bilhões de parâmetros pré-treinados localmente, garantindo soberania cognitiva e latência mínima.
 
 ---
 
