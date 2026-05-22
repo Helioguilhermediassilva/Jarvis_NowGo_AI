@@ -42,8 +42,11 @@ export default function JarvisCore({
   onPromptConsumed,
   cockpitSystemContext,
 }: Props) {
-  const [hudState, setHudState] = useState<HudState>("LISTENING");
-  const [muted, setMuted] = useState(false);
+  // Inicia mudo até o usuário clicar em ATIVAR (necessário para destravar autoplay
+  // e pedir permissão de microfone).
+  const [hudState, setHudState] = useState<HudState>("MUTED");
+  const [muted, setMuted] = useState(true);
+  const [activated, setActivated] = useState(false);
   const [inputText, setInputText] = useState("");
   const [conversation, setConversation] = useState<
     Array<{ role: "user" | "jarvis" | "sys"; content: string }>
@@ -51,13 +54,13 @@ export default function JarvisCore({
     {
       role: "sys",
       content:
-        "Cockpit ativo. Diga 'Ei Jarvis' ou digite para iniciar a conversa. Você também pode arrastar PDFs, imagens ou áudios.",
+        "Pressione ATIVAR JARVIS para liberar microfone e voz, depois diga 'Ei Jarvis' ou digite uma pergunta. Você também pode arrastar PDFs, imagens ou áudios.",
     },
   ]);
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [pendingAttachments, setPendingAttachments] = useState<AttachmentRef[]>([]);
 
-  const mutedRef = useRef(false);
+  const mutedRef = useRef(true);
   const historyRef = useRef<ChatMessage[]>([]);
   const processingRef = useRef(false);
   const pendingAttachmentsRef = useRef<AttachmentRef[]>([]);
@@ -228,8 +231,26 @@ export default function JarvisCore({
     }
   }, [hudState]);
 
+  // ------------------- Ativação inicial (libera autoplay + permissão mic) ------------------
+  const handleActivate = useCallback(async () => {
+    setActivated(true);
+    mutedRef.current = false;
+    setMuted(false);
+    // Saudção curta para destravar autoplay e confirmar voz
+    const greeting = "Senhor, estou à sua disposição.";
+    setConversation((c) => [...c, { role: "jarvis", content: greeting }]);
+    setHudState("SPEAKING");
+    try {
+      await ttsRef.current.elevenTts.speak(greeting);
+    } catch {
+      ttsRef.current.browserTts.speak(greeting, () => {});
+    }
+    setHudState("LISTENING");
+  }, []);
+
   // ------------------- Controles ------------------
   const toggleMute = useCallback(() => {
+    if (!activated) return; // Só funciona depois de ativar
     const next = !mutedRef.current;
     mutedRef.current = next;
     setMuted(next);
@@ -240,7 +261,7 @@ export default function JarvisCore({
     } else {
       setHudState("LISTENING");
     }
-  }, []);
+  }, [activated]);
 
   const handleSend = useCallback(() => {
     const text = inputText.trim();
@@ -313,26 +334,105 @@ export default function JarvisCore({
         >
           J.A.R.V.I.S. · {hudState}
         </div>
-        <button
-          onClick={toggleMute}
-          aria-label={muted ? "Ativar microfone" : "Silenciar microfone"}
-          style={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            background: muted ? "rgba(80,0,20,0.5)" : "rgba(0,40,30,0.5)",
-            border: `1px solid ${muted ? C.RED : C.GREEN}`,
-            color: muted ? C.RED : C.GREEN,
-            padding: "5px 10px",
-            borderRadius: 6,
-            fontSize: 10,
-            letterSpacing: 1.2,
-            cursor: "pointer",
-            fontWeight: 700,
-          }}
-        >
-          {muted ? "MIC OFF" : "MIC ON"}
-        </button>
+        {activated && (
+          <button
+            onClick={toggleMute}
+            aria-label={muted ? "Ativar microfone" : "Silenciar microfone"}
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 12,
+              background: muted ? "rgba(80,0,20,0.5)" : "rgba(0,40,30,0.5)",
+              border: `1px solid ${muted ? C.RED : C.GREEN}`,
+              color: muted ? C.RED : C.GREEN,
+              padding: "5px 10px",
+              borderRadius: 6,
+              fontSize: 10,
+              letterSpacing: 1.2,
+              cursor: "pointer",
+              fontWeight: 700,
+            }}
+          >
+            {muted ? "MIC OFF" : "MIC ON"}
+          </button>
+        )}
+        {/* Botão de ativação inicial (libera autoplay e mic) */}
+        {!activated && (
+          <button
+            onClick={handleActivate}
+            style={{
+              position: "absolute",
+              bottom: 18,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: `linear-gradient(135deg, ${C.PRI}33, ${C.PRI}11)`,
+              border: `1.5px solid ${C.PRI}`,
+              color: C.PRI,
+              padding: "12px 28px",
+              borderRadius: 8,
+              fontSize: 13,
+              letterSpacing: 2.5,
+              cursor: "pointer",
+              fontWeight: 800,
+              boxShadow: `0 0 24px ${C.PRI}66`,
+              animation: "jarvisActivatePulse 2s ease-in-out infinite",
+            }}
+          >
+            ▶ ATIVAR JARVIS
+          </button>
+        )}
+        {/* Status de escuta interim */}
+        {activated && stt.isListening && stt.interimTranscript && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 12,
+              right: 12,
+              fontSize: 10,
+              color: C.TEXT_DIM,
+              textAlign: "center",
+              fontStyle: "italic",
+              opacity: 0.85,
+            }}
+          >
+            “{stt.interimTranscript}”
+          </div>
+        )}
+        {/* Erro de microfone */}
+        {activated && stt.error && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 12,
+              right: 12,
+              fontSize: 10,
+              color: C.RED,
+              textAlign: "center",
+              fontWeight: 700,
+            }}
+          >
+            Microfone: {stt.error === "not-allowed" ? "permissão negada" : stt.error}
+          </div>
+        )}
+        {/* Aviso de STT não suportado */}
+        {activated && !stt.isSupported && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 12,
+              right: 12,
+              fontSize: 10,
+              color: "#ff9933",
+              textAlign: "center",
+              fontWeight: 700,
+            }}
+          >
+            Reconhecimento de voz não suportado neste navegador. Use Chrome ou Edge.
+          </div>
+        )}
       </div>
 
       {/* Stream de conversa */}

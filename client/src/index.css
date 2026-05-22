@@ -170,3 +170,8 @@
 body.cockpit-active {
   overflow: auto;
 }
+
+@keyframes jarvisActivatePulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(0, 212, 255, 0.4); transform: translateX(-50%) scale(1); }
+  50% { box-shadow: 0 0 36px rgba(0, 212, 255, 0.7); transform: translateX(-50%) scale(1.04); }
+}
