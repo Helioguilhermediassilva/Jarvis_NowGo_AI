@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const C = {
   PANEL: "rgba(2,12,20,0.7)",
@@ -84,8 +85,13 @@ function pctColor(pct: number): string {
 }
 
 export default function FinancialKpisBar() {
+  const auth = useAuth();
+  const isSuperadmin = auth.user?.role === "superadmin";
   const [kpis, setKpis] = useState<FinancialKpis | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<
+    null | "META_2026_BRL" | "TICKET_MEDIO_BRL" | "REALIZADO_YTD_OVERRIDE_BRL"
+  >(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -166,8 +172,25 @@ export default function FinancialKpisBar() {
           pctPerspectiva={pctPersp}
           dealsParaMeta={kpis.dealsParaMeta}
           ticketMedio={kpis.ticketMedioConsideradoBrl}
+          editable={isSuperadmin}
+          onEdit={() => setEditing("META_2026_BRL")}
         />
       </div>
+
+      {editing && (
+        <ConfigEditorModal
+          configKey={editing}
+          currentMeta={kpis.metaAnualBrl}
+          currentTicket={kpis.ticketMedioConsideradoBrl}
+          currentRealizado={kpis.realizadoYtdBrl}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            void refresh();
+            window.dispatchEvent(new CustomEvent("cockpit:refresh"));
+          }}
+        />
+      )}
 
       {/* Linha 2: KPIs operacionais + por missão */}
       <div
@@ -287,12 +310,16 @@ function MetaCard({
   pctPerspectiva,
   dealsParaMeta,
   ticketMedio,
+  editable,
+  onEdit,
 }: {
   metaAnualBrl: number;
   pctRealizado: number;
   pctPerspectiva: number;
   dealsParaMeta: number;
   ticketMedio: number;
+  editable?: boolean;
+  onEdit?: () => void;
 }) {
   const colorRealizado = pctColor(pctRealizado);
   const colorPersp = pctColor(pctPerspectiva);
@@ -326,8 +353,46 @@ function MetaCard({
         >
           Meta 2026
         </div>
-        <div style={{ fontSize: 10, color: C.TXT_FAINT, letterSpacing: 1 }}>
-          {dealsParaMeta} deals × {formatBrlCompact(ticketMedio)}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 10,
+            color: C.TXT_FAINT,
+            letterSpacing: 1,
+          }}
+        >
+          <span>
+            {dealsParaMeta} deals × {formatBrlCompact(ticketMedio)}
+          </span>
+          {editable && (
+            <button
+              onClick={onEdit}
+              title="Editar meta, ticket médio ou realizado YTD"
+              style={{
+                background: "rgba(187,136,255,0.12)",
+                border: `1px solid ${C.ACC}55`,
+                color: C.ACC,
+                fontSize: 10,
+                padding: "3px 7px",
+                borderRadius: 5,
+                cursor: "pointer",
+                letterSpacing: 1,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                transition: "all 160ms cubic-bezier(0.23,1,0.32,1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(187,136,255,0.22)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(187,136,255,0.12)";
+              }}
+            >
+              ✎ Editar
+            </button>
+          )}
         </div>
       </div>
 
@@ -526,6 +591,326 @@ function MissionMicro({
           <div style={{ color: C.TXT, fontWeight: 600 }}>
             {formatBrlCompact(kpi.realizadoYtdBrl)}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ===========================================================================
+// ConfigEditorModal — superadmin edita Meta/Ticket/Realizado override
+// ===========================================================================
+
+function ConfigEditorModal({
+  configKey: initialKey,
+  currentMeta,
+  currentTicket,
+  currentRealizado,
+  onClose,
+  onSaved,
+}: {
+  configKey: "META_2026_BRL" | "TICKET_MEDIO_BRL" | "REALIZADO_YTD_OVERRIDE_BRL";
+  currentMeta: number;
+  currentTicket: number;
+  currentRealizado: number;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [activeKey, setActiveKey] = useState<
+    "META_2026_BRL" | "TICKET_MEDIO_BRL" | "REALIZADO_YTD_OVERRIDE_BRL"
+  >(initialKey);
+  const initialFor = (
+    k: "META_2026_BRL" | "TICKET_MEDIO_BRL" | "REALIZADO_YTD_OVERRIDE_BRL",
+  ) =>
+    k === "META_2026_BRL"
+      ? currentMeta
+      : k === "TICKET_MEDIO_BRL"
+        ? currentTicket
+        : currentRealizado;
+
+  const [valueStr, setValueStr] = useState(() =>
+    String(initialFor(initialKey)),
+  );
+  const [notas, setNotas] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setValueStr(String(initialFor(activeKey)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKey]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const onSave = async () => {
+    setErr(null);
+    const v = parseFloat(valueStr.replace(/\./g, "").replace(",", "."));
+    if (!Number.isFinite(v) || v < 0) {
+      setErr("Valor inválido. Informe um número positivo (ex.: 25000000).");
+      return;
+    }
+    setSaving(true);
+    try {
+      const r = await fetch("/api/financial/configs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: activeKey,
+          value: v,
+          notas: notas.trim() || undefined,
+        }),
+      });
+      const j = await r.json();
+      if (!r.ok) {
+        setErr(j.error || "Falha ao salvar.");
+        setSaving(false);
+        return;
+      }
+      onSaved();
+    } catch (e) {
+      setErr((e as Error).message);
+      setSaving(false);
+    }
+  };
+
+  const labels: Record<typeof activeKey, { title: string; hint: string }> = {
+    META_2026_BRL: {
+      title: "Meta de Faturamento 2026",
+      hint: "Valor total a atingir até 31/dez/2026 (em R$).",
+    },
+    TICKET_MEDIO_BRL: {
+      title: "Ticket Médio Considerado",
+      hint: "Usado no cálculo de 'deals para meta'. Ex.: 11000000 = R$ 11MM.",
+    },
+    REALIZADO_YTD_OVERRIDE_BRL: {
+      title: "Realizado YTD (Override Manual)",
+      hint: "Sobrescreve o cálculo automático do Brain. Use 0 para desativar override.",
+    },
+  };
+  const cfg = labels[activeKey];
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,8,16,0.78)",
+        backdropFilter: "blur(6px)",
+        zIndex: 9000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          maxWidth: 480,
+          background: "linear-gradient(135deg, #0a1422 0%, #0d1a2e 100%)",
+          border: `1px solid ${C.BORDER}`,
+          borderRadius: 12,
+          padding: 24,
+          color: C.TXT,
+          boxShadow: "0 20px 60px rgba(0,212,255,0.2)",
+        }}
+      >
+        {/* Tabs de chave */}
+        <div
+          style={{
+            display: "flex",
+            gap: 4,
+            marginBottom: 16,
+            padding: 3,
+            background: "rgba(0,12,20,0.6)",
+            borderRadius: 8,
+            border: `1px solid ${C.BORDER_DIM}`,
+          }}
+        >
+          {(
+            [
+              "META_2026_BRL",
+              "TICKET_MEDIO_BRL",
+              "REALIZADO_YTD_OVERRIDE_BRL",
+            ] as const
+          ).map((k) => (
+            <button
+              key={k}
+              onClick={() => setActiveKey(k)}
+              style={{
+                flex: 1,
+                background: activeKey === k ? `${C.ACC}1a` : "transparent",
+                border:
+                  activeKey === k
+                    ? `1px solid ${C.ACC}55`
+                    : "1px solid transparent",
+                color: activeKey === k ? C.ACC : C.TXT_DIM,
+                fontSize: 9,
+                letterSpacing: 1.2,
+                padding: "7px 6px",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontWeight: 700,
+                textTransform: "uppercase",
+              }}
+            >
+              {k === "META_2026_BRL"
+                ? "Meta"
+                : k === "TICKET_MEDIO_BRL"
+                  ? "Ticket"
+                  : "Realizado"}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            letterSpacing: -0.3,
+            marginBottom: 4,
+          }}
+        >
+          {cfg.title}
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            color: C.TXT_DIM,
+            marginBottom: 16,
+            lineHeight: 1.5,
+          }}
+        >
+          {cfg.hint}
+        </div>
+
+        <label
+          style={{
+            display: "block",
+            fontSize: 10,
+            letterSpacing: 1.5,
+            color: C.TXT_FAINT,
+            textTransform: "uppercase",
+            marginBottom: 6,
+          }}
+        >
+          Novo valor (R$)
+        </label>
+        <input
+          type="text"
+          inputMode="decimal"
+          value={valueStr}
+          onChange={(e) => setValueStr(e.target.value)}
+          placeholder="ex.: 25000000"
+          style={{
+            width: "100%",
+            background: "rgba(0,8,14,0.7)",
+            border: `1px solid ${C.BORDER}`,
+            borderRadius: 7,
+            padding: "10px 12px",
+            color: C.TXT,
+            fontSize: 18,
+            fontVariantNumeric: "tabular-nums",
+            fontWeight: 600,
+            letterSpacing: 0.5,
+            outline: "none",
+            marginBottom: 14,
+          }}
+        />
+
+        <label
+          style={{
+            display: "block",
+            fontSize: 10,
+            letterSpacing: 1.5,
+            color: C.TXT_FAINT,
+            textTransform: "uppercase",
+            marginBottom: 6,
+          }}
+        >
+          Notas (opcional)
+        </label>
+        <input
+          type="text"
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          placeholder="ex.: revisão Q3 após case GDF"
+          style={{
+            width: "100%",
+            background: "rgba(0,8,14,0.7)",
+            border: `1px solid ${C.BORDER}`,
+            borderRadius: 7,
+            padding: "8px 10px",
+            color: C.TXT,
+            fontSize: 12,
+            outline: "none",
+            marginBottom: 16,
+          }}
+        />
+
+        {err && (
+          <div
+            style={{
+              fontSize: 11,
+              color: "#ff7799",
+              marginBottom: 12,
+              padding: 8,
+              background: "rgba(255,80,120,0.08)",
+              borderRadius: 5,
+              border: "1px solid rgba(255,80,120,0.25)",
+            }}
+          >
+            {err}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            style={{
+              background: "transparent",
+              border: `1px solid ${C.BORDER_DIM}`,
+              color: C.TXT_DIM,
+              padding: "9px 16px",
+              borderRadius: 6,
+              fontSize: 11,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              fontWeight: 700,
+              cursor: saving ? "not-allowed" : "pointer",
+            }}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onSave}
+            disabled={saving}
+            style={{
+              background: `${C.ACC2}22`,
+              border: `1px solid ${C.ACC2}`,
+              color: C.ACC2,
+              padding: "9px 18px",
+              borderRadius: 6,
+              fontSize: 11,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              fontWeight: 700,
+              cursor: saving ? "not-allowed" : "pointer",
+              boxShadow: `0 0 12px ${C.ACC2}33`,
+            }}
+          >
+            {saving ? "Salvando..." : "Salvar"}
+          </button>
         </div>
       </div>
     </div>
