@@ -115,6 +115,16 @@ export default function JarvisCore({
       try {
         let liveIdx = -1;
         let buf = "";
+        let spokenPos = 0; // posição até onde já falamos
+        const speakUpTo = (pos: number) => {
+          if (pos <= spokenPos) return;
+          const chunk = buf.slice(spokenPos, pos).trim();
+          spokenPos = pos;
+          if (chunk) {
+            setHudState("SPEAKING");
+            speakReply(chunk, () => {});
+          }
+        };
         const reply = await jarvisChatStream({
           history: historyRef.current,
           userMessage: text,
@@ -132,6 +142,14 @@ export default function JarvisCore({
               next[liveIdx] = { role: "jarvis", content: buf };
               return next;
             });
+            // Detecta fim de sentença (.,!?,;) e dispara TTS imediato
+            // para acelerar a resposta percebida.
+            const tail = buf.slice(spokenPos);
+            const sentenceEnd = tail.search(/[.!?](\s|$)/);
+            if (sentenceEnd >= 0) {
+              const absoluteEnd = spokenPos + sentenceEnd + 1;
+              speakUpTo(absoluteEnd);
+            }
           },
           onToolStart: (names) => {
             setConversation((c) => [
@@ -162,11 +180,19 @@ export default function JarvisCore({
           next[liveIdx] = { role: "jarvis", content: reply };
           return next;
         });
-        setHudState("SPEAKING");
-        speakReply(reply, () => {
+        // TTS já disparado por sentenças via speakSentence durante o streaming.
+        // Se o reply final tiver mais conteúdo (não falado), faz catch-up.
+        const finalRest = reply.slice(spokenPos);
+        if (finalRest.trim()) {
+          setHudState("SPEAKING");
+          speakReply(finalRest, () => {
+            processingRef.current = false;
+            setHudState("LISTENING");
+          });
+        } else {
           processingRef.current = false;
-          setHudState(mutedRef.current ? "MUTED" : "LISTENING");
-        });
+          setHudState("LISTENING");
+        }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         setConversation((c) => [...c, { role: "sys", content: `Erro — ${msg}` }]);
@@ -342,15 +368,18 @@ export default function JarvisCore({
               position: "absolute",
               top: 12,
               right: 12,
-              background: muted ? "rgba(80,0,20,0.5)" : "rgba(0,40,30,0.5)",
-              border: `1px solid ${muted ? C.RED : C.GREEN}`,
-              color: muted ? C.RED : C.GREEN,
-              padding: "5px 10px",
+              background: muted
+                ? "rgba(80,0,20,0.55)"
+                : "linear-gradient(135deg, rgba(0,255,136,0.25), rgba(0,255,136,0.08))",
+              border: `1px solid ${muted ? C.RED : "#00ff88"}`,
+              color: muted ? C.RED : "#00ff88",
+              padding: "6px 12px",
               borderRadius: 6,
               fontSize: 10,
-              letterSpacing: 1.2,
+              letterSpacing: 1.4,
               cursor: "pointer",
-              fontWeight: 700,
+              fontWeight: 800,
+              boxShadow: muted ? "none" : "0 0 12px rgba(0,255,136,0.45)",
             }}
           >
             {muted ? "MIC OFF" : "MIC ON"}
