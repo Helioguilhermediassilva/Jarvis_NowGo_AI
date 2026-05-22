@@ -3,8 +3,8 @@
  *
  * NowGo Revenue Cockpit — cálculo de indicadores financeiros consolidados.
  *
- * Parâmetros estratégicos (v1.0, 22/mai/2026, confirmados pelo founder):
- *  - Meta 2026: R$ 100.000.000
+ * Parâmetros estratégicos (v1.1, 22/mai/2026, confirmados pelo founder):
+ *  - Meta 2026 (inicial): R$ 10.000.000
  *  - Realizado YTD (snapshot inicial): R$ 640.000
  *  - Ticket médio esperado pós-case GDF: R$ 10MM a R$ 12MM
  *  - Metodologia da perspectiva: ponderação por estágio do pipeline
@@ -27,7 +27,9 @@ import type { PipelineStage } from "./brainSchema.js";
 // Constantes estratégicas
 // ---------------------------------------------------------------------------
 
-export const META_2026_BRL = 100_000_000;
+// Meta inicial 2026 (revisado pelo founder em 22/mai/2026): R$ 10MM.
+// Pode ser elevada conforme o pipeline maduro com tickets de R$ 10-12MM.
+export const META_2026_BRL = 10_000_000;
 export const REALIZADO_YTD_SNAPSHOT_BRL = 640_000;
 export const TICKET_MEDIO_BRL = 11_000_000; // média entre R$ 10MM e R$ 12MM
 export const ANO_CORRENTE = 2026;

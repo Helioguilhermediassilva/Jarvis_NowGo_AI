@@ -105,7 +105,7 @@
 ## F13 — Painel de Indicadores Financeiros (Revenue Cockpit)
 
 **Parâmetros confirmados pelo founder:**
-- Meta 2026: R$ 100.000.000 (R$ 100MM)
+- Meta 2026 (inicial): R$ 10.000.000 (R$ 10MM) — revisada em 22/mai/2026 para v1.1
 - Realizado YTD 2026 (snapshot inicial 22/mai/2026): R$ 640.000
 - Ticket médio esperado pós-case GDF: R$ 10MM a R$ 12MM por solução
 - Deals necessários para meta (estimativa): 8 a 10 contratos fechados em 2026
@@ -123,7 +123,7 @@
 - [ ] Volume total em negociação (pipeline aberto, R$) — Empresa + por Missão
 - [ ] Total fechado YTD 2026 (R$) — Empresa + por Missão
 - [ ] Perspectiva estatística end-of-year (R$) — Empresa + por Missão
-- [ ] Meta R$ 100MM com barra de progresso (% atingido) e gauge "quanto falta"
+- [ ] Meta R$ 10MM (inicial) com barra de progresso (% atingido) e gauge "quanto falta"
 - [ ] Quantidade de novas oportunidades (mês corrente)
 - [ ] Quantidade de reuniões agendadas (próximos 14 dias)
 - [ ] Quantidade de propostas em curso
