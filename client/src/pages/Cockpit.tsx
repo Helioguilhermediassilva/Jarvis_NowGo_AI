@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
 import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
+import UserManagementDrawer from "@/components/cockpit/UserManagementDrawer";
 import SunPipelinePanel from "@/components/cockpit/SunPipelinePanel";
 import SunControlPanel from "@/components/cockpit/SunControlPanel";
 import JarvisCore from "@/components/cockpit/JarvisCore";
@@ -94,6 +96,8 @@ export default function Cockpit() {
   const [brainError, setBrainError] = useState<string | null>(null);
   const [sunError, setSunError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const auth = useAuth();
+  const [usersDrawerOpen, setUsersDrawerOpen] = useState(false);
 
   // External prompt para mandar para o JarvisCore (ex.: clique numa missão)
   const [externalPrompt, setExternalPrompt] = useState<string | null>(null);
@@ -322,9 +326,60 @@ export default function Cockpit() {
                 ok={!sunError && !!sun}
                 loading={loading}
               />
+              {auth.authenticated && auth.user?.role === "superadmin" && (
+                <button
+                  onClick={() => setUsersDrawerOpen(true)}
+                  title="Gestão de Acesso (superadmin)"
+                  style={{
+                    background: "rgba(187,136,255,0.10)",
+                    border: "1px solid #bb88ff66",
+                    color: "#bb88ff",
+                    borderRadius: 8,
+                    padding: "6px 12px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    transition: "all 160ms ease-out",
+                  }}
+                >
+                  Acesso
+                </button>
+              )}
+              {auth.authenticated && (
+                <button
+                  onClick={() => void auth.logout()}
+                  title={`Sair (${auth.user?.email ?? ""})`}
+                  style={{
+                    background: "transparent",
+                    border: "1px solid #1a5c7a",
+                    color: "#5ab8cc",
+                    borderRadius: 8,
+                    padding: "6px 12px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    fontFamily: "'JetBrains Mono', monospace",
+                  }}
+                >
+                  Sair
+                </button>
+              )}
             </div>
           </div>
         </header>
+
+        {auth.authenticated && auth.user?.role === "superadmin" && (
+          <UserManagementDrawer
+            open={usersDrawerOpen}
+            onClose={() => setUsersDrawerOpen(false)}
+            currentUserEmail={auth.user.email}
+          />
+        )}
 
         {/* Faixa de Missões Ativas */}
         {sun && (
