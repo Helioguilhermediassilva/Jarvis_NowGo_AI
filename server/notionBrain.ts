@@ -203,6 +203,18 @@ export async function updatePage(
 }
 
 /**
+ * Arquiva uma página (soft delete via Notion API). Não destrói o registro;
+ * apenas o marca como `archived: true`, ocultando-o de queries padrão.
+ * Recuperável manualmente via Notion UI.
+ */
+export async function archivePage(pageId: string): Promise<any> {
+  return notionFetch<any>(`/pages/${pageId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ archived: true }),
+  });
+}
+
+/**
  * Limpa o cache (use em testes ou após escrita).
  */
 export function clearCache(): void {

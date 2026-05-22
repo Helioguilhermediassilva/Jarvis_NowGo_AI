@@ -153,3 +153,49 @@
   - [ ] Garantir contraste, espaçamentos e legibilidade total
 
 - [ ] Garantir 100% de responsividade em todas as páginas (mobile, tablet, desktop, ultra-wide) — landing, cockpit e Revenue Cockpit
+
+
+## F14 — CRUD Multimodal (voz + UI + Notion)
+
+Princípio: cada elemento operacional é editável por 3 canais simultâneos. Notion = fonte de verdade. UI dispara mutação via API. Voz dispara via tool calling. Toda mutação propaga via `cockpit:refresh` em <2s.
+
+### Pipeline SUN (SunPipelinePanel à esquerda)
+- [ ] Backend: helpers `addOpportunity`, `updateOpportunity`, `deleteOpportunity` em `server/notionBrain.ts`
+- [ ] Endpoints: `POST /api/brain/opportunities`, `PATCH /api/brain/opportunities`, `DELETE /api/brain/opportunities`
+- [ ] UI: ícones de editar (✎) e excluir (🗑) em cada linha do SunPipelinePanel
+- [ ] UI: botão `+ Nova oportunidade` no topo do painel
+- [ ] UI: drawer/modal de edição com campos (cliente, valor, estágio, missão, próxima ação, próxima data)
+- [ ] Voz: tool `add_opportunity`, `update_opportunity`, `delete_opportunity` no JarvisCore
+
+### Top 5 Deal Rooms
+- [ ] Backend: ranking automático top-5 por score + override manual via Notion
+- [ ] Endpoints: `POST/PATCH/DELETE /api/brain/deal-rooms`
+- [ ] UI: card editável com `+`, ✎ e 🗑
+- [ ] Voz: tools `add_deal_room`, `update_deal_room`, `remove_deal_room`
+
+### Missões Ativas (CRUD completo)
+- [ ] Backend: helpers `addMission`, `updateMission`, `deleteMission`
+- [ ] Endpoints: `POST/PATCH/DELETE /api/sun/missions`
+- [ ] UI: SunMissionsBar com botão `+` e cada card com menu contextual
+- [ ] UI: drawer de edição (nome, codinome, status, % progresso, próxima ação, deadline, owner)
+- [ ] Voz: tools `add_mission`, `update_mission`, `delete_mission`
+- [ ] Validação: máximo 5 missões ativas
+
+### Metas Financeiras (override manual)
+- [ ] Backend: database `NowGo Configs` (key/value) no Notion
+- [ ] `server/financialKpis.ts` lê override antes do default
+- [ ] `REALIZADO_YTD_SNAPSHOT_BRL` lê automaticamente das oportunidades em Ganho (fallback snapshot)
+- [ ] Endpoint: `POST /api/financial/config` (somente superadmin)
+- [ ] UI: clicar no card "Meta 2026" abre mini-form
+- [ ] UI: indicador 📌 quando há override ativo + botão "voltar ao automático"
+- [ ] Voz: tools `set_target_2026`, `set_avg_ticket`, `reset_target` (superadmin only)
+
+### Sincronização e auditoria
+- [ ] Toda mutação dispara `cockpit:refresh`
+- [ ] `server/auditLog.ts` registra autor, ação, timestamp, payload
+- [ ] Endpoint `/api/audit-log` (somente superadmin)
+
+### RBAC (Role-Based Access Control)
+- [ ] `leitor`: GET only (read-only no cockpit)
+- [ ] `operador`: CRUD em opps, deals e missões; NÃO edita metas
+- [ ] `superadmin`: tudo, inclusive resetar overrides

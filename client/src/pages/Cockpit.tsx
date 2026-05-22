@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
 import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
 import UserManagementDrawer from "@/components/cockpit/UserManagementDrawer";
-import SunPipelinePanel from "@/components/cockpit/SunPipelinePanel";
+import PipelineLeftColumn from "@/components/cockpit/PipelineLeftColumn";
 import SunControlPanel from "@/components/cockpit/SunControlPanel";
 import JarvisCore from "@/components/cockpit/JarvisCore";
 import SetupOverlay, {
@@ -395,12 +395,13 @@ export default function Cockpit() {
 
         {/* Grid principal */}
         <main style={mainStyle()}>
-          {/* Esquerda — Pipeline */}
+          {/* Esquerda — Pipeline (Snapshot SUN + Brain Live) */}
           <div style={{ minHeight: 0 }}>
             {sun ? (
-              <SunPipelinePanel
+              <PipelineLeftColumn
                 oportunidades={sun.snapshot.oportunidades}
                 onAsk={onAskOp}
+                role={(auth.user?.role ?? "leitor") as any}
               />
             ) : (
               <PanelPlaceholder

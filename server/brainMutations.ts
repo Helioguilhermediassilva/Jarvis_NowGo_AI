@@ -10,7 +10,7 @@
  *    documento Tipo=Ata, Status=Aprovado) — feito por separado em brainAudit.ts.
  */
 
-import { createPage, updatePage, clearCache } from "./notionBrain.js";
+import { createPage, updatePage, clearCache, archivePage } from "./notionBrain.js";
 import {
   BRAIN_DATABASES,
   BRAIN_PROPS,
@@ -72,6 +72,29 @@ export interface RegistrarAtaInput {
   confirmedByUser: true;
 }
 
+export interface CriarOportunidadeInput {
+  nome: string;                         // título da oportunidade (ex.: "GDF — Smart City")
+  empresa?: string;                     // nome da empresa cliente
+  estagio?: PipelineStage;              // default: Lead
+  valorEstimado?: number;               // BRL
+  probabilidade?: number;               // 0-100
+  score?: number;                       // 0-100
+  proximoFollowUp?: string;             // ISO yyyy-mm-dd
+  urgencia?: "Alta" | "Média" | "Baixa";
+  pontoTensao?: string;
+  criterioProximaFase?: string;
+  notas?: string;
+  cluster?: string;
+  agenteResponsavel?: string;
+  confirmedByUser: true;
+}
+
+export interface ArquivarOportunidadeInput {
+  pageId: string;
+  motivo?: string;                      // registrado em Notas antes de arquivar
+  confirmedByUser: true;
+}
+
 export interface CriarTarefaInput {
   nome: string;
   prioridade: "P0 - Crítica" | "P1 - Alta" | "P2 - Média" | "P3 - Baixa";
@@ -89,6 +112,94 @@ export interface CriarTarefaInput {
   notas?: string;
   projetoIds?: string[];
   confirmedByUser: true;
+}
+
+// ---------------------------------------------------------------------------
+// Criar oportunidade (Pipeline) — entrada no funil via voz/UI
+// ---------------------------------------------------------------------------
+
+export async function criarOportunidade(
+  input: CriarOportunidadeInput,
+): Promise<{ pageId: string; idHumano: string | null }> {
+  if (!input.confirmedByUser) {
+    throw new Error("criarOportunidade requer confirmedByUser=true");
+  }
+  if (!input.nome || input.nome.trim().length === 0) {
+    throw new Error("Nome da oportunidade é obrigatório.");
+  }
+
+  const p = BRAIN_PROPS.pipeline;
+  const properties: Record<string, unknown> = {
+    [p.title]: propTitle(input.nome.trim()),
+    [p.estagio]: propSelect(input.estagio ?? "Lead"),
+  };
+
+  if (input.empresa) properties[p.empresa] = propRichText(input.empresa);
+  if (typeof input.valorEstimado === "number")
+    properties[p.valorEstimado] = propNumber(input.valorEstimado);
+  if (typeof input.probabilidade === "number") {
+    if (input.probabilidade < 0 || input.probabilidade > 100) {
+      throw new Error(`Probabilidade fora do intervalo 0-100: ${input.probabilidade}`);
+    }
+    properties[p.probabilidade] = propNumber(input.probabilidade);
+  }
+  if (typeof input.score === "number") {
+    if (input.score < 0 || input.score > 100) {
+      throw new Error(`Score fora do intervalo 0-100: ${input.score}`);
+    }
+    properties[p.score] = propNumber(input.score);
+  }
+  if (input.proximoFollowUp)
+    properties[p.proximoFollowUp] = propDate(input.proximoFollowUp);
+  if (input.urgencia) properties[p.urgencia] = propSelect(input.urgencia);
+  if (input.pontoTensao) properties[p.pontoTensao] = propRichText(input.pontoTensao);
+  if (input.criterioProximaFase)
+    properties[p.criterioProximaFase] = propRichText(input.criterioProximaFase);
+  if (input.notas) properties[p.notas] = propRichText(input.notas);
+  if (input.cluster) properties[p.cluster] = propSelect(input.cluster);
+  if (input.agenteResponsavel)
+    properties[p.agenteResponsavel] = propSelect(input.agenteResponsavel);
+
+  const res = await createPage(BRAIN_DATABASES.pipeline.id, properties);
+  clearCache();
+  return {
+    pageId: res.id,
+    idHumano: res.properties?.[p.idOportunidade]?.unique_id
+      ? `${res.properties[p.idOportunidade].unique_id.prefix ?? ""}-${res.properties[p.idOportunidade].unique_id.number}`
+      : null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Arquivar oportunidade (soft delete) — marca archived=true no Notion
+// ---------------------------------------------------------------------------
+
+export async function arquivarOportunidade(
+  input: ArquivarOportunidadeInput,
+): Promise<{ pageId: string }> {
+  if (!input.confirmedByUser) {
+    throw new Error("arquivarOportunidade requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+
+  // Se houver motivo, registra em Notas antes de arquivar (auditoria leve)
+  if (input.motivo && input.motivo.trim().length > 0) {
+    const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+    const motivoFmt = `[Arquivado em ${stamp}] ${input.motivo.trim()}`;
+    try {
+      await updatePage(input.pageId, {
+        [BRAIN_PROPS.pipeline.notas]: propRichText(motivoFmt),
+      });
+    } catch {
+      // não bloqueia arquivamento se update falhar
+    }
+  }
+
+  await archivePage(input.pageId);
+  clearCache();
+  return { pageId: input.pageId };
 }
 
 // ---------------------------------------------------------------------------

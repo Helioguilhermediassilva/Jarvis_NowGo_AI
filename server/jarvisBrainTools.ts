@@ -28,9 +28,13 @@ import {
   atualizarOportunidade,
   registrarAta,
   criarTarefa,
+  criarOportunidade,
+  arquivarOportunidade,
   type AtualizarOportunidadeInput,
   type RegistrarAtaInput,
   type CriarTarefaInput,
+  type CriarOportunidadeInput,
+  type ArquivarOportunidadeInput,
 } from "./brainMutations.js";
 import { PIPELINE_STAGES } from "./brainSchema.js";
 
@@ -115,6 +119,48 @@ export const BRAIN_TOOLS = [
         properties: {
           limit: { type: "integer", minimum: 1, maximum: 30, description: "Máximo de tarefas (default 10)." },
         },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_criar_oportunidade",
+      description:
+        "Cria uma nova oportunidade no Pipeline NowGo Brain. PROTOCOLO DE CONFIRMAÇÃO: na primeira chamada, deixe `confirmedByUser=false` para retornar preview; ao receber 'sim' verbal do usuário, re-emita com `confirmedByUser=true`. Use sempre que o usuário mencionar uma nova oportunidade, lead, prospect ou cliente potencial.",
+      parameters: {
+        type: "object",
+        properties: {
+          nome: { type: "string", description: "Título da oportunidade (ex.: 'GDF — Smart City')." },
+          empresa: { type: "string", description: "Nome da empresa cliente (opcional)." },
+          estagio: { type: "string", enum: PIPELINE_STAGES as unknown as string[], description: "Default: Lead." },
+          valorEstimado: { type: "number", description: "Valor estimado em BRL." },
+          probabilidade: { type: "number", description: "Probabilidade 0-100 (%)." },
+          score: { type: "number", description: "Score 0-100." },
+          proximoFollowUp: { type: "string", description: "Data ISO yyyy-mm-dd." },
+          urgencia: { type: "string", enum: ["Alta", "Média", "Baixa"] },
+          pontoTensao: { type: "string" },
+          notas: { type: "string" },
+          confirmedByUser: { type: "boolean", description: "true SOMENTE após confirmação verbal." },
+        },
+        required: ["nome"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_arquivar_oportunidade",
+      description:
+        "Arquiva (soft delete) uma oportunidade do Pipeline. PROTOCOLO DE CONFIRMAÇÃO obrigatório. Use sempre que o usuário pedir para remover, descartar, deletar ou excluir uma oportunidade. O motivo é registrado em Notas para auditoria.",
+      parameters: {
+        type: "object",
+        properties: {
+          pageId: { type: "string", description: "ID interno (use brain_buscar_oportunidade antes)." },
+          motivo: { type: "string", description: "Motivo do arquivamento (registrado em Notas)." },
+          confirmedByUser: { type: "boolean", description: "true SOMENTE após confirmação verbal." },
+        },
+        required: ["pageId"],
       },
     },
   },
@@ -321,6 +367,80 @@ export async function executeBrainTool(
   }
 
   // ----- ESCRITAS (preview→confirma) -----
+  if (name === "brain_criar_oportunidade") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.nome) {
+      return { content: JSON.stringify({ error: "nome obrigatório" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview da nova oportunidade. Recite ao usuário e peça confirmação verbal antes de re-emitir com confirmedByUser=true.",
+          nome: args.nome,
+          empresa: args.empresa ?? null,
+          estagio: args.estagio ?? "Lead",
+          valorEstimado: args.valorEstimado ?? null,
+          probabilidade: args.probabilidade ?? null,
+          proximoFollowUp: args.proximoFollowUp ?? null,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await criarOportunidade({
+        ...args,
+        confirmedByUser: true,
+      } as CriarOportunidadeInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: `Oportunidade '${args.nome}' criada no Pipeline${out.idHumano ? " (" + out.idHumano + ")" : ""}.`,
+          pageId: out.pageId,
+          idHumano: out.idHumano,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  if (name === "brain_arquivar_oportunidade") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.pageId) {
+      return { content: JSON.stringify({ error: "pageId obrigatório" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview do arquivamento. Recite ao usuário e peça confirmação verbal antes de re-emitir.",
+          pageId: args.pageId,
+          motivo: args.motivo ?? null,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await arquivarOportunidade({
+        pageId: String(args.pageId),
+        motivo: args.motivo ? String(args.motivo) : undefined,
+        confirmedByUser: true,
+      } as ArquivarOportunidadeInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: "Oportunidade arquivada no Brain. Cockpit deve refrescar.",
+          pageId: out.pageId,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
   if (name === "brain_atualizar_oportunidade") {
     const confirmed = args.confirmedByUser === true;
     const fields: string[] = [];
