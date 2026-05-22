@@ -503,3 +503,60 @@ export function calcularMrrArrTotals(ativos: AtivoCrmResumo[]): RecurringRevenue
     topRecorrencia: top.slice(0, 10),
   };
 }
+
+
+// ---------------------------------------------------------------------------
+// F17.1 — Adapter: ATIVOS CRM IA → OportunidadeResumo (forma canônica)
+// ---------------------------------------------------------------------------
+
+/**
+ * Mapeia o status do ATIVOS CRM IA para o PipelineStage canônico.
+ */
+function mapAtivoStatusToStage(status: string | null): PipelineStage | null {
+  if (!status) return null;
+  const s = status.trim();
+  if (s === "Lead") return "Lead";
+  if (s === "Qualified") return "Qualificado";
+  if (s.startsWith("Proposal")) return "Proposta";
+  if (s === "Negotiation") return "Negociação";
+  if (s.startsWith("Closed")) return "Fechado-Ganho";
+  if (s === "Lost") return "Fechado-Perdido";
+  return null;
+}
+
+/**
+ * Converte um AtivoCrmResumo em OportunidadeResumo (formato esperado por
+ * calcularKpis), de modo que a ATIVOS CRM IA possa ser usada como fonte
+ * primária do cockpit financeiro.
+ */
+export function ativoCrmToOportunidade(a: AtivoCrmResumo): OportunidadeResumo {
+  return {
+    id: a.id,
+    nome: a.company || "(sem nome)",
+    idHumano: null,
+    estagio: mapAtivoStatusToStage(a.status),
+    score: null,
+    valorEstimado: a.estimatedValueBrl ?? null,
+    probabilidade: null,
+    urgencia: null,
+    proximoFollowUp: a.expectedClose ?? a.lastContact ?? null,
+    agenteResponsavel: null,
+    pontoTensao: "",
+    criterioProximaFase: "",
+    fortaleceTese: null,
+    cluster: null,
+    impactoEstrategico: null,
+    empresaIds: 0,
+    projetoIds: 0,
+  };
+}
+
+/**
+ * Reuso direto para o handler de KPIs: lê todos os ativos e devolve no
+ * formato canônico, pronto para passar a calcularKpis().
+ */
+export async function listarOportunidadesDeAtivosCrmIa(): Promise<OportunidadeResumo[]> {
+  const ativos = await listarAtivosCrmIa();
+  return ativos.map(ativoCrmToOportunidade);
+}
+

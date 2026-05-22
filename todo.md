@@ -336,3 +336,13 @@ Acoes imediatas:
 - [ ] Preencher Triad com MRR = 3500
 - [ ] Replicar MRR/ARR na Pipeline/Opportunities
 - [ ] Cockpit: card dedicado Receita Recorrente (MRR total, ARR total, deals com recorrencia)
+
+
+## F17.1 — Refatorar fonte primária dos KPIs (ATIVOS CRM IA)
+
+- [ ] Adicionar mapeamento estágios ATIVOS CRM IA → PipelineStage canônico
+- [ ] Adicionar helper `ativosCrmIaToOportunidades()` em brainQueries
+- [ ] Refatorar /api/financial/kpis para usar ATIVOS CRM IA como fonte primária
+- [ ] Validar typecheck
+- [ ] Commit + push
+- [ ] Validar números em produção
