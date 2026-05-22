@@ -39,6 +39,8 @@ export interface JarvisStreamEvents {
   onToolEnd?: (names: string[]) => void;
   /** Resposta final consolidada (mesmo conteúdo dos deltas concatenados). */
   onDone?: (reply: string, toolsUsed: string[]) => void;
+  /** Disparado quando uma tool de Brain altera dados (cockpit deve refrescar). */
+  onBrainMutated?: (toolName: string) => void;
   /** Erro fatal reportado pelo servidor durante o stream. */
   onError?: (message: string) => void;
 }
@@ -50,7 +52,7 @@ export interface JarvisChatStreamOptions extends JarvisChatOptions, JarvisStream
  * disparando callbacks granulares. Resolve com a resposta final.
  */
 export async function jarvisChatStream(opts: JarvisChatStreamOptions): Promise<string> {
-  const { history, userMessage, attachments, honorific, extraSystemContext, signal, onDelta, onToolStart, onToolEnd, onDone, onError } = opts;
+  const { history, userMessage, attachments, honorific, extraSystemContext, signal, onDelta, onToolStart, onToolEnd, onDone, onBrainMutated, onError } = opts;
   const resp = await fetch("/api/jarvis/chat/stream", {
     method: "POST",
     signal,
@@ -82,7 +84,7 @@ export async function jarvisChatStream(opts: JarvisChatStreamOptions): Promise<s
           if (!line.startsWith("data: ")) continue;
           const data = line.slice(6).trim();
           if (!data) continue;
-          let evt: { type: string; text?: string; names?: string[]; reply?: string; tools_used?: string[]; message?: string };
+          let evt: { type: string; text?: string; names?: string[]; reply?: string; tools_used?: string[]; message?: string; tool?: string };
           try { evt = JSON.parse(data); } catch { continue; }
           if (evt.type === "delta" && typeof evt.text === "string") {
             onDelta?.(evt.text);
@@ -90,6 +92,8 @@ export async function jarvisChatStream(opts: JarvisChatStreamOptions): Promise<s
             onToolStart?.(evt.names);
           } else if (evt.type === "tool_end" && Array.isArray(evt.names)) {
             onToolEnd?.(evt.names);
+          } else if (evt.type === "brain_mutated") {
+            onBrainMutated?.(evt.tool || "");
           } else if (evt.type === "done") {
             finalReply = (evt.reply || "").trim();
             toolsUsed = Array.isArray(evt.tools_used) ? evt.tools_used : [];

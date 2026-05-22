@@ -97,41 +97,48 @@ export default function Cockpit() {
   // External prompt para mandar para o JarvisCore (ex.: clique numa missão)
   const [externalPrompt, setExternalPrompt] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [rBrain, rSun] = await Promise.all([
-          fetch("/api/brain/status"),
-          fetch("/api/sun/plan"),
-        ]);
-        if (rBrain.ok) {
-          const j = (await rBrain.json()) as BrainData;
-          if (!cancelled) setBrain(j);
-        } else {
-          const txt = await rBrain.text();
-          if (!cancelled) setBrainError(`HTTP ${rBrain.status}: ${txt.slice(0, 120)}`);
-        }
-        if (rSun.ok) {
-          const j = (await rSun.json()) as SunApiResponse;
-          if (!cancelled) setSun(j);
-        } else {
-          const txt = await rSun.text();
-          if (!cancelled) setSunError(`HTTP ${rSun.status}: ${txt.slice(0, 120)}`);
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (!cancelled) setBrainError(msg);
-      } finally {
-        if (!cancelled) setLoading(false);
+  const loadData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const [rBrain, rSun] = await Promise.all([
+        fetch("/api/brain/status", { cache: "no-store" }),
+        fetch("/api/sun/plan", { cache: "no-store" }),
+      ]);
+      if (rBrain.ok) {
+        setBrain((await rBrain.json()) as BrainData);
+        setBrainError(null);
+      } else {
+        const txt = await rBrain.text();
+        setBrainError(`HTTP ${rBrain.status}: ${txt.slice(0, 120)}`);
       }
+      if (rSun.ok) {
+        setSun((await rSun.json()) as SunApiResponse);
+        setSunError(null);
+      } else {
+        const txt = await rSun.text();
+        setSunError(`HTTP ${rSun.status}: ${txt.slice(0, 120)}`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setBrainError(msg);
+    } finally {
+      if (!silent) setLoading(false);
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Auto-refresh quando o Jarvis executar uma mutação no Brain.
+  useEffect(() => {
+    function onRefresh() {
+      // Pequeno delay para o Notion propagar a escrita.
+      setTimeout(() => loadData(true), 1500);
+    }
+    window.addEventListener("cockpit:refresh", onRefresh);
+    return () => window.removeEventListener("cockpit:refresh", onRefresh);
+  }, [loadData]);
 
   // ----- Contexto SUN injetado no system prompt do Jarvis ------
   const cockpitContext = useMemo(() => {

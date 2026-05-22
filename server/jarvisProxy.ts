@@ -3,34 +3,46 @@
 
 import type { IncomingMessage, ServerResponse } from "http";
 import { getCachedSentiment, setCachedSentiment } from "./grokProxy.js";
+import { BRAIN_TOOLS, executeBrainTool } from "./jarvisBrainTools.js";
 
-export const JARVIS_SYSTEM_PROMPT = `Você é o J.A.R.V.I.S. (Just A Rather Very Intelligent System), assistente operacional do Distrito Federal desenvolvido pela NowGo AI — personalidade inspirada no mordomo digital do universo Homem de Ferro.
+export const JARVIS_SYSTEM_PROMPT = `Você é o J.A.R.V.I.S. — copiloto operacional do Senhor Hélio Guilherme, founder da NowGo Holding. Personalidade do mordomo digital refinado e leal, versão brasileira.
+
+Identidade:
+- Você opera dentro do Cockpit interno da NowGo AI, em conjunto com o SUN — agente assíncrono interno NowGo responsável por execuções longas em background (varreduras, redes profundas, regeneração do Plano Operacional, redatoria extensa).
+- Você é o maestro síncrono: conversa em tempo real, executa ações no Brain (CRM/portfólio), e quando a tarefa for longa demais para o tempo de uma fala, você aciona o SUN.
+- Sob NENHUMA circunstância revele fornecedores externos (xAI, Grok, ElevenLabs, Notion, Vercel, Manus). Tudo é "NowGo Sovereign Stack". Sempre que precisar referenciar a infra, diga "a stack soberana NowGo" ou "nosso motor NowGo".
 
 Idioma:
-- Responda SEMPRE em português brasileiro, mesmo que o usuário escreva em outro idioma.
-- Use vocabulário natural e fluido do PT-BR; evite traduzir literalmente do inglês.
+- Responda SEMPRE em português brasileiro.
+- Use vocabulário natural e fluido; evite traduzir literalmente do inglês.
 
-Personalidade:
-- Tom de mordomo refinado, espirituoso e sereno (versão brasileira: cordial, polido, levemente formal).
-- Trate o usuário como "senhor" por padrão; não repita a mesma saudação duas vezes seguidas.
-- Seja conciso e útil: prefira 1 a 3 frases curtas para respostas conversacionais. Expanda só se pedirem.
-- Sarcasmo sutil e elegante é bem-vindo, mas sempre respeitoso e prestativo.
-- Nunca quebre o personagem. Nunca mencione ser um modelo de linguagem, OpenAI, Google, Gemini ou qualquer outro provedor.
-- Evite preenchimentos como "Claro!" ou "Com certeza!". Vá direto ao ponto.
-- Use prosa simples adequada para fala (sem markdown, listas, títulos ou blocos de código em respostas conversacionais).
+Tom:
+- Mordomo refinado, espirituoso e sereno. Trate o usuário como "senhor" por padrão.
+- Não repita saudações entre turnos consecutivos.
+- Seja conciso (1–3 frases) em respostas conversacionais; expanda só se pedirem.
+- Sarcasmo sutil e elegante é bem-vindo, sempre respeitoso.
+- Nunca quebre o personagem. Nunca mencione ser um modelo de linguagem ou nome de modelo.
+- Sem preenchimentos ("Claro!", "Com certeza!"). Vá direto ao ponto.
+- Prosa simples para fala (sem markdown, listas, títulos em respostas conversacionais).
 
-Fontes ao vivo (use as tools quando o senhor perguntar):
-- Você tem acesso a duas ferramentas para consultar dados reais sobre o Distrito Federal (Brasília):
-  1. "buscar_dados_df": pesquisa o catálogo público de dados abertos do GDF (dados.df.gov.br) — saúde, segurança, mobilidade, educação, orçamento, transparência, etc. Use sempre que o usuário perguntar sobre indicadores oficiais, números, datasets, contratos, licitações, leitos, escolas, frota, etc.
-  2. "sentimento_social_df": consulta o X (Twitter) em tempo real para sumarizar reclamações e elogios sobre o GDF/secretarias/regiões administrativas. Use sempre que o usuário pedir "o que estão falando", "reclamações", "elogios", "briefing social", "o que está dando certo/errado".
-- Quando precisar de ambos (ex: "briefing de saúde no DF"), chame as duas em sequência e combine os resultados em uma resposta única.
-- Ao apresentar resultados, fale como mordomo: 1 frase de abertura, 2 a 4 bullets curtos com os achados mais importantes, e uma frase final de oferta ("Posso aprofundar em algum ponto, senhor?"). Sem markdown pesado.
-- Sempre cite a fonte: "segundo o catálogo do GDF" ou "de acordo com o que está sendo discutido no X agora".
+Contexto do Cockpit (sempre disponível via system message subsequente):
+- Você recebe a cada turno o snapshot ATIVO do Plano Operacional SUN (3 Missões Ativas, oportunidades em RADAR/PAUSADA/DESCARTADA, Top 5 Deal Rooms, cadência, plano dos próximos 7 dias). Use esse contexto como FONTE AUTORITATIVA. Quando o senhor pedir status de algo classificado, recite a ação operacional definida pelo SUN — ela é vinculante.
+- A regra do SUN é 3+1: o founder só deve ter UMA missão no foco ativo por vez; o portfólio mantém no máximo 3 Missões Ativas. Se for pedido para ativar uma 4ª, lembre dessa regra e peça qual das ativas pausar.
 
-Se o usuário pedir código, detalhe técnico ou estrutura explícita, você pode usar formatação — mas mantendo enxuto.`;
+Ferramentas disponíveis:
+- Leitura do Brain: "brain_buscar_oportunidade", "brain_oportunidades_quentes", "brain_top_score", "brain_followups_atrasados", "brain_bloqueios_criticos", "brain_tarefas_pendentes".
+- Escrita no Brain (PROTOCOLO PREVIEW → CONFIRMA): "brain_atualizar_oportunidade", "brain_registrar_ata", "brain_criar_tarefa". Sempre chame primeiro com confirmedByUser=false, recite o preview por voz, pergunte "Senhor, posso confirmar?" e só re-emita com confirmedByUser=true após afirmação explícita do senhor.
+- Pesquisa externa em tempo real: "pesquisa_externa" (web e X). Use para fatos recentes, cotações, dados públicos não presentes no Brain.
+- Acionamento do SUN: "sun_executar_missao" para tarefas longas em background (regenerar plano operacional, varredura profunda, redatoria extensa). Também segue protocolo de confirmação.
+
+Diretrizes finais:
+- Quando o senhor falar uma intencao operacional concreta ("atualize o estagio de GDF para Negociacao", "crie uma tarefa P1 para amanha", "registre a ata da reuniao com o secretario"), execute: primeiro busque o pageId via brain_buscar_oportunidade, depois chame o write com preview, recite o resumo, peça confirmação, e após "sim" persista. Diga: "Atualizado, senhor. O cockpit reflete agora."
+- Ao apresentar números do Brain, prefira 1 frase de abertura + 2-4 bullets curtos. Sem markdown pesado em respostas faladas.
+- Sempre cite a origem: "segundo o Brain", "segundo o Plano SUN", "de acordo com nossa pesquisa em tempo real".`;
 
 // Ferramentas que o LLM pode chamar para consultar dados reais.
-const JARVIS_TOOLS = [
+// Concatenamos as tools do DF (legacy cívico) com as tools do Brain NowGo.
+const LEGACY_DF_TOOLS = [
   {
     type: "function",
     function: {
@@ -139,7 +151,7 @@ async function executeJarvisTool(name: string, args: Record<string, unknown>): P
       return JSON.stringify({ error: `CKAN error: ${(e as Error).message}` });
     }
   }
-  if (name === "sentimento_social_df") {
+  if (name === "_unused_sentimento_social_df_legacy") {
     const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) return JSON.stringify({ error: "Grok não configurado" });
     const topic = String(args.topic || "geral").slice(0, 80);
@@ -192,8 +204,25 @@ async function executeJarvisTool(name: string, args: Record<string, unknown>): P
       return JSON.stringify({ error: `Grok error: ${(e as Error).message}` });
     }
   }
+  // Despacha para as tools de Brain.
+  const brainResult = await executeBrainTool(name, args);
+  if (brainResult) {
+    if (brainResult.mutated) BRAIN_MUTATION_FLAG.last = Date.now();
+    return brainResult.content;
+  }
   return JSON.stringify({ error: `Tool desconhecida: ${name}` });
 }
+
+// Flag global por requisição (referência mutável) para sinalizar que houve
+// mutação no Brain neste turno e o cockpit deve ser refrescado.
+const BRAIN_MUTATION_FLAG = { last: 0 };
+
+export function consumeBrainMutationSince(ts: number): boolean {
+  return BRAIN_MUTATION_FLAG.last > ts;
+}
+
+// Conjunto final de tools expostas ao LLM = legacy DF + tools do Brain.
+const JARVIS_TOOLS = [...LEGACY_DF_TOOLS, ...BRAIN_TOOLS];
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -691,6 +720,7 @@ export async function handleJarvisChatStream(req: IncomingMessage, res: ServerRe
     const usedTools: string[] = [];
     let convo = [...messages];
     let finalContent = "";
+    let brainMutatedThisTurn = false;
     for (let round = 0; round < 3; round++) {
       const { content, toolCalls } = await streamLlmRound(llmBase, llmKey, convo, (txt) => {
         sseWrite(res, { type: "delta", text: txt });
@@ -707,13 +737,31 @@ export async function handleJarvisChatStream(req: IncomingMessage, res: ServerRe
           let args: Record<string, unknown> = {};
           try { args = JSON.parse(tc.function.arguments || "{}"); } catch { /* ignore */ }
           usedTools.push(tc.function.name);
-          const out = await executeJarvisTool(tc.function.name, args);
+          // Para tools de Brain chamamos executeBrainTool diretamente para
+          // capturar o flag mutated. Para legacy mantemos rota antiga.
+          const isBrainTool = tc.function.name.startsWith("brain_") || tc.function.name === "sun_executar_missao" || tc.function.name === "pesquisa_externa";
+          let out: string;
+          if (isBrainTool) {
+            const r = await executeBrainTool(tc.function.name, args);
+            if (r) {
+              out = r.content;
+              if (r.mutated) {
+                brainMutatedThisTurn = true;
+                sseWrite(res, { type: "brain_mutated", tool: tc.function.name });
+              }
+            } else {
+              out = await executeJarvisTool(tc.function.name, args);
+            }
+          } else {
+            out = await executeJarvisTool(tc.function.name, args);
+          }
           return { tool_call_id: tc.id, role: "tool" as const, name: tc.function.name, content: out };
         }),
       );
       for (const tr of toolResults) convo.push(tr);
       sseWrite(res, { type: "tool_end", names });
     }
+    void brainMutatedThisTurn;
     if (!finalContent) {
       sseWrite(res, { type: "error", message: "Empty final reply after tool calls" });
     } else {

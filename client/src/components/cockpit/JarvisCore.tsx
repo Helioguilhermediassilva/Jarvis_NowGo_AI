@@ -136,6 +136,13 @@ export default function JarvisCore({
               { role: "sys", content: `consultando fontes (${names.join(", ")})...` },
             ]);
           },
+          onBrainMutated: (toolName) => {
+            setConversation((c) => [
+              ...c,
+              { role: "sys", content: `✓ Brain atualizado via ${toolName}—cockpit refrescando.` },
+            ]);
+            window.dispatchEvent(new CustomEvent("cockpit:refresh", { detail: { toolName } }));
+          },
         });
         const userContent =
           attachmentsToSend.length > 0
