@@ -160,14 +160,12 @@
   overflow: visible;
 }
 .nowgoai-landing .ng-hero-grid {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 3rem;
-  align-items: center;
+  display: block;
   position: relative;
 }
 .nowgoai-landing .ng-hero-text {
   position: relative; z-index: 3;
+  max-width: 640px;
 }
 .nowgoai-landing .ng-h1 {
   font-family: "Outfit", sans-serif;
@@ -193,17 +191,19 @@
 }
 .nowgoai-landing .ng-hero-kpi { display: inline-flex; align-items: center; gap: 0.5rem; }
 .nowgoai-landing .ng-hero-kpi span { color: var(--accent-cyan); font-size: 1.2rem; }
-/* Globe ao lado direito, alinhado ao texto, sem caixa visível */
+/* Globe absoluto como background do hero (lado direito, atrás do texto, alinhado ao heading) */
 .nowgoai-landing .ng-hero-globe-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 620px;
-  margin: 0 auto;
+  position: absolute;
+  top: 45%;
+  right: -6%;
+  transform: translateY(-50%);
+  width: clamp(560px, 52vw, 880px);
+  height: clamp(560px, 52vw, 880px);
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(circle at center, #000 45%, rgba(0,0,0,0.9) 60%, rgba(0,0,0,0.5) 80%, transparent 98%);
-          mask-image: radial-gradient(circle at center, #000 45%, rgba(0,0,0,0.9) 60%, rgba(0,0,0,0.5) 80%, transparent 98%);
-  opacity: 0.95;
+  z-index: 1;
+  -webkit-mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 78%, transparent 96%);
+          mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 78%, transparent 96%);
+  opacity: 0.92;
 }
 .nowgoai-landing #hero-globe { width: 100%; height: 100%; display: block; }
 .nowgoai-landing .ng-hero-content { position: relative; z-index: 3; }
