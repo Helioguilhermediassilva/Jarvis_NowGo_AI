@@ -411,3 +411,9 @@ Acoes imediatas:
 - [x] Adicionar guard ALLOWED_COCKPIT_EMAILS no RequireAuth (somente helio@nowgo.com.br)
 - [x] Mensagem amigável quando bloqueado + redirecionamento para /
 - [x] Não tocar em nada visual do cockpit
+
+## F23 — Correções na landing
+- [ ] Globe 3D fluido (sem frame quadrado)
+- [ ] Renomear Agri → Agro em PT/EN
+- [ ] Triad reposicionada como Fintech
+- [ ] Remover valores em reais de Cases Auditáveis e Modelos Comerciais

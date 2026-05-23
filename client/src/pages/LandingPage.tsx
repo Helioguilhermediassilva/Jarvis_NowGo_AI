@@ -101,7 +101,7 @@ export default function LandingPage() {
       {/* HERO */}
       <section id="top" className="ng-hero">
         <div className="ng-hero-grid">
-          <div className="ng-hero-text reveal">
+          <div className="ng-hero-text ng-hero-content reveal">
             <span className="tagline">{t.hero.tag}</span>
             <h1 className="ng-h1">
               <span className="ng-h1-line">{t.hero.titleA}</span>
@@ -178,7 +178,7 @@ export default function LandingPage() {
                 <span className="ng-case-tag">{c.tag}</span>
                 <h3 className="ng-case-title">{c.title}</h3>
                 <div className="ng-case-metric">
-                  <strong>{c.metric}</strong>
+                  {c.metric && <strong>{c.metric}</strong>}
                   <span>{c.metricLabel}</span>
                 </div>
                 <p className="ng-case-desc">{c.desc}</p>
