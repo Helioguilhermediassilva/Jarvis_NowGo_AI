@@ -155,13 +155,17 @@
 /* HERO */
 .nowgoai-landing .ng-hero {
   position: relative; z-index: 2;
-  padding: 200px 2rem 120px;
+  padding: 200px 2rem 160px;
   max-width: 1280px; margin: 0 auto;
   overflow: visible;
 }
 .nowgoai-landing .ng-hero-grid {
-  display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center;
+  display: block;
   position: relative;
+}
+.nowgoai-landing .ng-hero-text {
+  max-width: 640px;
+  position: relative; z-index: 3;
 }
 .nowgoai-landing .ng-h1 {
   font-family: "Outfit", sans-serif;
@@ -187,22 +191,22 @@
 }
 .nowgoai-landing .ng-hero-kpi { display: inline-flex; align-items: center; gap: 0.5rem; }
 .nowgoai-landing .ng-hero-kpi span { color: var(--accent-cyan); font-size: 1.2rem; }
-/* Globe fluido no fundo do hero (sem frame, com fade radial) */
+/* Globe fluido como background do hero (lado direito, atrás do conteúdo) */
 .nowgoai-landing .ng-hero-globe-wrap {
   position: absolute;
-  top: 50%; right: -8%;
+  top: 50%;
+  right: -10%;
   transform: translateY(-50%);
-  width: clamp(640px, 60vw, 1100px);
-  height: clamp(640px, 60vw, 1100px);
+  width: clamp(720px, 65vw, 1200px);
+  height: clamp(720px, 65vw, 1200px);
   pointer-events: none;
   z-index: 1;
-  -webkit-mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.45) 75%, transparent 95%);
-          mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.45) 75%, transparent 95%);
-  opacity: 0.95;
+  -webkit-mask-image: radial-gradient(circle at center, #000 35%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 75%, transparent 95%);
+          mask-image: radial-gradient(circle at center, #000 35%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 75%, transparent 95%);
+  opacity: 0.9;
 }
 .nowgoai-landing #hero-globe { width: 100%; height: 100%; display: block; }
-/* Conteúdo de texto do hero acima do globo */
-.nowgoai-landing .ng-hero-content { position: relative; z-index: 2; }
+.nowgoai-landing .ng-hero-content { position: relative; z-index: 3; }
 
 /* SECTIONS */
 .nowgoai-landing .ng-section { position: relative; z-index: 2; padding: 140px 2rem; }
@@ -428,13 +432,13 @@
 /* RESPONSIVE */
 @media (max-width: 980px) {
   .nowgoai-landing .ng-hero { padding: 140px 1.25rem 80px; overflow: hidden; }
-  .nowgoai-landing .ng-hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .nowgoai-landing .ng-hero-text { max-width: 100%; }
   .nowgoai-landing .ng-hero-globe-wrap {
     position: absolute;
     top: 50%; left: 50%; right: auto;
     transform: translate(-50%, -50%);
     width: 700px; height: 700px;
-    opacity: 0.55;
+    opacity: 0.45;
   }
   .nowgoai-landing .ng-section { padding: 100px 1.25rem; }
   .nowgoai-landing .ng-pillars,
