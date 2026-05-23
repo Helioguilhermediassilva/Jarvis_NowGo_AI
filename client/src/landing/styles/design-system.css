@@ -197,7 +197,7 @@
    secao Plataforma (sem quebra visivel). NAO faz parte do fluxo do hero. */
 .nowgoai-landing .ng-globe-bg {
   position: absolute;
-  top: 220px;
+  top: 254px; /* baseline da palavra "Inteligencia" */
   right: max(-160px, calc(50% - 760px));
   width: clamp(620px, 60vw, 900px);
   height: clamp(620px, 60vw, 900px);
