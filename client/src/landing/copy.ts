@@ -75,8 +75,7 @@ export const copy = {
     cases: {
       eyebrow: "CASES E PROVAS",
       title: "Resultados auditáveis, não promessas.",
-      subtitle:
-        "Cada número abaixo foi conferido contra a base ATIVOS CRM IA da nowgo ai e contra contratos formais. Nada inventado.",
+      subtitle: "",
       items: [
         {
           tag: "SMART CITY",
@@ -246,8 +245,7 @@ export const copy = {
     cases: {
       eyebrow: "CASES AND PROOFS",
       title: "Auditable results, not promises.",
-      subtitle:
-        "Every number below was verified against nowgo ai's ATIVOS CRM IA database and against formal contracts. Nothing made up.",
+      subtitle: "",
       items: [
         {
           tag: "SMART CITY",
