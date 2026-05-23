@@ -33,7 +33,7 @@ export const copy = {
       ctaSecondary: "Acessar Cockpit",
       kpiA: "108 oportunidades ativas",
       kpiB: "R$ 63,07MM em pipeline",
-      kpiC: "Smart City Fase 1 contratada",
+      kpiC: "Smart City Fase 1",
     },
     platform: {
       eyebrow: "PLATAFORMA",
@@ -204,7 +204,7 @@ export const copy = {
       ctaSecondary: "Open Cockpit",
       kpiA: "108 active opportunities",
       kpiB: "BRL 63.07 MM in pipeline",
-      kpiC: "Smart City Phase 1 contracted",
+      kpiC: "Smart City Phase 1",
     },
     platform: {
       eyebrow: "PLATFORM",
