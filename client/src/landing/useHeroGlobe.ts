@@ -26,7 +26,8 @@ export function useHeroGlobe(canvasRef: RefObject<HTMLCanvasElement | null>) {
     let mounted = true;
 
     const numNodes = 800;
-    const globeRadius = 220;
+    // globeRadius agora e dinamico (calculado em cada frame com base no tamanho do canvas)
+    let globeRadius = 220;
     const phi = Math.PI * (3 - Math.sqrt(5));
 
     type Node = { x: number; y: number; z: number; baseRadius: number; color: string };
@@ -93,6 +94,10 @@ export function useHeroGlobe(canvasRef: RefObject<HTMLCanvasElement | null>) {
       const cx = width / 2;
       const cy = height / 2;
       const fov = 800;
+      // Recalcula raio do globo proporcionalmente ao canvas para nunca cortar
+      // o anel orbital mais externo (raio = globeRadius * 1.45).
+      // 30% do menor lado deixa folga suficiente: 1.45 * 0.30 = 0.435 (<0.5).
+      globeRadius = Math.min(width, height) * 0.30;
 
       const gradient = ctx.createRadialGradient(cx, cy, globeRadius * 0.4, cx, cy, globeRadius * 1.6);
       gradient.addColorStop(0, "rgba(51, 210, 255, 0.15)");

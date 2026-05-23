@@ -203,8 +203,8 @@
   max-width: 560px;
   margin: 0 auto;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(circle at center, #000 50%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.4) 84%, transparent 100%);
-          mask-image: radial-gradient(circle at center, #000 50%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.4) 84%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, #000 70%, rgba(0,0,0,0.85) 86%, rgba(0,0,0,0.5) 95%, transparent 100%);
+          mask-image: radial-gradient(circle at center, #000 70%, rgba(0,0,0,0.85) 86%, rgba(0,0,0,0.5) 95%, transparent 100%);
   opacity: 0.95;
 }
 .nowgoai-landing .ng-hero-globe-col #hero-globe { width: 100%; height: 100%; display: block; }
