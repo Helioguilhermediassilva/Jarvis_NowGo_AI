@@ -161,18 +161,21 @@
   isolation: isolate;
 }
 .nowgoai-landing .ng-hero-grid {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
   position: relative;
 }
 .nowgoai-landing .ng-hero-text {
   position: relative; z-index: 3;
-  max-width: 640px;
+  max-width: 100%;
 }
 .nowgoai-landing .ng-h1 {
   font-family: "Outfit", sans-serif;
-  font-size: clamp(2.8rem, 5.2vw, 5.5rem);
-  line-height: 1.05; font-weight: 500; letter-spacing: -0.025em;
-  margin: 0 0 1.5rem 0;
+  font-size: clamp(2rem, 3.4vw, 3.5rem);
+  line-height: 1.08; font-weight: 500; letter-spacing: -0.022em;
+  margin: 0 0 1.25rem 0;
 }
 .nowgoai-landing .ng-h1-line { display: block; }
 .nowgoai-landing .ng-h1-line:first-child {
@@ -181,8 +184,8 @@
 }
 .nowgoai-landing .ng-h1-line-dim { color: var(--text-dim); }
 .nowgoai-landing .ng-hero-sub {
-  font-size: 1.15rem; line-height: 1.6; color: var(--text-dim);
-  max-width: 580px; margin: 0 0 2.25rem 0;
+  font-size: 1rem; line-height: 1.55; color: var(--text-dim);
+  max-width: 100%; margin: 0 0 1.75rem 0;
 }
 .nowgoai-landing .ng-hero-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
 .nowgoai-landing .ng-hero-kpis {
@@ -192,26 +195,20 @@
 }
 .nowgoai-landing .ng-hero-kpi { display: inline-flex; align-items: center; gap: 0.5rem; }
 .nowgoai-landing .ng-hero-kpi span { color: var(--accent-cyan); font-size: 1.2rem; }
-/* Globo como BACKGROUND GLOBAL da landing: ancorado ao topo da pagina, alinhado
-   horizontalmente com a palavra "Inteligencia" e extendendo-se sobre o inicio da
-   secao Plataforma (sem quebra visivel). NAO faz parte do fluxo do hero. */
-.nowgoai-landing .ng-globe-bg {
-  position: absolute;
-  top: 254px; /* baseline da palavra "Inteligencia" */
-  right: max(-160px, calc(50% - 760px));
-  width: clamp(620px, 60vw, 900px);
-  height: clamp(620px, 60vw, 900px);
+/* Globo como segunda coluna do grid no hero — contido na coluna direita, sem extrapolar para a proxima secao */
+.nowgoai-landing .ng-hero-globe-col {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 560px;
+  margin: 0 auto;
   pointer-events: none;
-  z-index: 0;
-  -webkit-mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.18) 88%, transparent 100%);
-          mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.18) 88%, transparent 100%);
-  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle at center, #000 50%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.4) 84%, transparent 100%);
+          mask-image: radial-gradient(circle at center, #000 50%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.4) 84%, transparent 100%);
+  opacity: 0.95;
 }
-.nowgoai-landing .ng-globe-bg #hero-globe { width: 100%; height: 100%; display: block; }
-/* Para o globo poder vazar pela proxima secao sem mostrar barra horizontal */
+.nowgoai-landing .ng-hero-globe-col #hero-globe { width: 100%; height: 100%; display: block; }
 .nowgoai-landing { position: relative; overflow-x: hidden; }
-/* Primeira secao apos o hero precisa ser transparente para o globo aparecer atras */
-.nowgoai-landing #platform { background: transparent; }
 
 .nowgoai-landing .ng-hero-content { position: relative; z-index: 3; }
 
@@ -440,12 +437,8 @@
 @media (max-width: 980px) {
   .nowgoai-landing .ng-hero { padding: 140px 1.25rem 80px; overflow: hidden; }
   .nowgoai-landing .ng-hero-text { max-width: 100%; }
-  .nowgoai-landing .ng-globe-bg {
-    top: 60%; left: 50%; right: auto;
-    transform: translate(-50%, -50%);
-    width: 90vw; height: 90vw;
-    opacity: 0.35;
-  }
+  .nowgoai-landing .ng-hero-grid { grid-template-columns: 1fr; }
+  .nowgoai-landing .ng-hero-globe-col { max-width: 380px; opacity: 0.6; margin-top: 1rem; }
   .nowgoai-landing .ng-section { padding: 100px 1.25rem; }
   .nowgoai-landing .ng-pillars,
   .nowgoai-landing .ng-cases-grid,
