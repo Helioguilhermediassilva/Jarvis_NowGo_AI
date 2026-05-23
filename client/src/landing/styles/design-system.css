@@ -194,16 +194,16 @@
 /* Globe absoluto como background do hero (lado direito, atrás do texto, alinhado ao heading) */
 .nowgoai-landing .ng-hero-globe-wrap {
   position: absolute;
-  top: 45%;
-  right: -6%;
+  top: 38%;
+  right: -2%;
   transform: translateY(-50%);
-  width: clamp(560px, 52vw, 880px);
-  height: clamp(560px, 52vw, 880px);
+  width: clamp(420px, 38vw, 620px);
+  height: clamp(420px, 38vw, 620px);
   pointer-events: none;
   z-index: 1;
-  -webkit-mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 78%, transparent 96%);
-          mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.4) 78%, transparent 96%);
-  opacity: 0.92;
+  -webkit-mask-image: radial-gradient(circle at center, #000 42%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, transparent 96%);
+          mask-image: radial-gradient(circle at center, #000 42%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, transparent 96%);
+  opacity: 0.95;
 }
 .nowgoai-landing #hero-globe { width: 100%; height: 100%; display: block; }
 .nowgoai-landing .ng-hero-content { position: relative; z-index: 3; }
