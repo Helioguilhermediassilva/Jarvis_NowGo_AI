@@ -158,6 +158,7 @@
   padding: 200px 2rem 160px;
   max-width: 1280px; margin: 0 auto;
   overflow: visible;
+  isolation: isolate;
 }
 .nowgoai-landing .ng-hero-grid {
   display: block;
@@ -191,21 +192,27 @@
 }
 .nowgoai-landing .ng-hero-kpi { display: inline-flex; align-items: center; gap: 0.5rem; }
 .nowgoai-landing .ng-hero-kpi span { color: var(--accent-cyan); font-size: 1.2rem; }
-/* Globe absoluto como background do hero (lado direito, atrás do texto, alinhado ao heading) */
-.nowgoai-landing .ng-hero-globe-wrap {
+/* Globo como BACKGROUND GLOBAL da landing: ancorado ao topo da pagina, alinhado
+   horizontalmente com a palavra "Inteligencia" e extendendo-se sobre o inicio da
+   secao Plataforma (sem quebra visivel). NAO faz parte do fluxo do hero. */
+.nowgoai-landing .ng-globe-bg {
   position: absolute;
-  top: 38%;
-  right: -2%;
-  transform: translateY(-50%);
-  width: clamp(420px, 38vw, 620px);
-  height: clamp(420px, 38vw, 620px);
+  top: 220px;
+  right: max(-160px, calc(50% - 760px));
+  width: clamp(620px, 60vw, 900px);
+  height: clamp(620px, 60vw, 900px);
   pointer-events: none;
-  z-index: 1;
-  -webkit-mask-image: radial-gradient(circle at center, #000 42%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, transparent 96%);
-          mask-image: radial-gradient(circle at center, #000 42%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.4) 80%, transparent 96%);
-  opacity: 0.95;
+  z-index: 0;
+  -webkit-mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.18) 88%, transparent 100%);
+          mask-image: radial-gradient(circle at center, #000 38%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.18) 88%, transparent 100%);
+  opacity: 0.92;
 }
-.nowgoai-landing #hero-globe { width: 100%; height: 100%; display: block; }
+.nowgoai-landing .ng-globe-bg #hero-globe { width: 100%; height: 100%; display: block; }
+/* Para o globo poder vazar pela proxima secao sem mostrar barra horizontal */
+.nowgoai-landing { position: relative; overflow-x: hidden; }
+/* Primeira secao apos o hero precisa ser transparente para o globo aparecer atras */
+.nowgoai-landing #platform { background: transparent; }
+
 .nowgoai-landing .ng-hero-content { position: relative; z-index: 3; }
 
 /* SECTIONS */
@@ -433,12 +440,11 @@
 @media (max-width: 980px) {
   .nowgoai-landing .ng-hero { padding: 140px 1.25rem 80px; overflow: hidden; }
   .nowgoai-landing .ng-hero-text { max-width: 100%; }
-  .nowgoai-landing .ng-hero-globe-wrap {
-    position: absolute;
-    top: 50%; left: 50%; right: auto;
+  .nowgoai-landing .ng-globe-bg {
+    top: 60%; left: 50%; right: auto;
     transform: translate(-50%, -50%);
-    width: 700px; height: 700px;
-    opacity: 0.45;
+    width: 90vw; height: 90vw;
+    opacity: 0.35;
   }
   .nowgoai-landing .ng-section { padding: 100px 1.25rem; }
   .nowgoai-landing .ng-pillars,

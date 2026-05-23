@@ -55,6 +55,11 @@ export default function LandingPage() {
     <div className="nowgoai-landing">
       <div className="ambient-glow" aria-hidden="true" />
       <div className="grid-layer" aria-hidden="true" />
+      {/* Globo posicionado como plano de fundo absoluto, alinhado horizontalmente com a primeira linha
+          do heading (“Inteligencia”). Vaza ate a area da proxima secao para nao criar quebra visivel. */}
+      <div className="ng-globe-bg" aria-hidden="true">
+        <canvas ref={canvasRef} id="hero-globe" />
+      </div>
       <div className="noise-layer" aria-hidden="true" />
 
       {/* HEADER */}
@@ -117,9 +122,6 @@ export default function LandingPage() {
               <div className="ng-hero-kpi"><span>•</span>{t.hero.kpiB}</div>
               <div className="ng-hero-kpi"><span>•</span>{t.hero.kpiC}</div>
             </div>
-          </div>
-          <div className="ng-hero-globe-wrap reveal">
-            <canvas ref={canvasRef} id="hero-globe" />
           </div>
         </div>
       </section>
