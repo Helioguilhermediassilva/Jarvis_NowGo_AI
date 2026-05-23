@@ -362,3 +362,52 @@ Acoes imediatas:
 - [ ] Criar card HDIA (Hospital Dia) na ATIVOS CRM IA — Qualified — contato Christiano Vinuales +55 61 99459-5052
 - [ ] Criar card IA Saúde RN na ATIVOS CRM IA — Lead — mesmo contato, reunião próxima semana
 - [ ] Validar no cockpit (contagem +2 deals em pipeline aberto)
+
+
+## F20 — Playbook de Vendas WhatsApp Agent (PDF de treinamento)
+
+- [ ] Pesquisar copy oficial NowGo AI no site nowgoai.com
+- [ ] Escrever playbook completo (Markdown): identidade, produtos, cases reais, scripts WhatsApp, objeções, FAQ
+- [ ] Aplicar branding: nowgo ai + Nvidia Partner Expert + Top 50 Global (DPI/JICA/BCG/Gates)
+- [ ] Cases REAIS verificáveis: Smart City Fase 1 (R$ 1,58MM), Triad (R$ 100K + MRR R$ 3,5K), Cartório RN (R$ 10K)
+- [ ] Não inventar métricas/percentuais — usar apenas dados verificáveis
+- [ ] Converter MD → PDF com manus-md-to-pdf
+- [ ] Entregar PDF como anexo
+
+
+## F21 — Design System + Landing Page profissional global
+
+- [ ] Extrair HTML/CSS/JS exatos da referência Asimov AI Intelligence SaaS
+- [ ] Construir design-system.html (Hero + Typography + Colors + Components + Layout + Motion + Icons)
+- [ ] Mapear rota / da landing page atual no projeto
+- [ ] Reconstruir landing page com Design System + conteúdo nowgo ai (cases reais, NVIDIA, Top 50 Global)
+- [ ] NÃO tocar no cockpit (rotas autenticadas e dashboards)
+- [ ] 100% responsivo
+- [ ] Validar typecheck, commit, push e deploy
+- [ ] Entregar URL ao vivo
+
+
+## F21 — Landing Page bilíngue (PT/EN) com Design System Asimov
+
+- [x] Extrair design-system.css/js da referência Asimov AI
+- [x] Construir design-system.html (Hero + Tokens + Components)
+- [ ] Mapear arquivo da landing page atual (Welcome.tsx ou Home.tsx)
+- [ ] Criar LandingPage.tsx com toggle PT|EN persistido em localStorage
+- [ ] Implementar i18n com objeto `copy.pt` e `copy.en` para todas as strings
+- [ ] Aplicar Design System: dark theme + tokens + Outfit/Inter + ambient glow + grid layer
+- [ ] Hero com globo canvas (igual referência) + headline gradient + 2 CTAs (Solicitar Acesso / Acessar Cockpit)
+- [ ] Seção Plataforma (3 pilares: Custom LLMs, Tailored IaaS, Autonomous Agents)
+- [ ] Seção Verticais (6 setores: Smart Cities, Health, Education, Environment, Agri, Entertainment)
+- [ ] Seção Cases (Smart City Fase 1, Triad MRR, Cartório RN — números reais do CRM)
+- [ ] Seção Selos (NVIDIA Partner Expert + Top 50 Global DPI/JICA/BCG/Gates)
+- [ ] Seção Pricing (Piloto, Enterprise, Programa)
+- [ ] Seção CTA final + Footer
+- [ ] Garantir 100% responsividade (mobile-first)
+- [ ] NÃO tocar em /cockpit, /welcome, /api/* ou qualquer rota autenticada
+- [ ] Typecheck, commit, push, deploy Vercel
+- [ ] Validar visualmente em produção (PT e EN)
+
+## F22 — Bloqueio de acesso ao cockpit (allowlist)
+- [x] Adicionar guard ALLOWED_COCKPIT_EMAILS no RequireAuth (somente helio@nowgo.com.br)
+- [x] Mensagem amigável quando bloqueado + redirecionamento para /
+- [x] Não tocar em nada visual do cockpit

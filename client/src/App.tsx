@@ -7,13 +7,17 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "@/pages/Home";
 import Cockpit from "@/pages/Cockpit";
 import Welcome from "@/pages/Welcome";
+import LandingPage from "@/pages/LandingPage";
 import RequireAuth from "@/components/RequireAuth";
 
 function Router() {
   return (
     <Switch>
-      {/* Landing institucional pública (rota raiz) */}
-      <Route path={"/"} component={Welcome} />
+      {/* Landing institucional pública (rota raiz) — nova versão bilíngue PT/EN */}
+      <Route path={"/"} component={LandingPage} />
+
+      {/* Versão anterior preservada em /welcome para comparação */}
+      <Route path={"/welcome"} component={Welcome} />
 
       {/* Cockpit interno NowGo — exige autenticação */}
       <Route path={"/cockpit"}>
