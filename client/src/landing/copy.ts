@@ -87,10 +87,10 @@ export const copy = {
         },
         {
           tag: "FINTECH",
-          title: "Triad — Agente de IA com receita recorrente",
+          title: "Orquestra de Agentes de IA com receita recorrente",
           metric: "",
           metricLabel: "Setup + recorrência mensal",
-          desc: "Fintech em produção com contrato assinado. Modelo replicável de setup + MRR aplicado a serviços financeiros, compliance e operações.",
+          desc: "Múltiplos agentes orquestrados em produção, com contrato assinado em cliente do setor financeiro. Modelo replicável de setup + MRR aplicado a serviços financeiros, compliance e operações.",
         },
         {
           tag: "JURÍDICO",
@@ -258,10 +258,10 @@ export const copy = {
         },
         {
           tag: "FINTECH",
-          title: "Triad — AI Agent with recurring revenue",
+          title: "AI Agent Orchestra with recurring revenue",
           metric: "",
           metricLabel: "Setup + monthly recurring",
-          desc: "Fintech in production with a signed contract. Replicable setup + MRR model applied to financial services, compliance and operations.",
+          desc: "Multi-agent orchestration in production, with a signed contract at a financial-sector client. Replicable setup + MRR model applied to financial services, compliance and operations.",
         },
         {
           tag: "LEGAL",
