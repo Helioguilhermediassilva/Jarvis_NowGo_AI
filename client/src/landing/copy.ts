@@ -82,7 +82,7 @@ export const copy = {
           tag: "SMART CITY",
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
-          metricLabel: "Fase 1 contratada",
+          metricLabel: "Fase 1",
           desc: "Implementação inicial em curso na esfera de governo, com escopo de expansão direto por fases subsequentes — gabinete digital, atendimento ao cidadão e operação 24/7.",
         },
         {
@@ -253,7 +253,7 @@ export const copy = {
           tag: "SMART CITY",
           title: "Smart City — Integrated Public Platform",
           metric: "",
-          metricLabel: "Phase 1 contracted",
+          metricLabel: "Phase 1",
           desc: "Initial implementation underway at the government level, with planned expansion across subsequent phases — digital cabinet, citizen services and 24/7 operation.",
         },
         {
