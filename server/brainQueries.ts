@@ -202,18 +202,124 @@ export async function listarFollowUpsAtrasados(): Promise<OportunidadeResumo[]> 
 }
 
 /**
- * Busca uma oportunidade pelo nome (matching parcial, case-insensitive).
+ * Normaliza string para matching fuzzy: lowercase + remove acentos + remove
+ * pontuação comum + colapsa espaços. Ex.: "WLM Indústrias S/A" -> "wlm industrias sa".
+ */
+function normalizeForFuzzy(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[\.,\-_/\\&()\[\]"']+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Levenshtein-lite (limite curto): true se distancia <= max. */
+function withinEditDistance(a: string, b: string, max: number): boolean {
+  if (Math.abs(a.length - b.length) > max) return false;
+  const la = a.length, lb = b.length;
+  if (la === 0) return lb <= max;
+  if (lb === 0) return la <= max;
+  let prev = new Array(lb + 1);
+  for (let j = 0; j <= lb; j++) prev[j] = j;
+  for (let i = 1; i <= la; i++) {
+    const cur = new Array(lb + 1);
+    cur[0] = i;
+    let rowMin = cur[0];
+    for (let j = 1; j <= lb; j++) {
+      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+      if (cur[j] < rowMin) rowMin = cur[j];
+    }
+    if (rowMin > max) return false;
+    prev = cur;
+  }
+  return prev[lb] <= max;
+}
+
+/**
+ * Busca uma oportunidade pelo nome com matching FUZZY:
+ *  - Primeiro tenta substring case-insensitive direto no Notion (rápido).
+ *  - Em paralelo, busca TODAS as oportunidades ativas (até 200) e roda
+ *    matching fuzzy local: substring de tokens normalizados, iniciais,
+ *    e Levenshtein <=2 sobre cada token. Resultados são dedup + scored.
+ *  - Top 10 por score retornado.
+ *
+ * Isso permite encontrar "WLM" mesmo quando o título é "Indústrias WLM S/A"
+ * ou quando o STT transcreve com pequenos erros ("vlm", "velemê").
  */
 export async function buscarOportunidadePorNome(query: string): Promise<OportunidadeResumo[]> {
   const props = BRAIN_PROPS.pipeline;
-  const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
-    filter: {
-      property: props.title,
-      title: { contains: query },
-    },
+  const qNorm = normalizeForFuzzy(query);
+  const qTokens = qNorm.split(" ").filter((t) => t.length >= 2);
+  if (!qNorm) return [];
+
+  // 1) Substring direto no Notion (rápido, geralmente cobre 80% dos casos).
+  const direct = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
+    filter: { property: props.title, title: { contains: query } },
     page_size: 10,
   });
-  return r.results.map(mapOportunidade);
+  const directMatches = direct.results.map(mapOportunidade);
+
+  // 2) Carrega TUDO ativo para matching local fuzzy (Notion não tem fuzzy nativo).
+  const all = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
+    filter: {
+      or: PIPELINE_ACTIVE_STAGES.map((s) => ({
+        property: props.estagio,
+        select: { equals: s },
+      })),
+    },
+    page_size: 200,
+  });
+  const allMatches: OportunidadeResumo[] = all.results.map(mapOportunidade);
+
+  // Score cada candidato: substring=10, prefix=8, todos tokens contidos=6,
+  // qualquer token contido=4, edit-distance<=2 em token=3, iniciais batem=5.
+  const scored = new Map<string, { item: OportunidadeResumo; score: number }>();
+  for (const item of allMatches) {
+    const nomeNorm = normalizeForFuzzy(item.nome || "");
+    if (!nomeNorm) continue;
+    const nomeTokens = nomeNorm.split(" ").filter(Boolean);
+    let score = 0;
+    if (nomeNorm.includes(qNorm)) score = Math.max(score, 10);
+    if (nomeNorm.startsWith(qNorm)) score = Math.max(score, 8);
+    if (qTokens.length > 0) {
+      const allTokensIn = qTokens.every((t) => nomeNorm.includes(t));
+      const anyTokenIn = qTokens.some((t) => nomeNorm.includes(t));
+      if (allTokensIn) score = Math.max(score, 6);
+      else if (anyTokenIn) score = Math.max(score, 4);
+      // Iniciais: query "WLM" -> match em token cujas iniciais sejam W L M.
+      if (qNorm.length <= 5 && /^[a-z]+$/.test(qNorm)) {
+        const initials = nomeTokens.map((t) => t[0]).join("");
+        if (initials.includes(qNorm)) score = Math.max(score, 5);
+      }
+      // Edit-distance pequeno por token (cobre erros de STT).
+      for (const qt of qTokens) {
+        if (qt.length < 3) continue;
+        for (const nt of nomeTokens) {
+          if (Math.abs(nt.length - qt.length) > 2) continue;
+          if (withinEditDistance(qt, nt, qt.length <= 4 ? 1 : 2)) {
+            score = Math.max(score, 3);
+          }
+        }
+      }
+    }
+    if (score > 0) {
+      scored.set(item.id, { item, score });
+    }
+  }
+  // Merge: prioriza directMatches (Notion encontrou substring exata).
+  for (const item of directMatches) {
+    const prev = scored.get(item.id);
+    if (prev) prev.score = Math.max(prev.score, 10);
+    else scored.set(item.id, { item, score: 10 });
+  }
+  const merged = Array.from(scored.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10)
+    .map((x) => x.item);
+  return merged;
 }
 
 // ---------------------------------------------------------------------------

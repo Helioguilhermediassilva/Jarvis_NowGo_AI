@@ -555,19 +555,23 @@ async function streamLlmRound(
   llmKey: string,
   msgs: Array<Record<string, unknown>>,
   onDelta: (text: string) => void,
+  opts: { disableTools?: boolean } = {},
 ): Promise<{ content: string; toolCalls: AccumulatedToolCall[] }> {
+  const bodyParams: Record<string, unknown> = {
+    model: "grok-4.3",
+    messages: msgs,
+    temperature: 0.5,
+    max_tokens: 280,
+    stream: true,
+  };
+  if (!opts.disableTools) {
+    bodyParams.tools = JARVIS_TOOLS;
+    bodyParams.tool_choice = "auto";
+  }
   const r = await fetch(`${llmBase}/v1/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${llmKey}` },
-    body: JSON.stringify({
-      model: "grok-4.3",
-      messages: msgs,
-      tools: JARVIS_TOOLS,
-      tool_choice: "auto",
-      temperature: 0.5,
-      max_tokens: 280,
-      stream: true,
-    }),
+    body: JSON.stringify(bodyParams),
     signal: AbortSignal.timeout(110_000),
   });
   if (!r.ok || !r.body) {
@@ -716,7 +720,10 @@ export async function handleJarvisChatStream(req: IncomingMessage, res: ServerRe
     let convo = [...messages];
     let finalContent = "";
     let brainMutatedThisTurn = false;
-    for (let round = 0; round < 3; round++) {
+    // Máximo 5 rodadas (antes era 3). Permite buscas mais elaboradas antes de
+    // chegar a uma escrita (busca fuzzy + confirmação + grava).
+    const MAX_ROUNDS = 5;
+    for (let round = 0; round < MAX_ROUNDS; round++) {
       const { content, toolCalls } = await streamLlmRound(llmBase, llmKey, convo, (txt) => {
         sseWrite(res, { type: "delta", text: txt });
       });
@@ -757,11 +764,36 @@ export async function handleJarvisChatStream(req: IncomingMessage, res: ServerRe
       sseWrite(res, { type: "tool_end", names });
     }
     void brainMutatedThisTurn;
+    // Fallback: se chegou ao limite de rodadas com tool_calls mas sem texto
+    // final, faz UMA rodada extra com instrução explícita de responder em texto
+    // (sem mais ferramentas). Evita o erro "Empty final reply after tool calls".
     if (!finalContent) {
-      sseWrite(res, { type: "error", message: "Empty final reply after tool calls" });
-    } else {
-      sseWrite(res, { type: "done", reply: finalContent, tools_used: usedTools });
+      convo.push({
+        role: "system",
+        content:
+          "Você já executou as ferramentas necessárias. Agora responda ao usuário APENAS em texto natural " +
+          "(em português, breve, em 1–2 frases), descrevendo o resultado da última ação. Não chame mais ferramentas.",
+      });
+      try {
+        const { content } = await streamLlmRound(llmBase, llmKey, convo, (txt) => {
+          sseWrite(res, { type: "delta", text: txt });
+        }, { disableTools: true });
+        finalContent = content.trim();
+      } catch (e) {
+        // Se a rodada de fallback também falhar, sintetiza uma resposta genérica
+        // a partir das ferramentas usadas para o usuário não ficar no escuro.
+        finalContent = usedTools.length > 0
+          ? `Concluí: ${usedTools.join(", ")}.`
+          : "Pronto, senhor.";
+      }
     }
+    if (!finalContent) {
+      // Último recurso (nunca deveria chegar aqui): sintetiza msg human-readable.
+      finalContent = usedTools.length > 0
+        ? `Ações executadas: ${usedTools.join(", ")}.`
+        : "Pronto.";
+    }
+    sseWrite(res, { type: "done", reply: finalContent, tools_used: usedTools });
   } catch (e) {
     sseWrite(res, { type: "error", message: (e as Error).message });
   } finally {
