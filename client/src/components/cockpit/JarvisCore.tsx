@@ -93,27 +93,63 @@ export default function JarvisCore({
     ttsRef.current = { elevenTts, browserTts };
   }, [elevenTts, browserTts]);
 
+  // Fila serial de fala: cada chamada de speakReply enfileira um trecho.
+  // Apenas um TTS toca por vez. Quando a fila esvazia, libera o lock e
+  // arma o cooldown anti-eco. Isso evita que múltiplos chunks de stream
+  // sobreponham áudio (causa do "Jarvis se ouvindo / repetindo").
+  const speechQueueRef = useRef<Array<{ text: string; onEnd: () => void }>>([]);
+  const speechRunningRef = useRef(false);
+
+  const runSpeechQueue = useCallback(() => {
+    if (speechRunningRef.current) return;
+    const job = speechQueueRef.current.shift();
+    if (!job) {
+      // Fila vazia: arma cooldown e libera lock.
+      cooldownUntilRef.current = Date.now() + 700;
+      speakingLockRef.current = false;
+      return;
+    }
+    speechRunningRef.current = true;
+    speakingLockRef.current = true;
+    try { sttRef.current?.stop(); } catch { /* ignore */ }
+    const advance = () => {
+      speechRunningRef.current = false;
+      // Chama o onEnd ANTES de continuar a fila, para o consumidor poder
+      // setar estados (ex.: voltar para LISTENING após o último chunk).
+      try { job.onEnd(); } catch { /* ignore */ }
+      // Se ainda há jobs, continua a fila imediatamente.
+      if (speechQueueRef.current.length > 0) {
+        runSpeechQueue();
+      } else {
+        cooldownUntilRef.current = Date.now() + 700;
+        speakingLockRef.current = false;
+      }
+    };
+    ttsRef.current.elevenTts
+      .speak(job.text)
+      .then(advance)
+      .catch(() => {
+        ttsRef.current.browserTts.speak(job.text, advance);
+      });
+  }, []);
+
   const speakReply = useCallback((text: string, onEnd: () => void) => {
-    if (mutedRef.current) {
+    if (mutedRef.current || !text.trim()) {
       onEnd();
       return;
     }
-    // Marca lock global de fala: desliga STT pra evitar auto-captura
-    speakingLockRef.current = true;
-    try { sttRef.current?.stop(); } catch { /* ignore */ }
-    const finish = () => {
-      // Cooldown de 700ms após o TTS terminar pra dissipar ressaca de áudio
-      // residual no alto-falante antes de religar o microfone.
-      cooldownUntilRef.current = Date.now() + 700;
-      speakingLockRef.current = false;
-      onEnd();
-    };
-    ttsRef.current.elevenTts
-      .speak(text)
-      .then(finish)
-      .catch(() => {
-        ttsRef.current.browserTts.speak(text, finish);
-      });
+    speechQueueRef.current.push({ text, onEnd });
+    runSpeechQueue();
+  }, [runSpeechQueue]);
+
+  // Cancela toda fala em andamento (botao parar / mute / nova pergunta)
+  const cancelAllSpeech = useCallback(() => {
+    speechQueueRef.current = [];
+    try { ttsRef.current.elevenTts.cancel?.(); } catch { /* ignore */ }
+    try { ttsRef.current.browserTts.cancel?.(); } catch { /* ignore */ }
+    speechRunningRef.current = false;
+    speakingLockRef.current = false;
+    cooldownUntilRef.current = 0;
   }, []);
 
   // ------------------- Processamento de comando ------------------
@@ -122,6 +158,9 @@ export default function JarvisCore({
       if (!text.trim() && pendingAttachmentsRef.current.length === 0) return;
       if (processingRef.current) return;
       processingRef.current = true;
+      // Garante que qualquer fala residual da rodada anterior seja descartada,
+      // para o Jarvis nunca "falar por cima" de uma nova pergunta.
+      cancelAllSpeech();
       const attachmentsToSend = pendingAttachmentsRef.current;
       const userLog = text.trim() ||
         (attachmentsToSend[0]?.name ? `[anexo: ${attachmentsToSend[0]?.name}]` : "[anexo]");
@@ -237,7 +276,7 @@ export default function JarvisCore({
         setHudState(mutedRef.current ? "MUTED" : "LISTENING");
       }
     },
-    [speakReply, cockpitSystemContext],
+    [speakReply, cockpitSystemContext, cancelAllSpeech],
   );
 
   // Consome promptings externos (ex.: clique numa missão SUN)
