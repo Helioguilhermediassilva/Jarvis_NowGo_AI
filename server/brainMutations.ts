@@ -490,3 +490,97 @@ export async function criarTarefa(
       : null,
   };
 }
+
+// ---------------------------------------------------------------------------
+// F30 — Decisor + Resolução de Deal (base ATIVOS CRM IA)
+// ---------------------------------------------------------------------------
+
+export interface AtualizarDecisorInput {
+  pageId: string;
+  decisor?: string;          // nome do decisor (rich_text)
+  contato?: string;          // cargo / canal / telefone / e-mail (rich_text)
+  confirmedByUser: true;
+}
+
+/**
+ * Atualiza o decisor do cliente e seu contato em uma oportunidade da
+ * Pipeline (fonte dos Top 5 Deal Rooms). Ambos os campos são opcionais;
+ * pelo menos um deve ser fornecido. Strings vazias limpam o campo.
+ */
+export async function atualizarDecisor(
+  input: AtualizarDecisorInput,
+): Promise<{ pageId: string; updatedFields: string[] }> {
+  if (!input.confirmedByUser) {
+    throw new Error("atualizarDecisor requer confirmedByUser=true");
+  }
+  const p = BRAIN_PROPS.pipeline as unknown as {
+    decisor: string;
+    contatoDecisor: string;
+  };
+  const properties: Record<string, unknown> = {};
+  const updated: string[] = [];
+  if (typeof input.decisor === "string") {
+    properties[p.decisor] = propRichText(input.decisor);
+    updated.push("decisor");
+  }
+  if (typeof input.contato === "string") {
+    properties[p.contatoDecisor] = propRichText(input.contato);
+    updated.push("contato");
+  }
+  if (updated.length === 0) {
+    throw new Error("Nenhum campo de decisor fornecido para atualizar.");
+  }
+  await updatePage(input.pageId, properties);
+  clearCache();
+  return { pageId: input.pageId, updatedFields: updated };
+}
+
+export interface ResolverDealInput {
+  pageId: string;
+  notaFinal?: string;        // texto livre registrado no Notion após resolução
+  confirmedByUser: true;
+}
+
+/**
+ * Marca uma oportunidade da Pipeline como resolvida (Fechado-Ganho).
+ * Opcionalmente registra uma nota final como ata na base Documentos.
+ * Quando concluído, libera espaço no Top 5 Deal Rooms e a próxima
+ * oportunidade entra automaticamente pela query ranking.
+ */
+export async function resolverDealAtivoCrm(
+  input: ResolverDealInput,
+): Promise<{ pageId: string; ataPageId: string | null }> {
+  if (!input.confirmedByUser) {
+    throw new Error("resolverDealAtivoCrm requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+  const p = BRAIN_PROPS.pipeline;
+  const properties: Record<string, unknown> = {
+    [p.estagio]: propSelect("Fechado-Ganho"),
+  };
+  if (input.notaFinal && input.notaFinal.trim().length > 0) {
+    const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+    properties[p.notas] = propRichText(`[Resolvido em ${stamp}] ${input.notaFinal.trim()}`);
+  }
+  await updatePage(input.pageId, properties);
+
+  let ataPageId: string | null = null;
+  if (input.notaFinal && input.notaFinal.trim().length > 0) {
+    try {
+      const ata = await registrarAta({
+        titulo: `Resolução de deal — ${new Date().toISOString().slice(0, 10)}`,
+        resumo: input.notaFinal.trim().slice(0, 1800),
+        tipo: "Ata",
+        tags: ["Fechado-Ganho", "F30"],
+        confirmedByUser: true,
+      });
+      ataPageId = ata.pageId;
+    } catch {
+      // Não bloqueia a resolução do deal se o registro da ata falhar.
+    }
+  }
+  clearCache();
+  return { pageId: input.pageId, ataPageId };
+}

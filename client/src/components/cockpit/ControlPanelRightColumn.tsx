@@ -31,10 +31,12 @@ interface Props {
   rituais: SunRitual[];
   proximos7Dias: SunDayAction[];
   removerDaAgenda: SunRemoveItem[];
+  role?: "leitor" | "operador" | "superadmin";
 }
 
 export default function ControlPanelRightColumn(props: Props) {
   const [view, setView] = useState<View>("snapshot");
+  const { role, ...snapshotProps } = props;
 
   return (
     <div
@@ -75,9 +77,9 @@ export default function ControlPanelRightColumn(props: Props) {
       {/* Conteúdo */}
       <div style={{ flex: 1, minHeight: 0 }}>
         {view === "snapshot" ? (
-          <SunControlPanel {...props} />
+          <SunControlPanel {...snapshotProps} />
         ) : (
-          <BrainDealRoomsLive />
+          <BrainDealRoomsLive role={role} />
         )}
       </div>
     </div>

@@ -428,6 +428,7 @@ export default function Cockpit() {
                 rituais={sun.snapshot.rituais}
                 proximos7Dias={sun.snapshot.proximos7Dias}
                 removerDaAgenda={sun.snapshot.removerDaAgenda}
+                role={(auth.user?.role ?? "leitor") as any}
               />
             ) : (
               <PanelPlaceholder

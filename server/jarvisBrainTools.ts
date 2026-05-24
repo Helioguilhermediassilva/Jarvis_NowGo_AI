@@ -38,6 +38,8 @@ import {
   criarMissao,
   atualizarMissao,
   arquivarMissao,
+  atualizarDecisor,
+  resolverDealAtivoCrm,
   type AtualizarOportunidadeInput,
   type RegistrarAtaInput,
   type CriarTarefaInput,
@@ -46,7 +48,10 @@ import {
   type CriarMissaoInput,
   type AtualizarMissaoInput,
   type ArquivarMissaoInput,
+  type AtualizarDecisorInput,
+  type ResolverDealInput,
 } from "./brainMutations.js";
+import { listarTopDealRooms, proximoDealRoomCandidato } from "./brainQueries.js";
 import { PIPELINE_STAGES } from "./brainSchema.js";
 
 /* ------------------------------------------------------------------ */
@@ -380,6 +385,53 @@ export const BRAIN_TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "brain_atualizar_decisor",
+      description:
+        "Atualiza o decisor do cliente (nome + contato) em uma oportunidade do Deal Room (base ATIVOS CRM IA). Use sempre que o usuário mencionar quem decide do lado do cliente. PROTOCOLO DE CONFIRMAÇÃO: na primeira chamada deixe `confirmedByUser=false`; após o usuário confirmar verbalmente, re-emita com `confirmedByUser=true`. Use o pageId obtido via brain_buscar_oportunidade.",
+      parameters: {
+        type: "object",
+        properties: {
+          pageId: { type: "string", description: "ID interno da oportunidade (page_id do Notion)." },
+          decisor: { type: "string", description: "Nome do decisor do cliente (ex.: 'Ana Silva')." },
+          contato: { type: "string", description: "Cargo/canal/telefone/e-mail do decisor em texto livre (ex.: 'CEO · WhatsApp +55 61 9XXXX-XXXX')." },
+          confirmedByUser: { type: "boolean" },
+        },
+        required: ["pageId"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_resolver_deal",
+      description:
+        "Marca uma oportunidade do Deal Room como Fechado-Ganho na base ATIVOS CRM IA, registra uma nota final opcional como ata no Brain e libera espaço para o próximo deal subir ao Top 5. PROTOCOLO DE CONFIRMAÇÃO obrigatório: na primeira chamada deixe `confirmedByUser=false` para preview; após o usuário confirmar verbalmente, re-emita com `confirmedByUser=true`. Retorna também o próximo candidato a Top Deal Room.",
+      parameters: {
+        type: "object",
+        properties: {
+          pageId: { type: "string", description: "ID interno da oportunidade fechada (page_id do Notion)." },
+          notaFinal: { type: "string", description: "Texto livre com aprendizados, valor final, condições (opcional)." },
+          confirmedByUser: { type: "boolean" },
+        },
+        required: ["pageId"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "brain_proximo_deal_room",
+      description:
+        "Calcula qual oportunidade subiria ao Top 5 Deal Rooms se uma das atuais fosse resolvida. Útil para o usuário planejar transições. Read-only.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
 ] as const;
 
 /* ------------------------------------------------------------------ */
@@ -432,6 +484,8 @@ const PREVIEW_WRITE_TOOLS = new Set([
   "brain_registrar_ata",
   "brain_criar_tarefa",
   "sun_executar_missao",
+  "brain_atualizar_decisor",
+  "brain_resolver_deal",
 ]);
 
 export async function executeBrainTool(
@@ -917,6 +971,132 @@ export async function executeBrainTool(
           idHumano: out.idHumano,
         }),
         mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  // ----- F30: DECISOR (preview → confirma) -----
+  if (name === "brain_atualizar_decisor") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.pageId) {
+      return { content: JSON.stringify({ error: "pageId obrigatório" }), mutated: false };
+    }
+    const fields: string[] = [];
+    if (typeof args.decisor === "string") fields.push(`decisor="${String(args.decisor).slice(0, 80)}"`);
+    if (typeof args.contato === "string") fields.push(`contato="${String(args.contato).slice(0, 120)}"`);
+    if (fields.length === 0) {
+      return { content: JSON.stringify({ error: "forneça ao menos decisor ou contato" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message: "Preview da atualização de decisor. Recite ao usuário e peça confirmação verbal antes de re-emitir com confirmedByUser=true.",
+          pageId: args.pageId,
+          camposParaAtualizar: fields,
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const out = await atualizarDecisor({
+        pageId: String(args.pageId),
+        decisor: typeof args.decisor === "string" ? args.decisor : undefined,
+        contato: typeof args.contato === "string" ? args.contato : undefined,
+        confirmedByUser: true,
+      } as AtualizarDecisorInput);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: "Decisor atualizado no Brain. Cockpit deve refrescar automaticamente.",
+          pageId: out.pageId,
+          updatedFields: out.updatedFields,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  // ----- F30: RESOLVER DEAL + auto-promoção do próximo (preview → confirma) -----
+  if (name === "brain_resolver_deal") {
+    const confirmed = args.confirmedByUser === true;
+    if (!args.pageId) {
+      return { content: JSON.stringify({ error: "pageId obrigatório" }), mutated: false };
+    }
+    if (!confirmed) {
+      return {
+        content: JSON.stringify({
+          preview: true,
+          message:
+            "Preview da resolução do deal (status → Fechado-Ganho). Recite ao usuário e peça confirmação verbal antes de re-emitir com confirmedByUser=true.",
+          pageId: args.pageId,
+          notaFinalPreview: args.notaFinal
+            ? String(args.notaFinal).slice(0, 240) + (String(args.notaFinal).length > 240 ? "..." : "")
+            : null,
+          observacao:
+            "Após a confirmação, a oportunidade será movida para Closed na ATIVOS CRM IA, a nota final será registrada como Ata no Brain (se fornecida) e o próximo deal candidato será retornado.",
+        }),
+        mutated: false,
+      };
+    }
+    try {
+      const top = await listarTopDealRooms(5);
+      const currentTopIds = top.map((d) => d.id);
+      const out = await resolverDealAtivoCrm({
+        pageId: String(args.pageId),
+        notaFinal: typeof args.notaFinal === "string" ? args.notaFinal : undefined,
+        confirmedByUser: true,
+      } as ResolverDealInput);
+      const proximo = await proximoDealRoomCandidato(currentTopIds);
+      return {
+        content: JSON.stringify({
+          ok: true,
+          message: "Deal resolvido (Fechado-Ganho). Cockpit deve refrescar e promover o próximo.",
+          pageId: out.pageId,
+          ataPageId: out.ataPageId,
+          proximoCandidato: proximo
+            ? {
+                pageId: proximo.id,
+                nome: proximo.nome,
+                estagio: proximo.estagio,
+                score: proximo.score,
+                valorEstimado: proximo.valorEstimado,
+              }
+            : null,
+        }),
+        mutated: true,
+      };
+    } catch (e) {
+      return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };
+    }
+  }
+
+  // ----- F30: próximo deal room (read-only) -----
+  if (name === "brain_proximo_deal_room") {
+    try {
+      const top = await listarTopDealRooms(5);
+      const currentTopIds = top.map((d) => d.id);
+      const proximo = await proximoDealRoomCandidato(currentTopIds);
+      return {
+        content: JSON.stringify({
+          topAtual: top.map(compactOpp),
+          proximoCandidato: proximo
+            ? {
+                pageId: proximo.id,
+                nome: proximo.nome,
+                estagio: proximo.estagio,
+                score: proximo.score,
+                valorEstimado: proximo.valorEstimado,
+                rankingScore:
+                  ((proximo.valorEstimado ?? 0) * ((proximo.score ?? 0) / 100)) || (proximo.score ?? 0),
+              }
+            : null,
+        }),
+        mutated: false,
       };
     } catch (e) {
       return { content: JSON.stringify({ error: (e as Error).message }), mutated: false };

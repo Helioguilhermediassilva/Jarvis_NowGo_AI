@@ -100,6 +100,10 @@ export interface OportunidadeResumo {
   projetoIds: number;
   /** Data de criação do registro (ISO yyyy-mm-dd). Usado pelo contador de novas oportunidades do mês. */
   dataCriacao?: string | null;
+  /** F30 — nome do decisor do cliente. */
+  decisor?: string | null;
+  /** F30 — contato do decisor (cargo + canal + telefone/e-mail). */
+  contatoDecisor?: string | null;
 }
 
 function mapOportunidade(page: any): OportunidadeResumo {
@@ -123,6 +127,8 @@ function mapOportunidade(page: any): OportunidadeResumo {
     impactoEstrategico: readSelect(p[props.impactoEstrategico]),
     empresaIds: readRelationCount(p[props.empresa]),
     projetoIds: readRelationCount(p[props.projeto]),
+    decisor: readRichText(p[(props as any).decisor]) || null,
+    contatoDecisor: readRichText(p[(props as any).contatoDecisor]) || null,
   };
 }
 
@@ -375,6 +381,46 @@ export async function listarTopDealRooms(limit = 5): Promise<OportunidadeResumo[
 }
 
 /**
+ * F30 — Calcula a próxima oportunidade candidata ao Top 5 Deal Rooms após
+ * a resolução de um deal atual. Exclui as oportunidades atualmente no
+ * Top 5 (currentTopIds) e as fechadas (Ganho/Perdido). Ranking interno:
+ * (valorEstimado || 0) × (score / 100), com fallback para score puro
+ * quando o valor não está preenchido.
+ */
+export async function proximoDealRoomCandidato(
+  currentTopIds: string[],
+): Promise<OportunidadeResumo | null> {
+  const props = BRAIN_PROPS.pipeline;
+  // Busca um pool maior (20) para depois filtrar e re-rankear localmente.
+  const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
+    filter: {
+      and: [
+        { property: props.score, number: { is_not_empty: true } },
+        ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
+          property: props.estagio,
+          select: { does_not_equal: s },
+        })),
+      ],
+    },
+    sorts: [{ property: props.score, direction: "descending" }],
+    page_size: 20,
+  });
+  const all = r.results.map(mapOportunidade);
+  const eligible = all.filter((o) => !currentTopIds.includes(o.id));
+  if (eligible.length === 0) return null;
+  // Re-rank por (valor × score/100) descendente.
+  eligible.sort((a, b) => {
+    const sa = (a.score ?? 0) / 100;
+    const sb = (b.score ?? 0) / 100;
+    const wa = (a.valorEstimado ?? 0) * sa;
+    const wb = (b.valorEstimado ?? 0) * sb;
+    if (wb !== wa) return wb - wa;
+    return (b.score ?? 0) - (a.score ?? 0);
+  });
+  return eligible[0];
+}
+
+/**
  * Lista missões SUN ativas — reuso da database `📁 Projetos` filtrando por
  * `Vertical = "Missão SUN"` e status ativo. Limite máximo de 5.
  */
@@ -507,6 +553,10 @@ export interface AtivoCrmResumo {
   lastContact: string | null;
   /** Data de criação do registro no Notion (campo Added) — ISO yyyy-mm-dd. */
   addedAt: string | null;
+  /** F30 — nome do decisor do cliente (rich_text livre). */
+  decisionMaker: string | null;
+  /** F30 — contato do decisor: cargo, canal, telefone, e-mail (rich_text livre). */
+  decisionMakerContact: string | null;
 }
 
 function mapAtivoCrm(page: any): AtivoCrmResumo {
@@ -540,6 +590,8 @@ function mapAtivoCrm(page: any): AtivoCrmResumo {
         return readDate(raw) ?? null;
       return null;
     })(),
+    decisionMaker: readRichText(p[(props as any).decisionMaker]) || null,
+    decisionMakerContact: readRichText(p[(props as any).decisionMakerContact]) || null,
   };
 }
 

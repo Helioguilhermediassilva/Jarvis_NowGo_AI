@@ -142,6 +142,8 @@ export const BRAIN_PROPS = {
     agenteResponsavel: "Agente Responsável",
     responsavel: "Responsável",
     projeto: "Projeto",
+    decisor: "Decisor",                  // F30 — nome do decisor do cliente
+    contatoDecisor: "Contato Decisor",   // F30 — cargo/canal/telefone
   },
   projetos: {
     title: "Nome",
@@ -245,5 +247,7 @@ export const BRAIN_PROPS = {
     arr: "ARR",                          // receita recorrente anual (formula = MRR * 12)
     email: "Email",
     lastContact: "Last Contact",
+    decisionMaker: "Decision Maker",            // F30 — nome do decisor do cliente
+    decisionMakerContact: "Decision Maker Contact", // F30 — cargo/canal/telefone
   },
 } as const;
