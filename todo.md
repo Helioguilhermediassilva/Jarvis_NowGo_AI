@@ -473,3 +473,30 @@ Acoes imediatas:
 - [ ] Pré-carregar contexto pesado (financeiro, top deals) no `cockpitCtxMsg` para evitar tool calls em perguntas frequentes
 - [ ] Rever cooldown pós-TTS: tentar 200ms (vs 250ms atual) sem causar eco
 - [ ] Validar com 10 turnos seguidos cronometrados
+
+
+## F30 — Decisor + Resolver com nota + auto-promoção (em andamento)
+
+- [ ] Schema Notion: adicionar `Decisor` e `Contato Decisor` na Pipeline DB
+- [ ] brainSchema.ts: registrar nomes dessas props
+- [ ] brainQueries.ts: ler decisor/contato no AtivoCrmResumo
+- [ ] brainMutations.ts: atualizarDecisor + resolverDeal(notaFinal?)
+- [ ] brainQueries.ts: proximoDealRoomCandidato (fora top5, melhor valor×prob)
+- [ ] jarvisBrainTools.ts: brain_atualizar_decisor (preview→confirma)
+- [ ] jarvisBrainTools.ts: brain_resolver_deal (preview→confirma, retorna próximo)
+- [ ] jarvisBrainTools.ts: brain_proximo_deal_room
+- [ ] jarvisProxy.ts: incluir tools no system prompt
+- [ ] UI cockpit: editar decisor/contato inline no Deal Room
+- [ ] UI cockpit: botão "Marcar como Resolvido" com modal nota final
+- [ ] UI cockpit: animação de promoção do próximo deal
+- [ ] Testes vitest
+- [ ] Build + commit + push + verificar deploy READY
+- [ ] Teste real via API stream
+
+## F35 — Performance audit + tuning (próxima)
+
+- [ ] Medir latência STT→TTS primeira sílaba
+- [ ] Identificar gargalos (LLM TTFT, tool exec, TTS TTFB)
+- [ ] Otimizar tokens de saída
+- [ ] Avaliar barge-in
+- [ ] Documentar baseline e ganhos
