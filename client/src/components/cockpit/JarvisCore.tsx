@@ -11,6 +11,7 @@ import {
   type AttachmentRef,
 } from "@/lib/jarvisLLM";
 import { matchWakeWord, WakeWordArmedWindow } from "@/lib/wakeWord";
+import { startTtsWarmup } from "@/lib/ttsWarmup";
 
 interface Props {
   /** Texto enviado externamente para o Jarvis processar (ex.: clique em card SUN). */
@@ -84,6 +85,15 @@ export default function JarvisCore({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [conversation]);
+
+  // F34: Pre-warm cache TTS com frases canônicas em background.
+  // Roda 1x por sessão; falhas são silenciosas. Elimina TTFB (~900ms) das
+  // respostas curtas mais frequentes do Jarvis.
+  useEffect(() => {
+    if (!activated) return;
+    const t = setTimeout(() => startTtsWarmup(), 1500);
+    return () => clearTimeout(t);
+  }, [activated]);
 
   // ------------------- TTS unificado (voz clonada + fallback) ------------------
   const elevenTts = useElevenLabsTTS();
@@ -301,7 +311,10 @@ export default function JarvisCore({
   //   2. Ignora se o Jarvis estiver falando (evita auto-disparo do próprio TTS)
   //   3. Filtra interjeções comuns que vazam do mic (ah, hum, eh, etc.)
   //   4. Wake-word ainda funciona como atalho explícito
-  const NOISE_PATTERNS = /^(ah|eh|hum|hmm|uhm|tch|ok|sim|não|nao|tudo|opa|ei|alô|alo)\s*[\.\?\!]?$/i;
+  // F34 fix: NUNCA descartar "sim", "não", "ok", "pode", "manda" — são
+  // confirmações legítimas a previews de escrita. Filtramos apenas interjeções
+  // puras (há, eh, hum, etc.) que vazam do mic sem informação semântica.
+  const NOISE_PATTERNS = /^(ah|eh|hum|hmm|uhm|tch|opa|ei|alô|alo)\s*[\.\?\!]?$/i;
   const handleSttFinal = useCallback(
     (txt: string) => {
       if (mutedRef.current || processingRef.current) return;
@@ -311,11 +324,20 @@ export default function JarvisCore({
       if (Date.now() < cooldownUntilRef.current) return;
       const trimmed = txt.trim();
       if (!trimmed) return;
-      // Salvaguarda 1: muito curto (provavelmente ruído)
+      // F34: whitelist de respostas curtas que SEMPRE devem passar.
+      // Confirmações/negações a previews de escrita do Jarvis chegam como
+      // "sim", "não", "ok", "pode", "manda" — todas válidas.
+      const cleaned = trimmed.toLowerCase().replace(/[\.\?\!,;:]/g, "").trim();
+      const SHORT_CONFIRMATIONS = new Set([
+        "sim", "não", "nao", "ok", "pode", "manda", "grava", "vai", "isso",
+        "correto", "confirma", "confirmo", "deixa", "cancela", "para",
+      ]);
+      const isShortConfirmation = SHORT_CONFIRMATIONS.has(cleaned);
+      // Salvaguarda 1: muito curto (provavelmente ruído) — mas confirmações passam.
       const wordCount = trimmed.split(/\s+/).length;
-      if (trimmed.length < 6 && wordCount < 2) return;
-      // Salvaguarda 3: interjeção sem comando real
-      if (NOISE_PATTERNS.test(trimmed)) return;
+      if (!isShortConfirmation && trimmed.length < 6 && wordCount < 2) return;
+      // Salvaguarda 3: interjeção sem comando real — mas confirmações passam.
+      if (!isShortConfirmation && NOISE_PATTERNS.test(trimmed)) return;
       // Wake-word como atalho: se detectada, remove e processa o resto
       const m = matchWakeWord(trimmed);
       if (m.matched && m.command) {
