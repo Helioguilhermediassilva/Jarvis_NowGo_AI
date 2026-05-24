@@ -100,13 +100,19 @@ export default function JarvisCore({
   const speechQueueRef = useRef<Array<{ text: string; onEnd: () => void }>>([]);
   const speechRunningRef = useRef(false);
 
+  // Quando a fila esvazia, religa o STT explicitamente se ainda estamos em
+  // LISTENING e não-mutados. O effect [hudState] do STT não re-roda nesse
+  // ponto (hudState não mudou), então precisamos disparar manualmente.
+  const reopenMicAfterSpeechRef = useRef<(() => void) | null>(null);
+
   const runSpeechQueue = useCallback(() => {
     if (speechRunningRef.current) return;
     const job = speechQueueRef.current.shift();
     if (!job) {
-      // Fila vazia: arma cooldown e libera lock.
+      // Fila vazia: arma cooldown, libera lock e religa o mic se preciso.
       cooldownUntilRef.current = Date.now() + 250;
       speakingLockRef.current = false;
+      reopenMicAfterSpeechRef.current?.();
       return;
     }
     speechRunningRef.current = true;
@@ -123,6 +129,7 @@ export default function JarvisCore({
       } else {
         cooldownUntilRef.current = Date.now() + 250;
         speakingLockRef.current = false;
+        reopenMicAfterSpeechRef.current?.();
       }
     };
     ttsRef.current.elevenTts
@@ -367,6 +374,34 @@ export default function JarvisCore({
       try { sttApi.stop(); } catch { /* ignore */ }
     }
   }, [hudState]);
+
+  // Watchdog: rastreia hudState num ref e expoe função de reopen para o
+  // runSpeechQueue chamar quando a fila esvazia. Re-religa o STT se o
+  // estado atual permite (LISTENING + não-mutado) e respeita cooldown.
+  const hudStateRef = useRef<HudState>(hudState);
+  useEffect(() => {
+    hudStateRef.current = hudState;
+  }, [hudState]);
+
+  useEffect(() => {
+    reopenMicAfterSpeechRef.current = () => {
+      if (hudStateRef.current !== "LISTENING") return;
+      if (mutedRef.current) return;
+      const wait = Math.max(0, cooldownUntilRef.current - Date.now());
+      setTimeout(() => {
+        if (
+          hudStateRef.current === "LISTENING" &&
+          !mutedRef.current &&
+          !speakingLockRef.current
+        ) {
+          try { sttRef.current?.start(); } catch { /* ignore */ }
+        }
+      }, wait + 50);
+    };
+    return () => {
+      reopenMicAfterSpeechRef.current = null;
+    };
+  }, []);
 
   // ------------------- Ativação inicial (libera autoplay + permissão mic) ------------------
   const handleActivate = useCallback(async () => {
