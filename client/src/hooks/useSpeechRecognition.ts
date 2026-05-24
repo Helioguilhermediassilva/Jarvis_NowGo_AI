@@ -49,6 +49,14 @@ export interface UseSpeechRecognitionReturn {
   reset: () => void;
 }
 
+/**
+ * Wrapper sobre Web Speech API com:
+ *  - INSTÂNCIA ÚNICA reutilizada (não recria a cada start, evita "Chrome blocked
+ *    after abort" que travava turnos subsequentes).
+ *  - Auto-restart em onend quando shouldRestartRef=true (continuous mode).
+ *  - Auto-retry com delay em InvalidStateError ("already started" / "blocked").
+ *  - Callback `onFinalResult` sempre via ref (sobrevive a re-renders).
+ */
 export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}): UseSpeechRecognitionReturn {
   const {
     lang = "en-US",
@@ -64,7 +72,9 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
 
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const shouldRestartRef = useRef(false);
+  const isRunningRef = useRef(false);
   const onFinalResultRef = useRef(onFinalResult);
+  const restartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     onFinalResultRef.current = onFinalResult;
@@ -73,10 +83,12 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
   const isSupported = typeof window !== "undefined" &&
     !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
-  const initRecognition = useCallback((): ISpeechRecognition | null => {
-    if (typeof window === "undefined") return null;
+  // Cria a instância UMA vez. Em mudança de lang/continuous/interimResults,
+  // a instância é recriada via dep array do effect abaixo.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return null;
+    if (!SR) return;
 
     const rec = new SR();
     rec.continuous = continuous;
@@ -107,7 +119,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
 
     rec.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event.error === "no-speech" || event.error === "aborted") {
-        // Silent recoverable errors
+        // Recoverable: continuous=true vai ressuscitar via onend
         return;
       }
       setError(event.error);
@@ -117,24 +129,47 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
       }
     };
 
+    rec.onstart = () => {
+      isRunningRef.current = true;
+      setIsListening(true);
+      setError(null);
+    };
+
     rec.onend = () => {
+      isRunningRef.current = false;
       if (shouldRestartRef.current) {
-        try {
-          rec.start();
-        } catch {
-          setIsListening(false);
-        }
+        // Pequeno delay anti-race do Chrome quando recognition.end()
+        // é seguido imediatamente de start() — o navegador rejeita.
+        if (restartTimeoutRef.current) clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = setTimeout(() => {
+          if (!shouldRestartRef.current) return;
+          try {
+            rec.start();
+          } catch {
+            // Se ainda assim falhar, tenta de novo um pouco mais tarde.
+            restartTimeoutRef.current = setTimeout(() => {
+              if (!shouldRestartRef.current) return;
+              try { rec.start(); } catch { setIsListening(false); }
+            }, 400);
+          }
+        }, 120);
       } else {
         setIsListening(false);
       }
     };
 
-    rec.onstart = () => {
-      setIsListening(true);
-      setError(null);
-    };
+    recognitionRef.current = rec;
 
-    return rec;
+    return () => {
+      shouldRestartRef.current = false;
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = null;
+      }
+      try { rec.abort(); } catch { /* ignore */ }
+      recognitionRef.current = null;
+      isRunningRef.current = false;
+    };
   }, [lang, continuous, interimResults]);
 
   const start = useCallback(() => {
@@ -142,33 +177,34 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
       setError("Speech recognition not supported in this browser");
       return;
     }
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.abort();
-      } catch { /* ignore */ }
-    }
-    const rec = initRecognition();
-    if (!rec) {
-      setError("Failed to initialise speech recognition");
-      return;
-    }
-    recognitionRef.current = rec;
+    const rec = recognitionRef.current;
+    if (!rec) return;
     shouldRestartRef.current = true;
+    // Se já está rodando, no-op (Chrome lança InvalidStateError se chamar start
+    // numa instância em execução). O onend cuidará de re-start quando parar.
+    if (isRunningRef.current) return;
     try {
       rec.start();
     } catch (e) {
-      setError(`Could not start: ${(e as Error).message}`);
+      // Pode dar InvalidStateError se ainda há cleanup pendente — agenda retry.
+      if (restartTimeoutRef.current) clearTimeout(restartTimeoutRef.current);
+      restartTimeoutRef.current = setTimeout(() => {
+        if (!shouldRestartRef.current) return;
+        try { rec.start(); } catch { setError(`Could not start: ${(e as Error).message}`); }
+      }, 250);
     }
-  }, [isSupported, initRecognition]);
+  }, [isSupported]);
 
   const stop = useCallback(() => {
     shouldRestartRef.current = false;
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch { /* ignore */ }
+    if (restartTimeoutRef.current) {
+      clearTimeout(restartTimeoutRef.current);
+      restartTimeoutRef.current = null;
     }
-    setIsListening(false);
+    const rec = recognitionRef.current;
+    if (rec && isRunningRef.current) {
+      try { rec.stop(); } catch { /* ignore */ }
+    }
     setInterimTranscript("");
   }, []);
 
@@ -176,18 +212,6 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
     setTranscript("");
     setInterimTranscript("");
     setError(null);
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      shouldRestartRef.current = false;
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.abort();
-        } catch { /* ignore */ }
-      }
-    };
   }, []);
 
   return {

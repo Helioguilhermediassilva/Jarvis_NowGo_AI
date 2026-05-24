@@ -342,23 +342,27 @@ export default function JarvisCore({
   // STT só fica ativo no estado LISTENING e quando o microfone está
   // desmutado. Em SPEAKING / THINKING / MUTED, o STT é desligado para
   // garantir turn-taking estrito e impedir auto-escuta do próprio TTS.
+  // OBS: dependemos diretamente do objeto `stt` (não de sttRef) para que o
+  // effect rode com a instância correta — o hook agora reusa a mesma instância
+  // através de re-renders, então isso é estável.
   useEffect(() => {
-    const s = sttRef.current;
-    if (!s || !s.isSupported) return;
+    if (!stt.isSupported) return;
     if (hudState === "LISTENING" && !mutedRef.current && !speakingLockRef.current) {
-      // Pequeno delay quando vem de SPEAKING para respeitar o cooldown.
+      // Pequeno delay quando vem de SPEAKING/THINKING para respeitar o cooldown.
       const wait = Math.max(0, cooldownUntilRef.current - Date.now());
       if (wait > 0) {
         const t = setTimeout(() => {
-          if (!mutedRef.current && !speakingLockRef.current) s.start();
-        }, wait);
+          if (!mutedRef.current && !speakingLockRef.current) {
+            try { stt.start(); } catch { /* ignore */ }
+          }
+        }, wait + 50);
         return () => clearTimeout(t);
       }
-      s.start();
+      try { stt.start(); } catch { /* ignore */ }
     } else {
-      s.stop();
+      try { stt.stop(); } catch { /* ignore */ }
     }
-  }, [hudState]);
+  }, [hudState, stt]);
 
   // ------------------- Ativação inicial (libera autoplay + permissão mic) ------------------
   const handleActivate = useCallback(async () => {
