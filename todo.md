@@ -417,3 +417,19 @@ Acoes imediatas:
 - [ ] Renomear Agri → Agro em PT/EN
 - [ ] Triad reposicionada como Fintech
 - [ ] Remover valores em reais de Cases Auditáveis e Modelos Comerciais
+
+
+## F30 — Deal Room: Owner editável, status Resolvido e promoção automática
+
+- [ ] Mapear propriedades do Notion Pipeline: Owner (Decisor), Cargo (Decisor) e Canal (Decisor)
+- [ ] Adicionar propriedades acima na base Notion Pipeline se ainda não existirem
+- [ ] Backend: rota tRPC `dealRoom.updateOwner` para gravar nome+cargo+canal num deal
+- [ ] Backend: rota tRPC `dealRoom.markResolved` (move estágio para 'Pós-venda', registra timestamp e nota)
+- [ ] Backend: função `nextTopDealRoom` que ordena por (valor × score/100) desc, excluindo deals já no top-5
+- [ ] Backend: rota tRPC `dealRoom.list` que devolve sempre top-5 ativos com owner expandido
+- [ ] Frontend: card de Deal Room mostra Nome + Cargo + Canal do decisor (linha extra abaixo do título)
+- [ ] Frontend: botão "Editar Owner" abre modal/popover com 3 inputs (nome, cargo, canal)
+- [ ] Frontend: botão "Marcar como resolvido" com confirmação; ao confirmar, anima saída do card e o próximo deal entra
+- [ ] Auto-refresh do TOP 5 após qualquer mutação (invalidate query)
+- [ ] Vitest para nextTopDealRoom (ordenação valor×score)
+- [ ] Build, deploy e validação em prod

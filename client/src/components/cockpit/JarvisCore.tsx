@@ -345,24 +345,28 @@ export default function JarvisCore({
   // OBS: dependemos diretamente do objeto `stt` (não de sttRef) para que o
   // effect rode com a instância correta — o hook agora reusa a mesma instância
   // através de re-renders, então isso é estável.
+  // IMPORTANTE: deps reduzidas para SOMENTE [hudState]. O objeto `stt`
+  // mudaria a cada transcript/interim, refazendo o effect e cancelando
+  // o timer de cooldown antes dele disparar — STT ficava preso eternamente.
+  // Acessamos os métodos via sttRef.current (instance única do hook).
   useEffect(() => {
-    if (!stt.isSupported) return;
+    const sttApi = sttRef.current;
+    if (!sttApi || !sttApi.isSupported) return;
     if (hudState === "LISTENING" && !mutedRef.current && !speakingLockRef.current) {
-      // Pequeno delay quando vem de SPEAKING/THINKING para respeitar o cooldown.
       const wait = Math.max(0, cooldownUntilRef.current - Date.now());
       if (wait > 0) {
         const t = setTimeout(() => {
           if (!mutedRef.current && !speakingLockRef.current) {
-            try { stt.start(); } catch { /* ignore */ }
+            try { sttRef.current?.start(); } catch { /* ignore */ }
           }
         }, wait + 50);
         return () => clearTimeout(t);
       }
-      try { stt.start(); } catch { /* ignore */ }
+      try { sttApi.start(); } catch { /* ignore */ }
     } else {
-      try { stt.stop(); } catch { /* ignore */ }
+      try { sttApi.stop(); } catch { /* ignore */ }
     }
-  }, [hudState, stt]);
+  }, [hudState]);
 
   // ------------------- Ativação inicial (libera autoplay + permissão mic) ------------------
   const handleActivate = useCallback(async () => {
