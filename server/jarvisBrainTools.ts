@@ -396,6 +396,22 @@ export interface BrainToolResult {
   mutated: boolean;
 }
 
+// Cache em memória do último preview pendente por nome de tool.
+// Vida útil de 5 minutos. Em deploy serverless cada instância tem sua própria
+// cache, mas como o usuário confirma em segundos, o hit-rate é alto.
+const lastPreviewPending = new Map<string, { ts: number; args: Record<string, unknown> }>();
+const PREVIEW_WRITE_TOOLS = new Set([
+  "brain_atualizar_oportunidade",
+  "brain_arquivar_oportunidade",
+  "brain_criar_oportunidade",
+  "brain_criar_missao",
+  "brain_atualizar_missao",
+  "brain_arquivar_missao",
+  "brain_registrar_ata",
+  "brain_criar_tarefa",
+  "sun_executar_missao",
+]);
+
 export async function executeBrainTool(
   name: string,
   args: Record<string, unknown>,
@@ -435,6 +451,30 @@ export async function executeBrainTool(
   }
 
   // ----- ESCRITAS (preview→confirma) -----
+  // Auto-merge: se o LLM re-emitir com confirmedByUser=true mas faltando args
+  // chave (pageId, nome, notas, etc.), recupera-os do último preview pendente.
+  if (PREVIEW_WRITE_TOOLS.has(name)) {
+    const confirmed = args.confirmedByUser === true;
+    if (confirmed) {
+      const last = lastPreviewPending.get(name);
+      if (last && Date.now() - last.ts < 5 * 60 * 1000) {
+        const merged: Record<string, unknown> = { ...last.args };
+        for (const [k, v] of Object.entries(args)) {
+          if (v !== undefined && v !== null && v !== "") merged[k] = v;
+        }
+        args = merged;
+      }
+    } else {
+      // Salva preview pendente (sem confirmedByUser) para usar na confirmação.
+      const snapshot: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(args)) {
+        if (k === "confirmedByUser") continue;
+        snapshot[k] = v;
+      }
+      lastPreviewPending.set(name, { ts: Date.now(), args: snapshot });
+    }
+  }
+
   // ----- MISSÕES SUN (preview → confirma) -----
   if (name === "brain_criar_missao") {
     const confirmed = args.confirmedByUser === true;

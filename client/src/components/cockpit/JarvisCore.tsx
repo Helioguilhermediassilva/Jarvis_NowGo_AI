@@ -105,7 +105,7 @@ export default function JarvisCore({
     const job = speechQueueRef.current.shift();
     if (!job) {
       // Fila vazia: arma cooldown e libera lock.
-      cooldownUntilRef.current = Date.now() + 700;
+      cooldownUntilRef.current = Date.now() + 250;
       speakingLockRef.current = false;
       return;
     }
@@ -121,7 +121,7 @@ export default function JarvisCore({
       if (speechQueueRef.current.length > 0) {
         runSpeechQueue();
       } else {
-        cooldownUntilRef.current = Date.now() + 700;
+        cooldownUntilRef.current = Date.now() + 250;
         speakingLockRef.current = false;
       }
     };
