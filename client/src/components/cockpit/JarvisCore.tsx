@@ -66,6 +66,13 @@ export default function JarvisCore({
   const pendingAttachmentsRef = useRef<AttachmentRef[]>([]);
   const wakeArmedRef = useRef(new WakeWordArmedWindow(8000));
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Trava global enquanto o Jarvis está falando (ou em cooldown pós-fala)
+  // para evitar que o próprio TTS, capturado pelo microfone, dispare um novo
+  // comando (loop de auto-escuta). Declarados no topo para serem usados em
+  // speakReply e no useEffect de STT.
+  const speakingLockRef = useRef(false);
+  const cooldownUntilRef = useRef(0);
+  const sttRef = useRef<ReturnType<typeof useSpeechRecognition> | null>(null);
 
   useEffect(() => {
     pendingAttachmentsRef.current = pendingAttachments;
@@ -91,11 +98,21 @@ export default function JarvisCore({
       onEnd();
       return;
     }
+    // Marca lock global de fala: desliga STT pra evitar auto-captura
+    speakingLockRef.current = true;
+    try { sttRef.current?.stop(); } catch { /* ignore */ }
+    const finish = () => {
+      // Cooldown de 700ms após o TTS terminar pra dissipar ressaca de áudio
+      // residual no alto-falante antes de religar o microfone.
+      cooldownUntilRef.current = Date.now() + 700;
+      speakingLockRef.current = false;
+      onEnd();
+    };
     ttsRef.current.elevenTts
       .speak(text)
-      .then(() => onEnd())
+      .then(finish)
       .catch(() => {
-        ttsRef.current.browserTts.speak(text, onEnd);
+        ttsRef.current.browserTts.speak(text, finish);
       });
   }, []);
 
@@ -242,6 +259,10 @@ export default function JarvisCore({
   const handleSttFinal = useCallback(
     (txt: string) => {
       if (mutedRef.current || processingRef.current) return;
+      // Anti-eco: enquanto o Jarvis fala ou está no cooldown pós-fala,
+      // descarta qualquer transcript capturado pelo microfone.
+      if (speakingLockRef.current) return;
+      if (Date.now() < cooldownUntilRef.current) return;
       const trimmed = txt.trim();
       if (!trimmed) return;
       // Salvaguarda 1: muito curto (provavelmente ruído)
@@ -276,14 +297,24 @@ export default function JarvisCore({
     interimResults: true,
     onFinalResult: handleSttFinal,
   });
-  const sttRef = useRef(stt);
   useEffect(() => {
     sttRef.current = stt;
   }, [stt]);
+  // STT só fica ativo no estado LISTENING e quando o microfone está
+  // desmutado. Em SPEAKING / THINKING / MUTED, o STT é desligado para
+  // garantir turn-taking estrito e impedir auto-escuta do próprio TTS.
   useEffect(() => {
     const s = sttRef.current;
-    if (!s.isSupported) return;
-    if (hudState === "LISTENING" && !mutedRef.current) {
+    if (!s || !s.isSupported) return;
+    if (hudState === "LISTENING" && !mutedRef.current && !speakingLockRef.current) {
+      // Pequeno delay quando vem de SPEAKING para respeitar o cooldown.
+      const wait = Math.max(0, cooldownUntilRef.current - Date.now());
+      if (wait > 0) {
+        const t = setTimeout(() => {
+          if (!mutedRef.current && !speakingLockRef.current) s.start();
+        }, wait);
+        return () => clearTimeout(t);
+      }
       s.start();
     } else {
       s.stop();
