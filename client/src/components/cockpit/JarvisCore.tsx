@@ -369,17 +369,17 @@ export default function JarvisCore({
     setActivated(true);
     mutedRef.current = false;
     setMuted(false);
-    // Saudção curta para destravar autoplay e confirmar voz
+    // Saudção curta para destravar autoplay e confirmar voz.
+    // Usa a fila speakReply (que arma speakingLockRef + cooldown) em vez de
+    // chamar elevenTts.speak() direto — senão o STT abre durante a saudação
+    // e capta a própria voz, criando loop.
     const greeting = "Senhor, estou à sua disposição.";
     setConversation((c) => [...c, { role: "jarvis", content: greeting }]);
     setHudState("SPEAKING");
-    try {
-      await ttsRef.current.elevenTts.speak(greeting);
-    } catch {
-      ttsRef.current.browserTts.speak(greeting, () => {});
-    }
-    setHudState("LISTENING");
-  }, []);
+    speakReply(greeting, () => {
+      setHudState("LISTENING");
+    });
+  }, [speakReply]);
 
   // ------------------- Controles ------------------
   const toggleMute = useCallback(() => {
