@@ -21,9 +21,14 @@ import {
   listarFollowUpsAtrasados,
   listarBloqueiosCriticos,
   listarTarefasPendentes,
+  listarOportunidadesDeAtivosCrmIa,
+  listarAtivosCrmIa,
+  calcularMrrArrTotals,
+  ativoCrmToOportunidade,
   type OportunidadeResumo,
   type TarefaResumo,
 } from "./brainQueries.js";
+import { calcularKpis } from "./financialKpis.js";
 import {
   atualizarOportunidade,
   registrarAta,
@@ -323,6 +328,23 @@ export const BRAIN_TOOLS = [
   {
     type: "function",
     function: {
+      name: "brain_situacao_financeira",
+      description:
+        "Retorna a situação financeira consolidada da NowGo AI calculada em tempo real a partir do NowGo Brain (Ativos CRM IA + Pipeline). Inclui pipeline aberto bruto, pipeline ponderado (perspectiva), realizado YTD, MRR, ARR, meta anual, % atingido, ticket médio, contagem por estágio (Lead, Qualificado, Proposta, Negociação, Fechado-Ganho, Fechado-Perdido), top 3 deals em valor e distribuição por missão SUN. Use SEMPRE que o usuário perguntar sobre números financeiros, situação da empresa, faturamento, MRR/ARR, pipeline, meta, atingimento ou quanta oportunidade existe.",
+      parameters: {
+        type: "object",
+        properties: {
+          incluirTopDeals: {
+            type: "boolean",
+            description: "Se true, inclui top 3 deals abertos por valor. Default true.",
+          },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "pesquisa_externa",
       description:
         "Faz pesquisa externa em tempo real (web + X/Twitter) via Live Search. Use para fatos recentes, notícias, cotações, dados públicos NÃO presentes no Brain ou no contexto. Retorna síntese textual.",
@@ -443,6 +465,50 @@ export async function executeBrainTool(
   if (name === "brain_bloqueios_criticos") {
     const results = await listarBloqueiosCriticos();
     return { content: JSON.stringify({ count: results.length, tarefas: results.map(compactTask) }), mutated: false };
+  }
+  if (name === "brain_situacao_financeira") {
+    try {
+      const incluirTopDeals = args.incluirTopDeals !== false;
+      const ativos = await listarAtivosCrmIa();
+      const oportunidades = ativos.map(ativoCrmToOportunidade);
+      const recurring = calcularMrrArrTotals(ativos);
+      const k = calcularKpis({
+        oportunidades,
+        mrrTotalBrl: recurring.mrrTotalBrl,
+        arrTotalBrl: recurring.arrTotalBrl,
+        dealsComRecorrencia: recurring.dealsComRecorrencia,
+      });
+      const fmt = (n: number) => `R$ ${(n / 1_000_000).toFixed(2)}MM`;
+      const fmtK = (n: number) => `R$ ${(n / 1_000).toFixed(1)}K`;
+      const out: Record<string, unknown> = {
+        ano: k.ano,
+        meta: fmt(k.metaAnualBrl),
+        realizadoYtd: fmt(k.realizadoYtdBrl),
+        pipelineAberto: fmt(k.pipelineAbertoBrl),
+        perspectiva: fmt(k.perspectivaBrl),
+        mrr: fmtK(k.mrrTotalBrl),
+        arr: fmtK(k.arrTotalBrl),
+        dealsRecorrencia: k.dealsComRecorrencia,
+        pctMetaAtingida: `${k.pctMetaAtingida.toFixed(1)}%`,
+        pctMetaPerspectiva: `${k.pctMetaPerspectiva.toFixed(1)}%`,
+        faltaParaMeta: fmt(k.faltaParaMetaBrl),
+        ticketMedioObservado: k.ticketMedioObservadoBrl != null ? fmt(k.ticketMedioObservadoBrl) : null,
+        contagens: k.contagens,
+        porMissao: {
+          missao1_parceriasInternacionais: { count: k.porMissao[1].contagem, pipeline: fmt(k.porMissao[1].pipelineAbertoBrl), perspectiva: fmt(k.porMissao[1].perspectivaBrl) },
+          missao2_saude: { count: k.porMissao[2].contagem, pipeline: fmt(k.porMissao[2].pipelineAbertoBrl), perspectiva: fmt(k.porMissao[2].perspectivaBrl) },
+          missao3_smartCity: { count: k.porMissao[3].contagem, pipeline: fmt(k.porMissao[3].pipelineAbertoBrl), perspectiva: fmt(k.porMissao[3].perspectivaBrl) },
+        },
+      };
+      if (incluirTopDeals) {
+        const ativosAbertos = oportunidades.filter((o) => o.estagio && o.estagio !== "Fechado-Ganho" && o.estagio !== "Fechado-Perdido" && (o.valorEstimado ?? 0) > 0);
+        ativosAbertos.sort((a, b) => (b.valorEstimado ?? 0) - (a.valorEstimado ?? 0));
+        out.topDealsAbertos = ativosAbertos.slice(0, 3).map((o) => ({ nome: o.nome, estagio: o.estagio, valor: fmt(o.valorEstimado ?? 0) }));
+      }
+      return { content: JSON.stringify(out), mutated: false };
+    } catch (e) {
+      return { content: JSON.stringify({ error: `situacao_financeira: ${(e as Error).message}` }), mutated: false };
+    }
   }
   if (name === "brain_tarefas_pendentes") {
     const limit = Math.max(1, Math.min(30, Number(args.limit ?? 10)));

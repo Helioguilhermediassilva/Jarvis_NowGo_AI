@@ -433,3 +433,43 @@ Acoes imediatas:
 - [ ] Auto-refresh do TOP 5 após qualquer mutação (invalidate query)
 - [ ] Vitest para nextTopDealRoom (ordenação valor×score)
 - [ ] Build, deploy e validação em prod
+
+
+## F31 — Jarvis com dados financeiros do Pipeline (NowGo Brain)
+
+- [ ] `derivarSituacaoFinanceira()` em `server/brainQueries.ts`: lê todas oportunidades, agrega métricas
+- [ ] Métricas: pipeline ponderado, valor bruto, qty por estágio, realizado YTD, ticket médio, top 3 deals
+- [ ] Tool `brain_situacao_financeira` em `server/jarvisBrainTools.ts`
+- [ ] Injetar resumo financeiro no `cockpitCtxMsg` do `jarvisProxy.ts`
+- [ ] Reforçar system prompt: "se perguntarem sobre situação financeira, use brain_situacao_financeira"
+- [ ] Build + deploy + validar
+
+## F32 — Tools genéricas de consulta cross-base no NowGo Brain
+
+- [ ] Tool `brain_listar_empresas` (filtros opcionais: segmento, região, status)
+- [ ] Tool `brain_listar_pessoas` (filtros: empresa, cargo, último contato)
+- [ ] Tool `brain_listar_missoes` (filtros: status, vertical, owner)
+- [ ] Tool `brain_consultar_base` (genérica: dbName + filtros simples)
+- [ ] Tool `brain_relacionar_oportunidade_empresa` (busca empresa+contatos via relação)
+- [ ] System prompt: "se a pergunta envolve qualquer dado do Brain (empresa, pessoa, missão, deal), use as tools brain_*"
+- [ ] Build + deploy + validar
+
+## F33 — Bridge Jarvis ↔ Manus (Sun) para dados externos
+
+- [ ] Helper `server/sunBridge.ts` que chama API Manus via MCP/HTTP
+- [ ] Tool `sun_pesquisar` (query livre → Manus retorna síntese de fontes externas)
+- [ ] Tool `sun_validar_oportunidade` (Manus avalia ICP, sentimento de mercado, contexto)
+- [ ] Tool `sun_pesquisar_empresa` (info corporativa, decisores conhecidos, notícias recentes)
+- [ ] Protocolo: Manus retorna texto + fontes; Jarvis cita ao usuário
+- [ ] Tratamento de timeout (Manus pode demorar; usar 30s + fallback "ainda processando")
+- [ ] Build + deploy + validar
+
+
+## F34 — Otimização da fluidez conversacional (transversal)
+
+- [ ] Encurtar respostas: system prompt force "1 a 3 frases curtas" salvo se usuário pedir profundidade
+- [ ] Variar abertura: evitar repetir "senhor" em toda resposta
+- [ ] Streaming TTS imediato: já implementado (chunk-by-sentence) — validar que latência do 1º áudio < 1.5s
+- [ ] Pré-carregar contexto pesado (financeiro, top deals) no `cockpitCtxMsg` para evitar tool calls em perguntas frequentes
+- [ ] Rever cooldown pós-TTS: tentar 200ms (vs 250ms atual) sem causar eco
+- [ ] Validar com 10 turnos seguidos cronometrados
