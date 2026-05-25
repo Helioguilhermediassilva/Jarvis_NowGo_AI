@@ -84,9 +84,9 @@
   color: var(--accent-cyan); font-size: 1.25rem;
   text-shadow: 0 0 16px var(--accent-glow);
 }
-.nowgoai-landing .ng-nav-links { display: flex; gap: 2rem; font-size: 0.92rem; color: var(--text-dim); }
-.nowgoai-landing .ng-nav-links a { transition: color 0.25s var(--easing-smooth); }
-.nowgoai-landing .ng-nav-links a:hover { color: var(--text-main); }
+.nowgoai-landing .ng-nav-links { display: flex; align-items: center; gap: 2rem; font-size: 0.92rem; color: var(--text-dim); }
+.nowgoai-landing .ng-nav-links > a { transition: color 0.25s var(--easing-smooth); }
+.nowgoai-landing .ng-nav-links > a:hover { color: var(--text-main); }
 .nowgoai-landing .ng-header-actions { display: flex; align-items: center; gap: 1rem; }
 .nowgoai-landing .ng-lang-toggle {
   display: inline-flex;
@@ -729,4 +729,94 @@
 @media (max-width: 640px) {
   .nowgoai-landing .ng-manifesto-grid,
   .nowgoai-landing .ng-manifesto-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ===========================================================
+ * Dropdown "Empresa" no header (lado esquerdo do nav)
+ * Sublinks: Sobre, Cases, Carreira, Imprensa (PT/EN/ES via copy.ts)
+ * =========================================================== */
+.nowgoai-landing .ng-nav-dropdown { position: relative; display: inline-flex; }
+
+.nowgoai-landing .ng-nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-dim);
+  transition: color 0.25s var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-nav-dropdown-trigger:hover,
+.nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-trigger,
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-trigger {
+  color: var(--text-main);
+}
+
+.nowgoai-landing .ng-nav-dropdown-caret {
+  font-size: 0.75rem;
+  line-height: 1;
+  transform: translateY(-1px);
+  transition: transform 0.2s var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-caret,
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-caret {
+  transform: translateY(0) rotate(180deg);
+}
+
+.nowgoai-landing .ng-nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  min-width: 200px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: rgba(10, 12, 18, 0.92);
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  pointer-events: none;
+  transform-origin: top left;
+  transition: opacity 0.18s var(--easing-smooth), transform 0.18s var(--easing-smooth);
+  z-index: 50;
+}
+
+.nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-menu,
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-menu {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.nowgoai-landing .ng-nav-dropdown-menu a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  border-radius: 8px;
+  transition: background 0.2s var(--easing-smooth), color 0.2s var(--easing-smooth);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.nowgoai-landing .ng-nav-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nowgoai-landing .ng-nav-dropdown-caret,
+  .nowgoai-landing .ng-nav-dropdown-menu {
+    transition: none;
+  }
 }

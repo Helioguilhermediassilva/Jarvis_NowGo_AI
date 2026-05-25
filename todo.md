@@ -542,3 +542,46 @@ Acoes imediatas:
 - [x] Commit e push com email helio@nowgo.com.br (commit 0037643)
 - [x] Aguardar deploy Vercel READY (bundle index-C1y5VzY1.js em produção)
 - [x] Validar em produção: /sobre, verticais com 8 cards, ecossistema sem links externos
+
+
+## F37 — KPIs hero (opção A) + menu Empresa no header
+
+- [ ] Substituir KPI A/B/C do hero (PT/EN/ES) pela opção A: "Brasil · jurisdição soberana", "NVIDIA Partner Expert 2026", "Top 50 Global · DPI"
+- [ ] Adicionar dropdown "Empresa" no header esquerdo com sublinks Sobre/Cases/Carreiras/Imprensa (PT/EN/ES) reutilizando t.footer.colB
+- [ ] CSS do dropdown coerente com design system (hover, animação ease-out <300ms)
+- [ ] Garantir EN aponta para /sobre (já corrigido)
+- [ ] Build TypeScript + Vite + testes
+- [ ] Commit e push (helio@nowgo.com.br)
+- [ ] Validar em produção: hero KPIs e dropdown Empresa funcionando em PT/EN/ES
+
+
+## F38 — Refatoração do Cockpit alinhada ao Blueprint Operacional do nowgo brain
+
+- [ ] Descartar rascunhos não commitados (menu Empresa header + KPIs hero rascunho)
+- [ ] Localizar Blueprint Operacional do nowgo brain no Notion (busca via MCP)
+- [ ] Ler e extrair pilares operacionais, política de receita (MRR/ARR), métricas canônicas
+- [ ] Mapear ATIVOS CRM IA atualizado: schema, status values, deals com MRR > 0
+- [ ] Mapear estado atual do Cockpit (componentes, queries, fontes Notion/SUN/DB)
+- [ ] Consolidar references/nowgo-brain-blueprint.md (fonte canônica versionada)
+- [ ] Propor plano de refatoração em fases ao Hélio e aguardar aprovação
+- [ ] Executar refatoração incremental (financeiro → pipeline → operacional → comando)
+- [ ] Build TypeScript + Vite + testes vitest
+- [ ] Commit e push (helio@nowgo.com.br) com checkpoints por fase
+- [ ] Validar Cockpit em produção
+
+
+## F37 — Landing: header e KPIs hero
+- [x] Substituir 3 KPIs do hero (PT/EN/ES) pela opção A: Brasil/Brazil · jurisdição soberana, NVIDIA Partner Expert 2026, Top 50 Global · DPI
+- [x] Adicionar dropdown "Empresa" como primeiro item do nav no header (lado esquerdo) reusando t.footer.colB (Sobre/About/Acerca de · Cases/Cases/Casos · Carreiras/Careers/Carreras · Imprensa/Press/Prensa)
+- [x] Implementar dropdown em LandingShell.tsx (todas as páginas internas) e LandingPage.tsx (landing principal)
+- [x] CSS do dropdown: hover/focus, animação suave, transform-origin top-left, prefers-reduced-motion
+- [x] Corrigir EN /about para /sobre (rota real)
+- [x] Build TypeScript + Vite + testes (31 passed, 6 skipped)
+- [ ] Commit + push e aguardar deploy Vercel
+- [ ] Validar em produção: dropdown funcional + KPIs novos em PT/EN/ES
+
+## F38 — Cockpit: corrigir MRR/ARR inflado por deal Lead
+- [x] Diagnosticar causa: campo MRR preenchido em deal "NowGo Estate — Prédios de Luxo AI-Native" (status Lead)
+- [x] Aplicar correção no Notion: zerar MRR do deal Lead (Notion como fonte de verdade)
+- [x] Validar em produção via /api/financial/kpis: MRR 33.500→3.500, ARR 402.000→42.000, dealsComRecorrencia 2→1
+- [x] Política: MRR só preenchido quando status = Closed 💪 (contrato assinado)

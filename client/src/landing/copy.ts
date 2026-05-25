@@ -32,9 +32,9 @@ export const copy = {
         "Tecnologia que serve, conecta e transforma vidas — para cidades, empresas e pessoas, com cuidado especial pelos invisíveis e vulneráveis. Construímos LLMs proprietárias, infraestrutura de IA sob medida e agentes autônomos com dados sob jurisdição nacional e operação 24/7.",
       ctaPrimary: "Solicitar Acesso Estratégico",
       ctaSecondary: "Acessar Cockpit",
-      kpiA: "108 oportunidades ativas",
-      kpiB: "R$ 63,07MM em pipeline",
-      kpiC: "Smart City Fase 1",
+      kpiA: "Brasil · jurisdição soberana",
+      kpiB: "NVIDIA Partner Expert 2026",
+      kpiC: "Top 50 Global · DPI",
     },
     platform: {
       eyebrow: "PLATAFORMA",
@@ -293,9 +293,9 @@ export const copy = {
         "Technology that serves, connects and transforms lives — for cities, enterprises and people, with special care for the invisible and the most vulnerable. We build proprietary LLMs, tailored AI infrastructure and autonomous agents with data under sovereign jurisdiction and 24/7 operation.",
       ctaPrimary: "Request Strategic Access",
       ctaSecondary: "Open Cockpit",
-      kpiA: "108 active opportunities",
-      kpiB: "BRL 63.07 MM in pipeline",
-      kpiC: "Smart City Phase 1",
+      kpiA: "Brazil · sovereign jurisdiction",
+      kpiB: "NVIDIA Partner Expert 2026",
+      kpiC: "Top 50 Global · DPI",
     },
     platform: {
       eyebrow: "PLATFORM",
@@ -519,7 +519,7 @@ export const copy = {
       colB: {
         title: "Company",
         links: [
-          { label: "About", href: "/about" },
+          { label: "About", href: "/sobre" },
           { label: "Cases", href: "#cases" },
           { label: "Careers", href: "mailto:talentos@nowgo.com.br" },
           { label: "Press", href: "mailto:imprensa@nowgo.com.br" },
@@ -554,9 +554,9 @@ export const copy = {
         "Tecnología que sirve, conecta y transforma vidas — para ciudades, empresas y personas, con un cuidado especial por los invisibles y los más vulnerables. Construimos LLMs propietarios, infraestructura de IA a medida y agentes autónomos con datos bajo jurisdicción nacional y operación 24/7.",
       ctaPrimary: "Solicitar Acceso Estratégico",
       ctaSecondary: "Acceder al Cockpit",
-      kpiA: "108 oportunidades activas",
-      kpiB: "BRL 63,07 MM en pipeline",
-      kpiC: "Smart City Fase 1",
+      kpiA: "Brasil · jurisdicción soberana",
+      kpiB: "NVIDIA Partner Expert 2026",
+      kpiC: "Top 50 Global · DPI",
     },
     platform: {
       eyebrow: "PLATAFORMA",
