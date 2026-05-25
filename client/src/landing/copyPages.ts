@@ -379,7 +379,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "Para se candidatar, envie um e-mail para carreiras@nowgoai.com com o assunto \"Estágio ADM\" e conte, em poucas linhas, por que essa missão faz sentido para você.",
+            text: "Para se candidatar, envie um e-mail para carreiras@nowgo.com.br com o assunto \"Estágio ADM\" e conte, em poucas linhas, por que essa missão faz sentido para você.",
             subject: "Estágio ADM",
             cta: "Candidatar-se — Estágio ADM",
           },
@@ -421,7 +421,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "Para se candidatar, envie um e-mail para carreiras@nowgoai.com com o assunto \"Dev AI First\" e inclua exemplos do que você já construiu — links, repositórios ou projetos que mostram como você pensa.",
+            text: "Para se candidatar, envie um e-mail para carreiras@nowgo.com.br com o assunto \"Dev AI First\" e inclua exemplos do que você já construiu — links, repositórios ou projetos que mostram como você pensa.",
             subject: "Dev AI First",
             cta: "Candidatar-se — Dev AI First",
           },
@@ -728,7 +728,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "To apply, send an email to carreiras@nowgoai.com with the subject \"Internship ADM\" and tell us, in a few lines, why this mission makes sense to you.",
+            text: "To apply, send an email to carreiras@nowgo.com.br with the subject \"Internship ADM\" and tell us, in a few lines, why this mission makes sense to you.",
             subject: "Internship ADM",
             cta: "Apply — Internship ADM",
           },
@@ -770,7 +770,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "To apply, send an email to carreiras@nowgoai.com with the subject \"Dev AI First\" and include examples of what you have already built — links, repositories or projects that show how you think.",
+            text: "To apply, send an email to carreiras@nowgo.com.br with the subject \"Dev AI First\" and include examples of what you have already built — links, repositories or projects that show how you think.",
             subject: "Dev AI First",
             cta: "Apply — Dev AI First",
           },
@@ -1077,7 +1077,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "Para postularte, envía un correo a carreiras@nowgoai.com con el asunto \"Pasantía ADM\" y cuéntanos, en pocas líneas, por qué esta misión tiene sentido para ti.",
+            text: "Para postularte, envía un correo a carreiras@nowgo.com.br con el asunto \"Pasantía ADM\" y cuéntanos, en pocas líneas, por qué esta misión tiene sentido para ti.",
             subject: "Pasantía ADM",
             cta: "Postular — Pasantía ADM",
           },
@@ -1119,7 +1119,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
             ],
           },
           apply: {
-            text: "Para postularte, envía un correo a carreiras@nowgoai.com con el asunto \"Dev AI First\" e incluye ejemplos de lo que ya has construido — enlaces, repositorios o proyectos que muestren cómo piensas.",
+            text: "Para postularte, envía un correo a carreiras@nowgo.com.br con el asunto \"Dev AI First\" e incluye ejemplos de lo que ya has construido — enlaces, repositorios o proyectos que muestren cómo piensas.",
             subject: "Dev AI First",
             cta: "Postular — Dev AI First",
           },

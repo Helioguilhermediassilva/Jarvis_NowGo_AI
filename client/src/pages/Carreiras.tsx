@@ -86,7 +86,7 @@ export default function Carreiras() {
 
                 <p className="ng-job-apply">{vaga.apply.text}</p>
                 <a
-                  href={`mailto:carreiras@nowgoai.com?subject=${encodeURIComponent(vaga.apply.subject)}`}
+                  href={`mailto:carreiras@nowgo.com.br?subject=${encodeURIComponent(vaga.apply.subject)}`}
                   className="btn-primary ng-job-cta"
                 >
                   {vaga.apply.cta}
@@ -103,7 +103,7 @@ export default function Carreiras() {
           <p className="ng-section-sub ng-final-sub">{t.contactCta.subtitle}</p>
           <div className="ng-hero-actions">
             <a
-              href="mailto:carreiras@nowgoai.com?subject=Candidatura%20espont%C3%A2nea"
+              href="mailto:carreiras@nowgo.com.br?subject=Candidatura%20espont%C3%A2nea"
               className="btn-primary"
             >
               {t.contactCta.primary}
