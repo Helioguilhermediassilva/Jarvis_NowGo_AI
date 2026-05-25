@@ -105,7 +105,7 @@ export default function Imprensa() {
               {t.contactCta.primary}
             </a>
             <a
-              href="https://wa.me/5561992509494"
+              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pela%20p%C3%A1gina%20de%20Imprensa%20da%20nowgo%20ai%20e%20gostaria%20de%20uma%20pauta%2Fentrevista."
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

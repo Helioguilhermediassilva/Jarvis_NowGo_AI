@@ -30,7 +30,7 @@ export const copy = {
       titleB: "para empresas e governos.",
       subtitle:
         "Tecnologia que serve, conecta e transforma vidas — para cidades, empresas e pessoas, com cuidado especial pelos invisíveis e vulneráveis. Construímos LLMs proprietárias, infraestrutura de IA sob medida e agentes autônomos com dados sob jurisdição nacional e operação 24/7.",
-      ctaPrimary: "Solicitar Acesso Estratégico",
+      ctaPrimary: "Agendar reunião",
       ctaSecondary: "Acessar Cockpit",
       kpiA: "Brasil · jurisdição soberana",
       kpiB: "NVIDIA Partner Expert 2026",
@@ -239,7 +239,7 @@ export const copy = {
       title: "Construir hoje o futuro que vale a pena.",
       subtitle:
         "Tecnologia soberana, humana e inteligente — para cidades, empresas e pessoas. Conversamos primeiro, propomos depois, só formalizamos quando o caso de uso realmente faz sentido.",
-      ctaPrimary: "Solicitar Acesso Estratégico",
+      ctaPrimary: "Agendar reunião",
       ctaSecondary: "Falar no WhatsApp",
     },
     footer: {
@@ -291,7 +291,7 @@ export const copy = {
       titleB: "for enterprises and governments.",
       subtitle:
         "Technology that serves, connects and transforms lives — for cities, enterprises and people, with special care for the invisible and the most vulnerable. We build proprietary LLMs, tailored AI infrastructure and autonomous agents with data under sovereign jurisdiction and 24/7 operation.",
-      ctaPrimary: "Request Strategic Access",
+      ctaPrimary: "Schedule a meeting",
       ctaSecondary: "Open Cockpit",
       kpiA: "Brazil · sovereign jurisdiction",
       kpiB: "NVIDIA Partner Expert 2026",
@@ -500,7 +500,7 @@ export const copy = {
       title: "Build today the future worth living.",
       subtitle:
         "Sovereign, human and intelligent technology — for cities, enterprises and people. We talk first, then propose, and only formalize when the use case truly makes sense.",
-      ctaPrimary: "Request Strategic Access",
+      ctaPrimary: "Schedule a meeting",
       ctaSecondary: "WhatsApp us",
     },
     footer: {
@@ -552,7 +552,7 @@ export const copy = {
       titleB: "para empresas y gobiernos.",
       subtitle:
         "Tecnología que sirve, conecta y transforma vidas — para ciudades, empresas y personas, con un cuidado especial por los invisibles y los más vulnerables. Construimos LLMs propietarios, infraestructura de IA a medida y agentes autónomos con datos bajo jurisdicción nacional y operación 24/7.",
-      ctaPrimary: "Solicitar Acceso Estratégico",
+      ctaPrimary: "Agendar reunión",
       ctaSecondary: "Acceder al Cockpit",
       kpiA: "Brasil · jurisdicción soberana",
       kpiB: "NVIDIA Partner Expert 2026",
@@ -761,7 +761,7 @@ export const copy = {
       title: "Construir hoy el futuro que vale la pena.",
       subtitle:
         "Tecnología soberana, humana e inteligente — para ciudades, empresas y personas. Conversamos primero, proponemos después, solo formalizamos cuando el caso de uso realmente tiene sentido.",
-      ctaPrimary: "Solicitar Acceso Estratégico",
+      ctaPrimary: "Agendar reunión",
       ctaSecondary: "Hablar por WhatsApp",
     },
     footer: {

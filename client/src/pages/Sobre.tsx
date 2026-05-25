@@ -57,11 +57,16 @@ export default function Sobre() {
           <h2 className="ng-h2 ng-final-h2">{t.contactCta.title}</h2>
           <p className="ng-section-sub ng-final-sub">{t.contactCta.subtitle}</p>
           <div className="ng-hero-actions">
-            <a href="mailto:helio@nowgo.com.br" className="btn-primary">
+            <a
+              href="https://cal.com/helio-guilherme-jnrivp"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary"
+            >
               {t.contactCta.primary}
             </a>
             <a
-              href="https://wa.me/5561992509494"
+              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20nowgo%20ai.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar."
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

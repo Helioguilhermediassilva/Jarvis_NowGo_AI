@@ -109,7 +109,7 @@ export default function LandingPage() {
             </h1>
             <p className="ng-hero-sub">{t.hero.subtitle}</p>
             <div className="ng-hero-actions">
-              <a href="#contact" className="btn-primary">{t.hero.ctaPrimary}</a>
+              <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.hero.ctaPrimary}</a>
               <Link href="/cockpit" className="btn-secondary">{t.hero.ctaSecondary}</Link>
             </div>
             <div className="ng-hero-kpis">
@@ -279,7 +279,7 @@ export default function LandingPage() {
                 <ul className="ng-tier-features">
                   {tier.features.map((f, j) => <li key={j}>{f}</li>)}
                 </ul>
-                <a href="#contact" className={tier.highlight ? "btn-primary" : "btn-secondary"}>{tier.cta}</a>
+                <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className={tier.highlight ? "btn-primary" : "btn-secondary"}>{tier.cta}</a>
               </article>
             ))}
           </div>
@@ -293,8 +293,8 @@ export default function LandingPage() {
           <h2 className="ng-h2 ng-final-h2">{t.finalCta.title}</h2>
           <p className="ng-section-sub ng-final-sub">{t.finalCta.subtitle}</p>
           <div className="ng-hero-actions">
-            <a href="mailto:helio@nowgo.com.br" className="btn-primary">{t.finalCta.ctaPrimary}</a>
-            <a href="https://wa.me/5561992509494" target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
+            <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.finalCta.ctaPrimary}</a>
+            <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20nowgo%20ai.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
           </div>
         </div>
       </section>

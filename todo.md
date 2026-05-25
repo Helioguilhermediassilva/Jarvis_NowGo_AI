@@ -622,8 +622,17 @@ Acoes imediatas:
 
 
 ## F42 — Sobre: enriquecer trecho InovaSkill / Bluefields / Grupo Jacto
-- [ ] Pesquisar Grupo Jacto (origem, escala, atuação)
-- [ ] Pesquisar Bluefields (relação com Jacto, papel, programa InovaSkill)
-- [ ] Confirmar relação InovaSkill ↔ FATEC Pompeia
-- [ ] Redigir versões enriquecidas PT/EN/ES e apresentar antes do deploy
-- [ ] Após aprovação: aplicar em copyPages.ts + build + commit + push + validar produção
+- [x] Pesquisar Grupo Jacto (origem, escala, atuação)
+- [x] Pesquisar Bluefields (relação com Jacto, papel, programa InovaSkill)
+- [x] Confirmar relação InovaSkill ↔ FATEC Pompeia
+- [x] Redigir versões enriquecidas PT/EN/ES e apresentar antes do deploy
+- [x] Após aprovação: aplicar em copyPages.ts + build + commit + push + validar produção
+
+
+## F43 — CTAs: trocar "Acesso Estratégico" por "Agendar reunião" + WhatsApp 61 99970-8833
+- [x] Auditar todos os CTAs atuais (acesso estratégico, WhatsApp, e-mail) no copy.ts e copyPages.ts
+- [x] Apresentar proposta de fluxo (Calendly externo vs formulário interno + WhatsApp) e obter aprovação
+- [x] Aplicar substituições nos 3 idiomas (copy.ts + copyPages.ts + páginas)
+- [x] Atualizar número de WhatsApp para +55 61 99970-8833 em todos os pontos
+- [x] Build TS + Vite + testes vitest
+- [x] Commit + push + validar em produção (PT/EN/ES)
