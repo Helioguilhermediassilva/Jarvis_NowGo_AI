@@ -611,3 +611,11 @@ Acoes imediatas:
 - [x] Commit + push (helio@nowgo.com.br)
 - [x] Aguardar deploy Vercel READY (~3 min)
 - [x] Validar /imprensa em produção (PT/EN/ES) e link externo Gazeta Mercantil
+
+## F41 — Refino visual da página /manifesto
+- [x] Auditar Manifesto.tsx (classes CSS, hierarquia de títulos)
+- [x] Auditar design-system.css (paleta atual: --ng-violet, --ng-cyan, --ng-blue, eyebrows, gradientes)
+- [x] Comparar com /sobre, /carreiras, /imprensa para identificar inconsistências de títulos e cores
+- [x] Refatorar Manifesto.tsx + design-system.css aplicando tokens consistentes
+- [x] Build TS + Vite + testes vitest
+- [x] Commit + push + validar em produção (PT/EN/ES, mobile/desktop)
