@@ -636,3 +636,13 @@ Acoes imediatas:
 - [x] Atualizar número de WhatsApp para +55 61 99970-8833 em todos os pontos
 - [x] Build TS + Vite + testes vitest
 - [x] Commit + push + validar em produção (PT/EN/ES)
+
+
+## F44 — Cockpit privado + correção OAuth + delta pipeline R$ 31,11 MM
+- [ ] Auditar pipeline atual no NowGo Brain e identificar delta de oportunidades
+- [ ] Diagnosticar erro Google OAuth ao acessar /cockpit (causa raiz)
+- [ ] Remover/restringir CTA "Acessar Cockpit" da landing pública (header + hero)
+- [ ] Corrigir OAuth para garantir acesso restrito ao owner (helio@nowgo.com.br)
+- [ ] Build TS + Vite + testes vitest
+- [ ] Commit + push + validar em produção
+- [ ] Reportar delta do pipeline ao usuário

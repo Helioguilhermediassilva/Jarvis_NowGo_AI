@@ -22,7 +22,7 @@ export const copy = {
       cases: "Cases",
       ecosystem: "Ecossistema",
       pricing: "Investimento",
-      cockpitCta: "Acessar Cockpit",
+      cockpitCta: "Login",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",
@@ -31,7 +31,7 @@ export const copy = {
       subtitle:
         "Tecnologia que serve, conecta e transforma vidas — para cidades, empresas e pessoas, com cuidado especial pelos invisíveis e vulneráveis. Construímos LLMs proprietárias, infraestrutura de IA sob medida e agentes autônomos com dados sob jurisdição nacional e operação 24/7.",
       ctaPrimary: "Agendar reunião",
-      ctaSecondary: "Acessar Cockpit",
+      ctaSecondary: "Falar no WhatsApp",
       kpiA: "Brasil · jurisdição soberana",
       kpiB: "NVIDIA Partner Expert 2026",
       kpiC: "Top 50 Global · DPI",
@@ -283,7 +283,7 @@ export const copy = {
       cases: "Cases",
       ecosystem: "Ecosystem",
       pricing: "Investment",
-      cockpitCta: "Open Cockpit",
+      cockpitCta: "Login",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",
@@ -292,7 +292,7 @@ export const copy = {
       subtitle:
         "Technology that serves, connects and transforms lives — for cities, enterprises and people, with special care for the invisible and the most vulnerable. We build proprietary LLMs, tailored AI infrastructure and autonomous agents with data under sovereign jurisdiction and 24/7 operation.",
       ctaPrimary: "Schedule a meeting",
-      ctaSecondary: "Open Cockpit",
+      ctaSecondary: "Chat on WhatsApp",
       kpiA: "Brazil · sovereign jurisdiction",
       kpiB: "NVIDIA Partner Expert 2026",
       kpiC: "Top 50 Global · DPI",
@@ -544,7 +544,7 @@ export const copy = {
       cases: "Casos",
       ecosystem: "Ecosistema",
       pricing: "Inversión",
-      cockpitCta: "Acceder al Cockpit",
+      cockpitCta: "Login",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",
@@ -553,7 +553,7 @@ export const copy = {
       subtitle:
         "Tecnología que sirve, conecta y transforma vidas — para ciudades, empresas y personas, con un cuidado especial por los invisibles y los más vulnerables. Construimos LLMs propietarios, infraestructura de IA a medida y agentes autónomos con datos bajo jurisdicción nacional y operación 24/7.",
       ctaPrimary: "Agendar reunión",
-      ctaSecondary: "Acceder al Cockpit",
+      ctaSecondary: "Hablar por WhatsApp",
       kpiA: "Brasil · jurisdicción soberana",
       kpiB: "NVIDIA Partner Expert 2026",
       kpiC: "Top 50 Global · DPI",
