@@ -71,24 +71,26 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     sobre: {
       hero: {
         eyebrow: "SOBRE A NOWGO AI",
-        title: "AI native company com soberania brasileira.",
+        title: "AI Native Company brasileira, soberana e operacional.",
         subtitle:
-          "Plataforma operacional de inteligência artificial fundada por Hélio Guilherme — NVIDIA Partner Expert e referência Top 50 Global de IA aplicada.",
+          "Infraestrutura operacional inteligente, modular e auditável para cidades, empresas e serviços públicos — sobre stack NVIDIA, com governança brasileira e cuidado pelos invisíveis.",
       },
       bio: {
         title: "A nowgo ai em uma frase",
         body: [
-          "A nowgo ai é uma AI Native Company brasileira que combina infraestrutura NVIDIA Enterprise, modelos de linguagem soberanos e orquestração de agentes inteligentes para entregar transformação operacional real a empresas e governos.",
-          "Operamos sobre uma stack modular que vai de dados a cidadão — dados, IA, automação e experiência humana — com a mesma base tecnológica que move líderes mundiais, adaptada à jurisdição e à realidade brasileira.",
-          "Atendemos hoje frentes públicas (Smart Cities) e Enterprise (Saúde, Educação, Meio Ambiente, Agro, Finanças, Entretenimento e Imobiliário), sempre com soberania de dados, governança auditável e compromisso com quem é invisível ou vulnerável.",
+          "A nowgo ai é uma AI Native Company brasileira que entrega infraestrutura operacional inteligente, soberana, modular e auditável para cidades, empresas e serviços públicos — sobre stack NVIDIA Enterprise.",
+          "<strong>Missão:</strong> conectar dados, cidadãos, empresas e serviços públicos para um futuro melhor — com cuidado especial pelos invisíveis e mais vulneráveis.",
+          "<strong>Visão:</strong> ser referência global em infraestrutura operacional soberana de IA para cidades, empresas e serviços públicos.",
         ],
       },
       founder: {
-        title: "Fundador",
+        title: "Fundador — Hélio Guilherme Dias Silva",
         body: [
-          "Hélio Guilherme é fundador e CEO da nowgo ai. Engenheiro de origem, atuou por mais de duas décadas em transformação digital de larga escala — em projetos públicos e privados que combinam dados, automação e inteligência aplicada.",
-          "É reconhecido como NVIDIA Partner Expert e figura entre as 50 lideranças globais com maior potencial em IA aplicada por organizações de referência. Sua tese: a próxima década será definida por quem dominar IA operacional soberana — não apenas modelos, mas todo o stack.",
-          "Hoje conduz a nowgo ai com foco em impacto real: Smart Cities que cuidam dos invisíveis, hospitais que acolhem com dignidade, empresas que decidem com inteligência baseada em dados.",
+          "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> nasceu no Brasil de muitos Brasis. Carrega raízes mineiras, capixabas e nordestinas, e construiu sua trajetória entre o público e o privado, entre a engenharia e a visão de país. Aos 14 anos já sabia o que queria fazer: usar tecnologia para transformar vidas em escala.",
+          "Aos 19 anos tornou-se instrutor oficial Oracle — um dos mais novos da América Latina à época. Ainda na universidade, cofundou uma das duas primeiras edtechs latino-americanas selecionadas para o programa Top 10 Global da 500 Startups (\"Vale O Que Aprendi\"). A empresa foi vendida e não sobreviveu como organização, mas a visão e a missão continuaram — e se ampliaram. Hoje, com IA generativa e infraestrutura GPU, tudo o que parecia impensável se tornou possível.",
+          "Hélio reúne equipe técnica nacional com bases em telecom e no setor de Justiça (CNJ), e teve passagem pelo Banco Mundial em projetos anteriores. Hoje está 100% dedicado à nowgo ai — a empresa que materializa, em escala, aquela visão de cidade, empresa e serviço público verdadeiramente humanos.",
+          "É reconhecido entre as <strong>Top 50 Global</strong> lideranças em infraestrutura digital pública pela DPI · JICA · BCG · Bill & Melinda Gates Foundation, e é <strong>NVIDIA Partner Expert 2026</strong>. Atua como mentor de IA na FATEC Pompeia (~80 mil alunos) e treinou mais de mil especialistas em IA em Brasília.",
+          "É presidente da AACMB — Associação dos ex-alunos do Colégio Militar de Brasília, rede de cerca de 80 mil famílias que inclui empresários, artistas, ministros e o atual governador de São Paulo. Lidera ainda parcerias com 14 universidades africanas e coopera com o MEC e o Centro de Estudos Estratégicos Brasileiros para o desenvolvimento de LLMs em português.",
         ],
       },
       philosophy: {
@@ -271,24 +273,26 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     sobre: {
       hero: {
         eyebrow: "ABOUT NOWGO AI",
-        title: "AI native company with Brazilian sovereignty.",
+        title: "Brazilian AI Native Company — sovereign and operational.",
         subtitle:
-          "Operational AI platform founded by Hélio Guilherme — NVIDIA Partner Expert and Top 50 Global reference in applied AI.",
+          "Sovereign, modular and auditable operational AI infrastructure for cities, enterprises and public services — on NVIDIA stack, with Brazilian governance and care for the invisible.",
       },
       bio: {
         title: "nowgo ai in one sentence",
         body: [
-          "nowgo ai is a Brazilian AI Native Company that combines NVIDIA Enterprise infrastructure, sovereign language models and intelligent agent orchestration to deliver real operational transformation to enterprises and governments.",
-          "We operate on a modular stack that goes from data to citizen — data, AI, automation and human experience — on the same technological foundation that powers world leaders, adapted to Brazilian jurisdiction and reality.",
-          "We currently serve public fronts (Smart Cities) and Enterprise (Health, Education, Environment, Agro, Finance, Entertainment and Real Estate), always with data sovereignty, auditable governance and commitment to those who are invisible or vulnerable.",
+          "nowgo ai is a Brazilian AI Native Company that delivers sovereign, modular and auditable operational AI infrastructure for cities, enterprises and public services — on NVIDIA Enterprise stack.",
+          "<strong>Mission:</strong> to connect data, citizens, enterprises and public services for a better future — with special care for the invisible and most vulnerable.",
+          "<strong>Vision:</strong> to become the global reference in sovereign operational AI infrastructure for cities, enterprises and public services.",
         ],
       },
       founder: {
-        title: "Founder",
+        title: "Founder — Hélio Guilherme Dias Silva",
         body: [
-          "Hélio Guilherme is founder and CEO of nowgo ai. An engineer by background, he has worked for over two decades on large-scale digital transformation — in public and private projects that combine data, automation and applied intelligence.",
-          "He is recognized as NVIDIA Partner Expert and ranks among the 50 global leaders with the highest potential in applied AI by reference organizations. His thesis: the next decade will be defined by those who master sovereign operational AI — not just models, but the entire stack.",
-          "He now leads nowgo ai with focus on real impact: Smart Cities that care for the invisible, hospitals that welcome with dignity, enterprises that decide with data-driven intelligence.",
+          "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> was born in the Brazil of many Brazils. He carries roots from Minas Gerais, Espírito Santo and the Northeast, and built his career between the public and the private, between engineering and a vision for the country. At 14 he already knew what he wanted to do: use technology to transform lives at scale.",
+          "At 19 he became an official Oracle instructor — one of the youngest in Latin America at the time. Still in university, he co-founded one of the first two Latin American edtechs selected for the Top 10 Global program at 500 Startups (\"Vale O Que Aprendi\"). The company was sold and did not survive as an organization, but the vision and mission continued — and grew. Today, with generative AI and GPU infrastructure, what once seemed impossible has become possible.",
+          "Hélio leads a national technical team with backgrounds in telecom and the Brazilian Justice sector (CNJ), and previously worked on World Bank projects. He is now 100% dedicated to nowgo ai — the company that materializes, at scale, that vision of truly human cities, enterprises and public services.",
+          "He is recognized among the <strong>Top 50 Global</strong> leaders in digital public infrastructure by DPI · JICA · BCG · Bill & Melinda Gates Foundation, and is an <strong>NVIDIA Partner Expert 2026</strong>. He acts as AI mentor at FATEC Pompeia (~80,000 students) and has trained over a thousand AI specialists in Brasília.",
+          "He is president of AACMB — the alumni association of the Brasília Military College, a network of around 80,000 families that includes entrepreneurs, artists, ministers and the current governor of São Paulo. He also leads partnerships with 14 African universities and cooperates with Brazil's Ministry of Education and the Brazilian Strategic Studies Center on the development of Portuguese-language LLMs.",
         ],
       },
       philosophy: {
@@ -471,24 +475,26 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     sobre: {
       hero: {
         eyebrow: "ACERCA DE NOWGO AI",
-        title: "AI native company con soberanía brasileña.",
+        title: "AI Native Company brasileña, soberana y operacional.",
         subtitle:
-          "Plataforma operacional de inteligencia artificial fundada por Hélio Guilherme — NVIDIA Partner Expert y referencia Top 50 Global en IA aplicada.",
+          "Infraestructura operacional inteligente, modular y auditable para ciudades, empresas y servicios públicos — sobre stack NVIDIA, con gobernanza brasileña y cuidado por los invisibles.",
       },
       bio: {
         title: "nowgo ai en una frase",
         body: [
-          "nowgo ai es una AI Native Company brasileña que combina infraestructura NVIDIA Enterprise, modelos de lenguaje soberanos y orquestación de agentes inteligentes para entregar transformación operacional real a empresas y gobiernos.",
-          "Operamos sobre un stack modular que va de datos al ciudadano — datos, IA, automatización y experiencia humana — sobre la misma base tecnológica que mueve a líderes mundiales, adaptada a la jurisdicción y realidad brasileñas.",
-          "Hoy atendemos frentes públicos (Smart Cities) y Enterprise (Salud, Educación, Medio Ambiente, Agro, Finanzas, Entretenimiento e Inmobiliario), siempre con soberanía de datos, gobernanza auditable y compromiso con quienes son invisibles o vulnerables.",
+          "nowgo ai es una AI Native Company brasileña que entrega infraestructura operacional inteligente, soberana, modular y auditable para ciudades, empresas y servicios públicos — sobre stack NVIDIA Enterprise.",
+          "<strong>Misión:</strong> conectar datos, ciudadanos, empresas y servicios públicos para un futuro mejor — con cuidado especial por los invisibles y más vulnerables.",
+          "<strong>Visión:</strong> ser referencia global en infraestructura operacional soberana de IA para ciudades, empresas y servicios públicos.",
         ],
       },
       founder: {
-        title: "Fundador",
+        title: "Fundador — Hélio Guilherme Dias Silva",
         body: [
-          "Hélio Guilherme es fundador y CEO de nowgo ai. Ingeniero de origen, ha trabajado durante más de dos décadas en transformación digital a gran escala — en proyectos públicos y privados que combinan datos, automatización e inteligencia aplicada.",
-          "Es reconocido como NVIDIA Partner Expert y figura entre los 50 líderes globales con mayor potencial en IA aplicada por organizaciones de referencia. Su tesis: la próxima década estará definida por quien domine la IA operacional soberana — no solo los modelos, sino todo el stack.",
-          "Hoy lidera nowgo ai con foco en impacto real: Smart Cities que cuidan de los invisibles, hospitales que acogen con dignidad, empresas que deciden con inteligencia basada en datos.",
+          "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> nació en el Brasil de muchos Brasis. Lleva raíces mineiras, capixabas y nordestinas, y construyó su trayectoria entre lo público y lo privado, entre la ingeniería y una visión de país. A los 14 años ya sabía lo que quería hacer: usar la tecnología para transformar vidas a escala.",
+          "A los 19 años se convirtió en instructor oficial de Oracle — uno de los más jóvenes de América Latina en aquel momento. Aún en la universidad, cofundó una de las dos primeras edtechs latinoamericanas seleccionadas para el programa Top 10 Global de 500 Startups (\"Vale O Que Aprendi\"). La empresa fue vendida y no sobrevivió como organización, pero la visión y la misión continuaron — y se ampliaron. Hoy, con IA generativa e infraestructura GPU, lo que parecía impensable se volvió posible.",
+          "Hélio reúne un equipo técnico nacional con bases en telecom y en el sector de Justicia (CNJ), y tuvo paso por el Banco Mundial en proyectos anteriores. Hoy está 100% dedicado a nowgo ai — la empresa que materializa, a escala, aquella visión de ciudad, empresa y servicio público verdaderamente humanos.",
+          "Es reconocido entre los <strong>Top 50 Global</strong> líderes en infraestructura digital pública por DPI · JICA · BCG · Bill & Melinda Gates Foundation, y es <strong>NVIDIA Partner Expert 2026</strong>. Actúa como mentor de IA en FATEC Pompeia (~80 mil alumnos) y ha entrenado a más de mil especialistas en IA en Brasilia.",
+          "Es presidente de AACMB — Asociación de exalumnos del Colegio Militar de Brasilia, red de cerca de 80 mil familias que incluye empresarios, artistas, ministros y el actual gobernador de São Paulo. Lidera además alianzas con 14 universidades africanas y coopera con el MEC y el Centro de Estudios Estratégicos Brasileños para el desarrollo de LLMs en portugués.",
         ],
       },
       philosophy: {

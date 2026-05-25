@@ -249,9 +249,9 @@
 }
 .nowgoai-landing .ng-pillar-desc { font-size: 0.95rem; line-height: 1.6; color: var(--text-dim); margin: 0; }
 
-/* VERTICALS */
+/* VERTICALS — Enterprise grid: 8 cards (4x2 desktop, 2x4 tablet, 1x8 mobile) */
 .nowgoai-landing .ng-verticals-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
   background: var(--border-soft); border: 1px solid var(--border-soft);
   border-radius: 1rem; overflow: hidden;
 }

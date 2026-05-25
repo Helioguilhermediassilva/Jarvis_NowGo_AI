@@ -527,3 +527,18 @@ Acoes imediatas:
 - [ ] Tsc strict OK
 - [ ] Testes verde
 - [ ] Smoke test em produção (todos os 12 links funcionais)
+
+
+## F36 — /sobre reescrita + Energy + cleanup ecossistema NVIDIA
+
+- [x] Reescrever /sobre PT/EN/ES com história aprovada (Brasil de muitos Brasis, edtech vendida, Top 50 Global, NVIDIA Partner Expert, FATEC, AACMB, 14 universidades africanas, Banco Mundial passado, MEC LLM)
+- [x] Linkar nome "Hélio Guilherme" para https://www.linkedin.com/in/helioguilherme/ em /sobre
+- [x] Atualizar email contato para helio@nowgo.com.br em /sobre
+- [x] Manter Entertainment e adicionar Energy aos verticais Enterprise (8 cards) PT/EN/ES
+- [x] Ajustar grid CSS para acomodar 8 cards equilibradamente (4×2 desktop, 2×4 tablet, 1×8 mobile)
+- [x] Remover links externos "Ver mais cases na NVIDIA" dos 8 cases da seção Ecossistema (PT/EN/ES)
+- [x] Remover frase final "Cases listados na página oficial da NVIDIA…" da seção Ecossistema (PT/EN/ES)
+- [x] Build TypeScript + Vite + testes (31 passed, 6 skipped)
+- [ ] Commit e push com email helio@nowgo.com.br
+- [ ] Aguardar deploy Vercel READY
+- [ ] Validar em produção: /sobre, verticais com 8 cards, ecossistema sem links externos

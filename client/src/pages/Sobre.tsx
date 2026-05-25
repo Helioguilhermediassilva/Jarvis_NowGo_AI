@@ -31,21 +31,21 @@ export default function Sobre() {
             <article className="ng-page-block">
               <h2>{t.bio.title}</h2>
               {t.bio.body.map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
               ))}
             </article>
 
             <article className="ng-page-block">
               <h2>{t.founder.title}</h2>
               {t.founder.body.map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
               ))}
             </article>
 
             <article className="ng-page-block">
               <h2>{t.philosophy.title}</h2>
               {t.philosophy.body.map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
               ))}
             </article>
           </div>

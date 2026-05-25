@@ -237,11 +237,8 @@ export default function LandingPage() {
           </div>
           <div className="ng-ecosystem-grid">
             {t.ecosystem.items.map((c, i) => (
-              <a
+              <article
                 key={i}
-                href={c.href}
-                target="_blank"
-                rel="noreferrer"
                 className="ng-eco reveal"
                 style={{ transitionDelay: `${i * 60}ms` }}
               >
@@ -253,20 +250,8 @@ export default function LandingPage() {
                     __html: c.desc.replace(/\*([^*]+)\*/g, "<em>$1</em>"),
                   }}
                 />
-                <span className="ng-eco-link">{t.ecosystem.cta} ↗</span>
-              </a>
+              </article>
             ))}
-          </div>
-          <p className="ng-cases-footer reveal">{t.ecosystem.footer}</p>
-          <div className="ng-section-cta reveal">
-            <a
-              href={t.ecosystem.ctaHref}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary"
-            >
-              {t.ecosystem.cta} ↗
-            </a>
           </div>
         </div>
       </section>
