@@ -619,3 +619,11 @@ Acoes imediatas:
 - [x] Refatorar Manifesto.tsx + design-system.css aplicando tokens consistentes
 - [x] Build TS + Vite + testes vitest
 - [x] Commit + push + validar em produção (PT/EN/ES, mobile/desktop)
+
+
+## F42 — Sobre: enriquecer trecho InovaSkill / Bluefields / Grupo Jacto
+- [ ] Pesquisar Grupo Jacto (origem, escala, atuação)
+- [ ] Pesquisar Bluefields (relação com Jacto, papel, programa InovaSkill)
+- [ ] Confirmar relação InovaSkill ↔ FATEC Pompeia
+- [ ] Redigir versões enriquecidas PT/EN/ES e apresentar antes do deploy
+- [ ] Após aprovação: aplicar em copyPages.ts + build + commit + push + validar produção
