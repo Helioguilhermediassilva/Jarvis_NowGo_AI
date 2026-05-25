@@ -594,7 +594,7 @@ Acoes imediatas:
 - [ ] Registrar rota /carreiras em App.tsx
 - [ ] Atualizar link footer.colB "Carreiras" para /carreiras nos 3 idiomas (PT/EN/ES)
 - [ ] Build TypeScript + Vite + testes vitest
-- [ ] Commit + push (helio@nowgo.com.br)
+- [x] Commit + push (helio@nowgo.com.br)
 - [ ] Aguardar deploy Vercel READY
 - [ ] Validar /carreiras em produção (PT/EN/ES) e usabilidade do dropdown
 - [ ] Coletar Pipeline via Notion MCP (paralelo limitado)
@@ -608,6 +608,6 @@ Acoes imediatas:
 - [x] Registrar rotas /imprensa, /press, /prensa em App.tsx
 - [x] Atualizar link "Imprensa/Press/Prensa" do footer.colB de mailto: para /imprensa em copy.ts (PT/EN/ES)
 - [x] Build TypeScript + Vite + testes vitest (31 passed)
-- [ ] Commit + push (helio@nowgo.com.br)
-- [ ] Aguardar deploy Vercel READY (~3 min)
-- [ ] Validar /imprensa em produção (PT/EN/ES) e link externo Gazeta Mercantil
+- [x] Commit + push (helio@nowgo.com.br)
+- [x] Aguardar deploy Vercel READY (~3 min)
+- [x] Validar /imprensa em produção (PT/EN/ES) e link externo Gazeta Mercantil
