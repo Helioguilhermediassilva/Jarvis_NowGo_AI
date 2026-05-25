@@ -9,7 +9,7 @@ export default function Sobre() {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.title = `${t.hero.title} · nowgo ai`;
+      document.title = `${t.hero.title} · NowGo AI`;
     }
   }, [t.hero.title]);
 
@@ -66,7 +66,7 @@ export default function Sobre() {
               {t.contactCta.primary}
             </a>
             <a
-              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20nowgo%20ai.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar."
+              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar."
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

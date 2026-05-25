@@ -1,5 +1,5 @@
 /**
- * Conteúdo bilíngue (PT-BR / EN) da landing page nowgo ai.
+ * Conteúdo bilíngue (PT-BR / EN) da landing page NowGo AI.
  *
  * Toda string usada na landing fica aqui, em duas chaves espelhadas (`pt` e `en`).
  * O objetivo é permitir o toggle PT|EN no header com persistência em localStorage,
@@ -138,7 +138,7 @@ export const copy = {
       eyebrow: "NVIDIA PARTNER EXPERT · ECOSSISTEMA GLOBAL",
       title: "A mesma stack Enterprise que move líderes globais.",
       subtitle:
-        "Como NVIDIA Partner Expert, a nowgo ai opera sobre a mesma infraestrutura de IA Enterprise que sustenta referências mundiais em saúde, indústria, energia e cidades — adaptada à soberania brasileira. Os cases abaixo são do ecossistema oficial NVIDIA; nossa stack herda a mesma base.",
+        "Como NVIDIA Partner Expert, a NowGo AI opera sobre a mesma infraestrutura de IA Enterprise que sustenta referências mundiais em saúde, indústria, energia e cidades — adaptada à soberania brasileira. Os cases abaixo são do ecossistema oficial NVIDIA; nossa stack herda a mesma base.",
       items: [
         {
           tag: "PUBLIC · SMART CITIES",
@@ -244,7 +244,7 @@ export const copy = {
     },
     footer: {
       tag: "AI NATIVE COMPANY",
-      brand: "nowgo ai",
+      brand: "NowGo AI",
       desc: "Plataforma de IA empresarial para um mundo soberano e humano. Built in Brazil. Trusted globally.",
       colA: {
         title: "Plataforma",
@@ -273,7 +273,7 @@ export const copy = {
           { label: "Contato", href: "#contact" },
         ],
       },
-      copyright: "© 2026 nowgo ai. Todos os direitos reservados.",
+      copyright: "© 2026 NowGo AI. Todos os direitos reservados.",
     },
   },
   en: {
@@ -399,7 +399,7 @@ export const copy = {
       eyebrow: "NVIDIA PARTNER EXPERT · GLOBAL ECOSYSTEM",
       title: "The same Enterprise stack that powers global leaders.",
       subtitle:
-        "As an NVIDIA Partner Expert, nowgo ai operates on the same Enterprise AI infrastructure that supports world-class references in healthcare, industry, energy and cities — adapted to Brazilian sovereignty. The cases below come from the official NVIDIA ecosystem; our stack inherits the same foundation.",
+        "As an NVIDIA Partner Expert, NowGo AI operates on the same Enterprise AI infrastructure that supports world-class references in healthcare, industry, energy and cities — adapted to Brazilian sovereignty. The cases below come from the official NVIDIA ecosystem; our stack inherits the same foundation.",
       items: [
         {
           tag: "PUBLIC · SMART CITIES",
@@ -505,7 +505,7 @@ export const copy = {
     },
     footer: {
       tag: "AI NATIVE COMPANY",
-      brand: "nowgo ai",
+      brand: "NowGo AI",
       desc: "Enterprise AI platform for a sovereign and human world. Built in Brazil. Trusted globally.",
       colA: {
         title: "Platform",
@@ -534,7 +534,7 @@ export const copy = {
           { label: "Contact", href: "#contact" },
         ],
       },
-      copyright: "© 2026 nowgo ai. All rights reserved.",
+      copyright: "© 2026 NowGo AI. All rights reserved.",
     },
   },
   es: {
@@ -660,7 +660,7 @@ export const copy = {
       eyebrow: "NVIDIA PARTNER EXPERT · ECOSISTEMA GLOBAL",
       title: "El mismo stack Enterprise que mueve a los líderes globales.",
       subtitle:
-        "Como NVIDIA Partner Expert, nowgo ai opera sobre la misma infraestructura de IA Enterprise que sustenta referencias mundiales en salud, industria, energía y ciudades — adaptada a la soberanía brasileña. Los casos a continuación provienen del ecosistema oficial NVIDIA; nuestro stack hereda la misma base.",
+        "Como NVIDIA Partner Expert, NowGo AI opera sobre la misma infraestructura de IA Enterprise que sustenta referencias mundiales en salud, industria, energía y ciudades — adaptada a la soberanía brasileña. Los casos a continuación provienen del ecosistema oficial NVIDIA; nuestro stack hereda la misma base.",
       items: [
         {
           tag: "PUBLIC · SMART CITIES",
@@ -766,7 +766,7 @@ export const copy = {
     },
     footer: {
       tag: "AI NATIVE COMPANY",
-      brand: "nowgo ai",
+      brand: "NowGo AI",
       desc: "Plataforma de IA empresarial para un mundo soberano y humano. Built in Brazil. Trusted globally.",
       colA: {
         title: "Plataforma",
@@ -795,7 +795,7 @@ export const copy = {
           { label: "Contacto", href: "#contact" },
         ],
       },
-      copyright: "© 2026 nowgo ai. Todos los derechos reservados.",
+      copyright: "© 2026 NowGo AI. Todos los derechos reservados.",
     },
   },
 } as const;

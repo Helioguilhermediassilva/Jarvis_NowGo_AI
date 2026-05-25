@@ -7,13 +7,13 @@ import { copy } from "@/landing/copy";
 import CompanyDropdown from "@/landing/CompanyDropdown";
 
 /**
- * LandingPage — landing pública da nowgo ai em cockpitcrmnowgoai.com (rota /).
+ * LandingPage — landing pública da NowGo AI em cockpitcrmnowgoai.com (rota /).
  *
  * Esta página é o ponto de entrada institucional. O cockpit autenticado
  * (/cockpit) e o Jarvis cívico (/civic) permanecem intocados. Todo o
  * design system (cores, tipografia, animações) é importado de
  * `@/landing/styles/design-system.css`, fiel à referência Asimov AI
- * Intelligence SaaS, com tokens da nowgo ai.
+ * Intelligence SaaS, com tokens da NowGo AI.
  *
  * Conteúdo: bilíngue PT-BR/EN, controlado pelo hook `useLang` com persistência
  * em localStorage. Toda string vem do arquivo `copy.ts`, sem hardcode no JSX.
@@ -63,7 +63,7 @@ export default function LandingPage() {
         <div className="ng-header-inner">
           <a href="#top" className="ng-brand">
             <span className="ng-brand-mark">◇</span>
-            <span className="ng-brand-text">nowgo ai</span>
+            <span className="ng-brand-text">NowGo AI</span>
           </a>
           <nav className="ng-nav-links" aria-label="primary">
             <CompanyDropdown
@@ -111,7 +111,7 @@ export default function LandingPage() {
             <p className="ng-hero-sub">{t.hero.subtitle}</p>
             <div className="ng-hero-actions">
               <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.hero.ctaPrimary}</a>
-              <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20nowgo%20ai.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.hero.ctaSecondary}</a>
+              <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.hero.ctaSecondary}</a>
             </div>
             <div className="ng-hero-kpis">
               <div className="ng-hero-kpi"><span>•</span>{t.hero.kpiA}</div>
@@ -295,7 +295,7 @@ export default function LandingPage() {
           <p className="ng-section-sub ng-final-sub">{t.finalCta.subtitle}</p>
           <div className="ng-hero-actions">
             <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.finalCta.ctaPrimary}</a>
-            <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20nowgo%20ai.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
+            <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
           </div>
         </div>
       </section>

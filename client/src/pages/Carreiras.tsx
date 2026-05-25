@@ -4,7 +4,7 @@ import { useLang } from "@/landing/useLang";
 import { pagesCopy } from "@/landing/copyPages";
 
 /**
- * Carreiras — página institucional de vagas da nowgo ai.
+ * Carreiras — página institucional de vagas da NowGo AI.
  *
  * Mantém o mesmo padrão visual de Sobre/Manifesto/Privacidade (LandingShell
  * com hero, blocos de conteúdo e CTA final), garantindo coerência de design
@@ -16,7 +16,7 @@ export default function Carreiras() {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.title = `${t.hero.title} · nowgo ai`;
+      document.title = `${t.hero.title} · NowGo AI`;
     }
   }, [t.hero.title]);
 
@@ -109,7 +109,7 @@ export default function Carreiras() {
               {t.contactCta.primary}
             </a>
             <a
-              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pela%20p%C3%A1gina%20de%20Carreiras%20da%20nowgo%20ai%20e%20gostaria%20de%20conversar%20sobre%20oportunidades."
+              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pela%20p%C3%A1gina%20de%20Carreiras%20da%20NowGo%20AI%20e%20gostaria%20de%20conversar%20sobre%20oportunidades."
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

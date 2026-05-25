@@ -4,7 +4,7 @@ import { useLang } from "@/landing/useLang";
 import { pagesCopy } from "@/landing/copyPages";
 
 /**
- * Imprensa — página institucional de imprensa da nowgo ai.
+ * Imprensa — página institucional de imprensa da NowGo AI.
  *
  * Lista artigos, entrevistas e cobertura de mídia sobre a empresa em PT/EN/ES.
  * Estrutura escalável: novos artigos são adicionados em copyPages.ts no array
@@ -20,7 +20,7 @@ export default function Imprensa() {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.title = `${t.hero.title} · nowgo ai`;
+      document.title = `${t.hero.title} · NowGo AI`;
     }
   }, [t.hero.title]);
 
@@ -105,7 +105,7 @@ export default function Imprensa() {
               {t.contactCta.primary}
             </a>
             <a
-              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pela%20p%C3%A1gina%20de%20Imprensa%20da%20nowgo%20ai%20e%20gostaria%20de%20uma%20pauta%2Fentrevista."
+              href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pela%20p%C3%A1gina%20de%20Imprensa%20da%20NowGo%20AI%20e%20gostaria%20de%20uma%20pauta%2Fentrevista."
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

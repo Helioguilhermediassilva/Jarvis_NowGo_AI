@@ -140,9 +140,9 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "Infraestrutura operacional inteligente, modular e auditável para cidades, empresas e serviços públicos — sobre stack NVIDIA, com governança brasileira e cuidado pelos invisíveis.",
       },
       bio: {
-        title: "A nowgo ai em uma frase",
+        title: "A NowGo AI em uma frase",
         body: [
-          "A nowgo ai é uma AI Native Company brasileira que entrega infraestrutura operacional inteligente, soberana, modular e auditável para cidades, empresas e serviços públicos — sobre stack NVIDIA Enterprise.",
+          "A NowGo AI é uma AI Native Company brasileira que entrega infraestrutura operacional inteligente, soberana, modular e auditável para cidades, empresas e serviços públicos — sobre stack NVIDIA Enterprise.",
           "<strong>Missão:</strong> conectar dados, cidadãos, empresas e serviços públicos para um futuro melhor — com cuidado especial pelos invisíveis e mais vulneráveis.",
           "<strong>Visão:</strong> ser referência global em infraestrutura operacional soberana de IA para cidades, empresas e serviços públicos.",
         ],
@@ -152,7 +152,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         body: [
           "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> nasceu no Brasil de muitos Brasis e foi criado em Brasília. Carrega raízes mineiras, capixabas e nordestinas, e construiu sua trajetória entre o público e o privado, entre a engenharia e a visão de país. Aos 14 anos já sabia o que queria fazer: usar tecnologia para transformar vidas em escala.",
           "Aos 19 anos tornou-se instrutor oficial Oracle — um dos mais novos da América Latina à época. Ainda como coordenador de infraestrutura de TI logo após a universidade, foi o líder técnico responsável pela revitalização completa do Data Center da Funcef, que sustentou o crescimento do fundo de R$ 4 bilhões para R$ 40 bilhões de reais. Em seguida, cofundou uma das duas primeiras empresas latino-americanas selecionadas para o programa Top 10 Global da 500 Startups. A empresa foi vendida e não sobreviveu como organização, mas a visão e a missão continuaram — e se ampliaram. Hoje, com IA generativa e infraestrutura GPU, tudo o que parecia impensável se tornou possível.",
-          "Hélio reúne equipe técnica nacional com bases em telecom e no setor de Justiça (CNJ), e teve passagem pelo Banco Mundial em projetos anteriores. Hoje está 100% dedicado à nowgo ai — a empresa que materializa, em escala, aquela visão de cidade, empresa e serviço público verdadeiramente humanos.",
+          "Hélio reúne equipe técnica nacional com bases em telecom e no setor de Justiça (CNJ), e teve passagem pelo Banco Mundial em projetos anteriores. Hoje está 100% dedicado à NowGo AI — a empresa que materializa, em escala, aquela visão de cidade, empresa e serviço público verdadeiramente humanos.",
           "É reconhecido entre as <strong>Top 50 Global</strong> lideranças em infraestrutura digital pública pela DPI · JICA · BCG · Bill & Melinda Gates Foundation, e é <strong>NVIDIA Partner Expert 2026</strong>. Atua como mentor de IA no programa <strong>InovaSkill</strong> — maior iniciativa de intraempreendedorismo e inovação aberta do centro-oeste paulista, idealizada pela <strong>Fundação Shunji Nishimura de Tecnologia</strong> (do <strong>Grupo Jacto</strong>, referência mundial em AgTech, fundado em 1948 em Pompeia/SP) e conduzido pelas consultorias <strong>Mentto</strong> (Pompeia/SP) e <strong>Bluefields Aceleradora</strong> (Top 10 do Brasil pela ABStartups), em parceria com a <strong>FATEC Pompeia “Shunji Nishimura”</strong>. Já treinou mais de mil especialistas em IA em Brasília.",
           "É presidente da AACMB — Associação dos ex-alunos do Colégio Militar de Brasília, rede de cerca de 80 mil famílias que inclui empresários, artistas, ministros e o atual governador de São Paulo. Lidera ainda parcerias com 14 universidades africanas e coopera com o MEC e o Centro de Estudos Estratégicos Brasileiros para o desenvolvimento de LLMs em português.",
           "Como autor, publicou <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Desenvolvendo oportunidades além do Vale do Silício</a></em> (Editora Trampolim), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024) e <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Sistemas Computacionais: Fundamentos e Aplicações Inovadoras</a></em> (2024) — obras que consolidam sua trajetória entre tecnologia, empreendedorismo e visão de país.",
@@ -178,7 +178,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "MANIFESTO · CONSTRUTOR DE FUTURO",
         title: "Tecnologia que serve, conecta e transforma vidas.",
         subtitle:
-          "O norte que orienta cada decisão da nowgo ai e do seu fundador, Hélio Guilherme.",
+          "O norte que orienta cada decisão da NowGo AI e do seu fundador, Hélio Guilherme.",
       },
       pillars: [
         {
@@ -255,14 +255,14 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "POLÍTICA DE PRIVACIDADE",
         title: "Como tratamos seus dados.",
         subtitle:
-          "Esta política descreve, em linguagem clara, como a nowgo ai coleta, utiliza, compartilha e protege dados pessoais — em conformidade com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018) e com o Regulamento Geral de Proteção de Dados (GDPR) europeu, quando aplicável.",
+          "Esta política descreve, em linguagem clara, como a NowGo AI coleta, utiliza, compartilha e protege dados pessoais — em conformidade com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018) e com o Regulamento Geral de Proteção de Dados (GDPR) europeu, quando aplicável.",
         updated: "Última atualização: 25 de maio de 2026",
       },
       sections: [
         {
           title: "1. Quem somos",
           body: [
-            "A nowgo ai é uma plataforma operacional de inteligência artificial mantida por nowgo ai Tecnologia Ltda., com sede no Brasil, atuando como controladora de dados pessoais coletados em sua landing page e em produtos vinculados (Cockpit, agentes inteligentes e integrações).",
+            "A NowGo AI é uma plataforma operacional de inteligência artificial mantida por NowGo AI Tecnologia Ltda., com sede no Brasil, atuando como controladora de dados pessoais coletados em sua landing page e em produtos vinculados (Cockpit, agentes inteligentes e integrações).",
             "Para exercer direitos previstos em lei, ou para qualquer questão sobre privacidade, escreva para privacidade@nowgo.com.br.",
           ],
         },
@@ -335,7 +335,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     carreiras: {
       hero: {
         eyebrow: "CARREIRAS",
-        title: "Faça parte da nowgo ai",
+        title: "Faça parte da NowGo AI",
         subtitle:
           "Construímos infraestrutura operacional soberana de inteligência artificial para tornar visível quem sempre foi invisível para as políticas públicas. Buscamos pessoas com fome de aprender, humildade real e conexão genuína com essa missão.",
       },
@@ -350,7 +350,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "Estagiário(a) Administrativo e Financeiro",
           meta: "Brasília · Presencial / Híbrido · Início: Jun/2026",
           intro:
-            "Você vai estar no coração da operação da nowgo ai — organizando processos, gerenciando ferramentas, apoiando o time e garantindo que nada se perca no meio do crescimento acelerado. É uma posição para quem gosta de deixar tudo em ordem e quer aprender como uma empresa de tecnologia de impacto funciona por dentro.",
+            "Você vai estar no coração da operação da NowGo AI — organizando processos, gerenciando ferramentas, apoiando o time e garantindo que nada se perca no meio do crescimento acelerado. É uma posição para quem gosta de deixar tudo em ordem e quer aprender como uma empresa de tecnologia de impacto funciona por dentro.",
           responsibilities: {
             title: "O que você vai fazer",
             items: [
@@ -389,7 +389,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "Desenvolvedor(a) de Software AI First",
           meta: "Brasília / Remoto · Início: Jun/2026",
           intro:
-            "Você vai construir a camada técnica da plataforma nowgo ai — agentes de inteligência artificial, integrações com sistemas públicos e hospitalares, automações e interfaces que chegam onde a tecnologia ainda não chega. Trabalhará diretamente com o arquiteto técnico da empresa em projetos que impactam cidadãos reais.",
+            "Você vai construir a camada técnica da plataforma NowGo AI — agentes de inteligência artificial, integrações com sistemas públicos e hospitalares, automações e interfaces que chegam onde a tecnologia ainda não chega. Trabalhará diretamente com o arquiteto técnico da empresa em projetos que impactam cidadãos reais.",
           responsibilities: {
             title: "O que você vai fazer",
             items: [
@@ -440,7 +440,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "IMPRENSA",
         title: "Imprensa",
         subtitle:
-          "Artigos, entrevistas e cobertura da mídia sobre a nowgo ai e seu fundador, Hélio Guilherme Dias Silva — com foco em IA Native, soberania digital e infraestrutura embarcada para cidades, empresas e serviços públicos.",
+          "Artigos, entrevistas e cobertura da mídia sobre a NowGo AI e seu fundador, Hélio Guilherme Dias Silva — com foco em IA Native, soberania digital e infraestrutura embarcada para cidades, empresas e serviços públicos.",
       },
       intro: {
         body: [
@@ -489,9 +489,9 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "Sovereign, modular and auditable operational AI infrastructure for cities, enterprises and public services — on NVIDIA stack, with Brazilian governance and care for the invisible.",
       },
       bio: {
-        title: "nowgo ai in one sentence",
+        title: "NowGo AI in one sentence",
         body: [
-          "nowgo ai is a Brazilian AI Native Company that delivers sovereign, modular and auditable operational AI infrastructure for cities, enterprises and public services — on NVIDIA Enterprise stack.",
+          "NowGo AI is a Brazilian AI Native Company that delivers sovereign, modular and auditable operational AI infrastructure for cities, enterprises and public services — on NVIDIA Enterprise stack.",
           "<strong>Mission:</strong> to connect data, citizens, enterprises and public services for a better future — with special care for the invisible and most vulnerable.",
           "<strong>Vision:</strong> to become the global reference in sovereign operational AI infrastructure for cities, enterprises and public services.",
         ],
@@ -501,7 +501,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         body: [
           "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> was born in the Brazil of many Brazils and was raised in Brasília. He carries roots from Minas Gerais, Espírito Santo and the Northeast, and built his career between the public and the private, between engineering and a vision for the country. At 14 he already knew what he wanted to do: use technology to transform lives at scale.",
           "At 19 he became an official Oracle instructor — one of the youngest in Latin America at the time. Right after university, serving as IT infrastructure coordinator, he was the technical lead responsible for the full revitalization of Funcef's Data Center, which supported the fund's growth from R$ 4 billion to R$ 40 billion in assets under management. He then co-founded one of the first two Latin American companies selected for the Top 10 Global program at 500 Startups. The company was sold and did not survive as an organization, but the vision and mission continued — and grew. Today, with generative AI and GPU infrastructure, what once seemed impossible has become possible.",
-          "Hélio leads a national technical team with backgrounds in telecom and the Brazilian Justice sector (CNJ), and previously worked on World Bank projects. He is now 100% dedicated to nowgo ai — the company that materializes, at scale, that vision of truly human cities, enterprises and public services.",
+          "Hélio leads a national technical team with backgrounds in telecom and the Brazilian Justice sector (CNJ), and previously worked on World Bank projects. He is now 100% dedicated to NowGo AI — the company that materializes, at scale, that vision of truly human cities, enterprises and public services.",
           "He is recognized among the <strong>Top 50 Global</strong> leaders in digital public infrastructure by DPI · JICA · BCG · Bill & Melinda Gates Foundation, and is an <strong>NVIDIA Partner Expert 2026</strong>. He acts as AI mentor in the <strong>InovaSkill</strong> program — the largest open innovation and intrapreneurship initiative in Brazil's central-western São Paulo region, created by the <strong>Shunji Nishimura Technology Foundation</strong> (of <strong>Grupo Jacto</strong>, a global benchmark in AgTech, founded in 1948 in Pompeia/SP) and run by consultancies <strong>Mentto</strong> (Pompeia/SP) and <strong>Bluefields Accelerator</strong> (Top 10 in Brazil by ABStartups), in partnership with <strong>FATEC Pompeia “Shunji Nishimura”</strong>. He has trained over a thousand AI specialists in Brasília.",
           "He is president of AACMB — the alumni association of the Brasília Military College, a network of around 80,000 families that includes entrepreneurs, artists, ministers and the current governor of São Paulo. He also leads partnerships with 14 African universities and cooperates with Brazil's Ministry of Education and the Brazilian Strategic Studies Center on the development of Portuguese-language LLMs.",
           "As an author, he has published <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Developing opportunities beyond Silicon Valley</a></em> (Trampolim Publishing), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024), and <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Computational Systems: Foundations and Innovative Applications</a></em> (2024) — works that consolidate his journey across technology, entrepreneurship and national vision.",
@@ -527,7 +527,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "MANIFESTO · FUTURE BUILDER",
         title: "Technology that serves, connects and transforms lives.",
         subtitle:
-          "The north that guides every decision at nowgo ai and its founder, Hélio Guilherme.",
+          "The north that guides every decision at NowGo AI and its founder, Hélio Guilherme.",
       },
       pillars: [
         {
@@ -604,14 +604,14 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "PRIVACY POLICY",
         title: "How we handle your data.",
         subtitle:
-          "This policy describes, in clear language, how nowgo ai collects, uses, shares and protects personal data — in compliance with the Brazilian General Data Protection Law (LGPD, Law 13,709/2018) and the European General Data Protection Regulation (GDPR), when applicable.",
+          "This policy describes, in clear language, how NowGo AI collects, uses, shares and protects personal data — in compliance with the Brazilian General Data Protection Law (LGPD, Law 13,709/2018) and the European General Data Protection Regulation (GDPR), when applicable.",
         updated: "Last update: May 25, 2026",
       },
       sections: [
         {
           title: "1. Who we are",
           body: [
-            "nowgo ai is an operational artificial intelligence platform maintained by nowgo ai Tecnologia Ltda., headquartered in Brazil, acting as controller of personal data collected on its landing page and on linked products (Cockpit, intelligent agents and integrations).",
+            "NowGo AI is an operational artificial intelligence platform maintained by NowGo AI Tecnologia Ltda., headquartered in Brazil, acting as controller of personal data collected on its landing page and on linked products (Cockpit, intelligent agents and integrations).",
             "To exercise rights provided by law, or for any question about privacy, write to privacidade@nowgo.com.br.",
           ],
         },
@@ -684,7 +684,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     carreiras: {
       hero: {
         eyebrow: "CAREERS",
-        title: "Join nowgo ai",
+        title: "Join NowGo AI",
         subtitle:
           "We build sovereign operational infrastructure of artificial intelligence to make visible those who have always been invisible to public policies. We seek people hungry to learn, with real humility and genuine connection to this mission.",
       },
@@ -699,7 +699,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "Administrative & Finance Intern",
           meta: "Brasília · On-site / Hybrid · Start: Jun/2026",
           intro:
-            "You will be at the heart of nowgo ai's operation — organizing processes, managing tools, supporting the team and making sure nothing falls through the cracks during accelerated growth. It is a position for those who like to keep everything in order and want to learn how an impact-focused technology company works from the inside.",
+            "You will be at the heart of NowGo AI's operation — organizing processes, managing tools, supporting the team and making sure nothing falls through the cracks during accelerated growth. It is a position for those who like to keep everything in order and want to learn how an impact-focused technology company works from the inside.",
           responsibilities: {
             title: "What you will do",
             items: [
@@ -738,7 +738,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "AI First Software Developer",
           meta: "Brasília / Remote · Start: Jun/2026",
           intro:
-            "You will build the technical layer of the nowgo ai platform — AI agents, integrations with public and hospital systems, automations and interfaces that reach where technology has not yet arrived. You will work directly with the company's technical architect on projects that impact real citizens.",
+            "You will build the technical layer of the NowGo AI platform — AI agents, integrations with public and hospital systems, automations and interfaces that reach where technology has not yet arrived. You will work directly with the company's technical architect on projects that impact real citizens.",
           responsibilities: {
             title: "What you will do",
             items: [
@@ -789,7 +789,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "PRESS",
         title: "Press",
         subtitle:
-          "Articles, interviews and media coverage about nowgo ai and its founder, Hélio Guilherme Dias Silva — focused on AI Native operation, digital sovereignty and embedded infrastructure for cities, enterprises and public services.",
+          "Articles, interviews and media coverage about NowGo AI and its founder, Hélio Guilherme Dias Silva — focused on AI Native operation, digital sovereignty and embedded infrastructure for cities, enterprises and public services.",
       },
       intro: {
         body: [
@@ -838,9 +838,9 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "Infraestructura operacional inteligente, modular y auditable para ciudades, empresas y servicios públicos — sobre stack NVIDIA, con gobernanza brasileña y cuidado por los invisibles.",
       },
       bio: {
-        title: "nowgo ai en una frase",
+        title: "NowGo AI en una frase",
         body: [
-          "nowgo ai es una AI Native Company brasileña que entrega infraestructura operacional inteligente, soberana, modular y auditable para ciudades, empresas y servicios públicos — sobre stack NVIDIA Enterprise.",
+          "NowGo AI es una AI Native Company brasileña que entrega infraestructura operacional inteligente, soberana, modular y auditable para ciudades, empresas y servicios públicos — sobre stack NVIDIA Enterprise.",
           "<strong>Misión:</strong> conectar datos, ciudadanos, empresas y servicios públicos para un futuro mejor — con cuidado especial por los invisibles y más vulnerables.",
           "<strong>Visión:</strong> ser referencia global en infraestructura operacional soberana de IA para ciudades, empresas y servicios públicos.",
         ],
@@ -850,7 +850,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         body: [
           "<a href=\"https://www.linkedin.com/in/helioguilherme/\" target=\"_blank\" rel=\"noopener noreferrer\">Hélio Guilherme</a> nació en el Brasil de muchos Brasis y fue criado en Brasilia. Lleva raíces mineiras, capixabas y nordestinas, y construyó su trayectoria entre lo público y lo privado, entre la ingeniería y una visión de país. A los 14 años ya sabía lo que quería hacer: usar la tecnología para transformar vidas a escala.",
           "A los 19 años se convirtió en instructor oficial de Oracle — uno de los más jóvenes de América Latina en aquel momento. Justo después de la universidad, ejerciendo como coordinador de infraestructura de TI, fue el líder técnico responsable por la revitalización completa del Data Center de Funcef, que sostuvo el crecimiento del fondo de R$ 4 mil millones a R$ 40 mil millones de reales. Luego, cofundó una de las dos primeras empresas latinoamericanas seleccionadas para el programa Top 10 Global de 500 Startups. La empresa fue vendida y no sobrevivió como organización, pero la visión y la misión continuaron — y se ampliaron. Hoy, con IA generativa e infraestructura GPU, lo que parecía impensable se volvió posible.",
-          "Hélio reúne un equipo técnico nacional con bases en telecom y en el sector de Justicia (CNJ), y tuvo paso por el Banco Mundial en proyectos anteriores. Hoy está 100% dedicado a nowgo ai — la empresa que materializa, a escala, aquella visión de ciudad, empresa y servicio público verdaderamente humanos.",
+          "Hélio reúne un equipo técnico nacional con bases en telecom y en el sector de Justicia (CNJ), y tuvo paso por el Banco Mundial en proyectos anteriores. Hoy está 100% dedicado a NowGo AI — la empresa que materializa, a escala, aquella visión de ciudad, empresa y servicio público verdaderamente humanos.",
           "Es reconocido entre los <strong>Top 50 Global</strong> líderes en infraestructura digital pública por DPI · JICA · BCG · Bill & Melinda Gates Foundation, y es <strong>NVIDIA Partner Expert 2026</strong>. Actúa como mentor de IA en el programa <strong>InovaSkill</strong> — la mayor iniciativa de intraemprendimiento e innovación abierta del centro-oeste paulista, ideada por la <strong>Fundação Shunji Nishimura de Tecnologia</strong> (del <strong>Grupo Jacto</strong>, referencia mundial en AgTech, fundado en 1948 en Pompeia/SP) y conducida por las consultorías <strong>Mentto</strong> (Pompeia/SP) y <strong>Bluefields Aceleradora</strong> (Top 10 de Brasil por ABStartups), en alianza con la <strong>FATEC Pompeia “Shunji Nishimura”</strong>. Ha entrenado a más de mil especialistas en IA en Brasilia.",
           "Es presidente de AACMB — Asociación de exalumnos del Colegio Militar de Brasilia, red de cerca de 80 mil familias que incluye empresarios, artistas, ministros y el actual gobernador de São Paulo. Lidera además alianzas con 14 universidades africanas y coopera con el MEC y el Centro de Estudios Estratégicos Brasileños para el desarrollo de LLMs en portugués.",
           "Como autor, ha publicado <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Desarrollando oportunidades más allá de Silicon Valley</a></em> (Editorial Trampolim), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024) y <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Sistemas Computacionales: Fundamentos y Aplicaciones Innovadoras</a></em> (2024) — obras que consolidan su trayectoria entre tecnología, emprendimiento y visión de país.",
@@ -876,7 +876,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "MANIFIESTO · CONSTRUCTOR DE FUTURO",
         title: "Tecnología que sirve, conecta y transforma vidas.",
         subtitle:
-          "El norte que orienta cada decisión de nowgo ai y de su fundador, Hélio Guilherme.",
+          "El norte que orienta cada decisión de NowGo AI y de su fundador, Hélio Guilherme.",
       },
       pillars: [
         {
@@ -953,14 +953,14 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "POLÍTICA DE PRIVACIDAD",
         title: "Cómo tratamos sus datos.",
         subtitle:
-          "Esta política describe, en lenguaje claro, cómo nowgo ai recopila, utiliza, comparte y protege datos personales — en cumplimiento con la Ley General de Protección de Datos brasileña (LGPD, Ley 13.709/2018) y con el Reglamento General de Protección de Datos (GDPR) europeo, cuando aplicable.",
+          "Esta política describe, en lenguaje claro, cómo NowGo AI recopila, utiliza, comparte y protege datos personales — en cumplimiento con la Ley General de Protección de Datos brasileña (LGPD, Ley 13.709/2018) y con el Reglamento General de Protección de Datos (GDPR) europeo, cuando aplicable.",
         updated: "Última actualización: 25 de mayo de 2026",
       },
       sections: [
         {
           title: "1. Quiénes somos",
           body: [
-            "nowgo ai es una plataforma operacional de inteligencia artificial mantenida por nowgo ai Tecnologia Ltda., con sede en Brasil, actuando como responsable de datos personales recopilados en su landing page y en productos vinculados (Cockpit, agentes inteligentes e integraciones).",
+            "NowGo AI es una plataforma operacional de inteligencia artificial mantenida por NowGo AI Tecnologia Ltda., con sede en Brasil, actuando como responsable de datos personales recopilados en su landing page y en productos vinculados (Cockpit, agentes inteligentes e integraciones).",
             "Para ejercer derechos previstos por ley, o para cualquier pregunta sobre privacidad, escriba a privacidade@nowgo.com.br.",
           ],
         },
@@ -1033,7 +1033,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
     carreiras: {
       hero: {
         eyebrow: "CARRERAS",
-        title: "Forma parte de nowgo ai",
+        title: "Forma parte de NowGo AI",
         subtitle:
           "Construimos infraestructura operacional soberana de inteligencia artificial para hacer visibles a quienes siempre fueron invisibles para las políticas públicas. Buscamos personas con hambre de aprender, humildad real y conexión genuina con esta misión.",
       },
@@ -1048,7 +1048,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "Pasante Administrativo y Financiero",
           meta: "Brasília · Presencial / Híbrido · Inicio: Jun/2026",
           intro:
-            "Estarás en el corazón de la operación de nowgo ai — organizando procesos, gestionando herramientas, apoyando al equipo y asegurando que nada se pierda en medio del crecimiento acelerado. Es una posición para quien le gusta dejar todo en orden y quiere aprender cómo funciona por dentro una empresa de tecnología de impacto.",
+            "Estarás en el corazón de la operación de NowGo AI — organizando procesos, gestionando herramientas, apoyando al equipo y asegurando que nada se pierda en medio del crecimiento acelerado. Es una posición para quien le gusta dejar todo en orden y quiere aprender cómo funciona por dentro una empresa de tecnología de impacto.",
           responsibilities: {
             title: "Lo que harás",
             items: [
@@ -1087,7 +1087,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           role: "Desarrollador(a) de Software AI First",
           meta: "Brasília / Remoto · Inicio: Jun/2026",
           intro:
-            "Construirás la capa técnica de la plataforma nowgo ai — agentes de inteligencia artificial, integraciones con sistemas públicos y hospitalarios, automatizaciones e interfaces que llegan donde la tecnología aún no llega. Trabajarás directamente con el arquitecto técnico de la empresa en proyectos que impactan a ciudadanos reales.",
+            "Construirás la capa técnica de la plataforma NowGo AI — agentes de inteligencia artificial, integraciones con sistemas públicos y hospitalarios, automatizaciones e interfaces que llegan donde la tecnología aún no llega. Trabajarás directamente con el arquitecto técnico de la empresa en proyectos que impactan a ciudadanos reales.",
           responsibilities: {
             title: "Lo que harás",
             items: [
@@ -1138,7 +1138,7 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         eyebrow: "PRENSA",
         title: "Prensa",
         subtitle:
-          "Artículos, entrevistas y cobertura mediática sobre nowgo ai y su fundador, Hélio Guilherme Dias Silva — con foco en operación AI Native, soberanía digital e infraestructura embebida para ciudades, empresas y servicios públicos.",
+          "Artículos, entrevistas y cobertura mediática sobre NowGo AI y su fundador, Hélio Guilherme Dias Silva — con foco en operación AI Native, soberanía digital e infraestructura embebida para ciudades, empresas y servicios públicos.",
       },
       intro: {
         body: [

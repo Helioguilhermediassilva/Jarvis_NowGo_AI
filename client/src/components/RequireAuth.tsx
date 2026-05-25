@@ -137,7 +137,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
               lineHeight: 1.2,
             }}
           >
-            O cockpit nowgo ai está em acesso restrito neste primeiro momento.
+            O cockpit NowGo AI está em acesso restrito neste primeiro momento.
           </h1>
           <p
             style={{
@@ -147,7 +147,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
               margin: "0 0 1.75rem",
             }}
           >
-            Sua conta {user?.email ? <strong style={{ color: "#F4F4F6" }}>({user.email})</strong> : null} está autenticada com sucesso, mas ainda não está habilitada para o painel interno. A liberação acontece em ondas controladas. Para solicitar acesso, fale com a equipe nowgo ai.
+            Sua conta {user?.email ? <strong style={{ color: "#F4F4F6" }}>({user.email})</strong> : null} está autenticada com sucesso, mas ainda não está habilitada para o painel interno. A liberação acontece em ondas controladas. Para solicitar acesso, fale com a equipe NowGo AI.
           </p>
           <div
             style={{

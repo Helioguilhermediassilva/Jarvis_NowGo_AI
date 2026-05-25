@@ -9,7 +9,7 @@ export default function Manifesto() {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.title = `${t.hero.title} · nowgo ai`;
+      document.title = `${t.hero.title} · NowGo AI`;
     }
   }, [t.hero.title]);
 

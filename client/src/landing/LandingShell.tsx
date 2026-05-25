@@ -63,7 +63,7 @@ export default function LandingShell({ children, activeNav: _activeNav }: Props)
         <div className="ng-header-inner">
           <Link href="/" className="ng-brand">
             <span className="ng-brand-mark">◇</span>
-            <span className="ng-brand-text">nowgo ai</span>
+            <span className="ng-brand-text">NowGo AI</span>
           </Link>
           <nav className="ng-nav-links" aria-label="primary">
             <CompanyDropdown
