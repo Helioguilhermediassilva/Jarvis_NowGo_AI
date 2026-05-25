@@ -12,6 +12,7 @@ import Sobre from "@/pages/Sobre";
 import Manifesto from "@/pages/Manifesto";
 import Privacidade from "@/pages/Privacidade";
 import Carreiras from "@/pages/Carreiras";
+import Imprensa from "@/pages/Imprensa";
 import RequireAuth from "@/components/RequireAuth";
 
 function Router() {
@@ -42,6 +43,9 @@ function Router() {
       <Route path={"/carreiras"} component={Carreiras} />
       <Route path={"/careers"} component={Carreiras} />
       <Route path={"/carreras"} component={Carreiras} />
+      <Route path={"/imprensa"} component={Imprensa} />
+      <Route path={"/press"} component={Imprensa} />
+      <Route path={"/prensa"} component={Imprensa} />
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

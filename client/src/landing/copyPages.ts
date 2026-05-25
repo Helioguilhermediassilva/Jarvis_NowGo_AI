@@ -94,11 +94,40 @@ type CarreirasContent = {
   };
 };
 
+type PressArticle = {
+  outlet: string; // ex: "Gazeta Mercantil"
+  category: string; // ex: "Magazine · Tecnologia"
+  date: string; // formato local pt/en/es já formatado
+  title: string;
+  summary: string;
+  url?: string; // ausente quando upcoming = true
+  upcoming?: boolean;
+  ctaLabel?: string; // "Ler artigo" / "Read article" / "Leer artículo"
+  upcomingLabel?: string; // "Em breve" / "Coming soon" / "Próximamente"
+};
+
+type ImprensaContent = {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  intro: { body: string[] };
+  articles: PressArticle[];
+  contactCta: {
+    title: string;
+    subtitle: string;
+    primary: string;
+    secondary: string;
+  };
+};
+
 type PagesCopy = {
   sobre: SobreContent;
   manifesto: ManifestoContent;
   privacidade: PrivacyContent;
   carreiras: CarreirasContent;
+  imprensa: ImprensaContent;
 };
 
 export const pagesCopy: Record<Lang, PagesCopy> = {
@@ -403,6 +432,49 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         subtitle:
           "Se você acredita na missão e tem algo a contribuir, escreva mesmo assim. Estamos sempre abertos a conversar com quem soma.",
         primary: "Enviar candidatura espontânea",
+        secondary: "Falar pelo WhatsApp",
+      },
+    },
+    imprensa: {
+      hero: {
+        eyebrow: "IMPRENSA",
+        title: "Imprensa",
+        subtitle:
+          "Artigos, entrevistas e cobertura da mídia sobre a nowgo ai e seu fundador, Hélio Guilherme Dias Silva — com foco em IA Native, soberania digital e infraestrutura embarcada para cidades, empresas e serviços públicos.",
+      },
+      intro: {
+        body: [
+          "Aqui reunimos artigos publicados em veículos parceiros, entrevistas e análises que ajudam a contar, na prática, o que é construir uma AI Native Company brasileira. Para solicitações de imprensa, entrevistas ou pautas, escreva para imprensa@nowgo.com.br.",
+        ],
+      },
+      articles: [
+        {
+          outlet: "Gazeta Mercantil",
+          category: "Magazine · Tecnologia",
+          date: "17 de abril de 2026",
+          title:
+            "Do hype à prática: como a inteligência artificial já está transformando a educação no mundo",
+          summary:
+            "Análise crítica sobre como a IA está mudando a educação na prática — combinando evidência científica (npj Science of Learning), casos internacionais (ASU, Duolingo, Brookings) e brasileiros (SESI-SP LEIA, FATEC Pompeia, MEC), com discussão de governança, soberania de LLM em português e o papel da infraestrutura embarcada como base para a próxima etapa do setor.",
+          url: "https://www.gazetamercantil.digital/do-hype-a-pratica-como-a-inteligencia-artificial-ja-esta-transformando-a-educacao-no-mundo/",
+          ctaLabel: "Ler artigo na Gazeta Mercantil",
+        },
+        {
+          outlet: "Próximas publicações",
+          category: "Em pauta",
+          date: "2026",
+          title: "Mais artigos e entrevistas em breve",
+          summary:
+            "Estamos preparando novas publicações sobre IA soberana, cidades inteligentes, saúde pública e operação AI Native em parceria com veículos brasileiros e internacionais.",
+          upcoming: true,
+          upcomingLabel: "Em breve",
+        },
+      ],
+      contactCta: {
+        title: "Contato de imprensa",
+        subtitle:
+          "Para entrevistas, pautas, dados, declarações ou material institucional, escreva para imprensa@nowgo.com.br. Respondemos em até dois dias úteis.",
+        primary: "Escrever para imprensa@nowgo.com.br",
         secondary: "Falar pelo WhatsApp",
       },
     },
@@ -712,6 +784,49 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         secondary: "Reach us on WhatsApp",
       },
     },
+    imprensa: {
+      hero: {
+        eyebrow: "PRESS",
+        title: "Press",
+        subtitle:
+          "Articles, interviews and media coverage about nowgo ai and its founder, Hélio Guilherme Dias Silva — focused on AI Native operation, digital sovereignty and embedded infrastructure for cities, enterprises and public services.",
+      },
+      intro: {
+        body: [
+          "Here we gather articles published in partner outlets, interviews and analyses that help tell, in practice, what it means to build a Brazilian AI Native Company. For press requests, interviews or story pitches, write to imprensa@nowgo.com.br.",
+        ],
+      },
+      articles: [
+        {
+          outlet: "Gazeta Mercantil",
+          category: "Magazine · Technology",
+          date: "April 17, 2026",
+          title:
+            "From hype to practice: how artificial intelligence is already transforming education worldwide",
+          summary:
+            "A critical analysis on how AI is actually transforming education — combining scientific evidence (npj Science of Learning), international cases (ASU, Duolingo, Brookings) and Brazilian ones (SESI-SP LEIA, FATEC Pompeia, MEC), with a discussion on governance, sovereignty of Brazilian-Portuguese LLMs and the role of embedded infrastructure as the foundation for the next stage of the sector.",
+          url: "https://www.gazetamercantil.digital/do-hype-a-pratica-como-a-inteligencia-artificial-ja-esta-transformando-a-educacao-no-mundo/",
+          ctaLabel: "Read the article in Gazeta Mercantil",
+        },
+        {
+          outlet: "Upcoming publications",
+          category: "In the pipeline",
+          date: "2026",
+          title: "More articles and interviews coming soon",
+          summary:
+            "We are preparing new publications on sovereign AI, smart cities, public health and AI Native operation in partnership with Brazilian and international outlets.",
+          upcoming: true,
+          upcomingLabel: "Coming soon",
+        },
+      ],
+      contactCta: {
+        title: "Press contact",
+        subtitle:
+          "For interviews, story pitches, data, statements or institutional materials, write to imprensa@nowgo.com.br. We reply within two business days.",
+        primary: "Write to imprensa@nowgo.com.br",
+        secondary: "Reach us on WhatsApp",
+      },
+    },
   },
 
   es: {
@@ -1015,6 +1130,49 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         subtitle:
           "Si crees en la misión y tienes algo que aportar, escríbenos igualmente. Siempre estamos abiertos a conversar con quienes suman.",
         primary: "Enviar candidatura espontánea",
+        secondary: "Hablar por WhatsApp",
+      },
+    },
+    imprensa: {
+      hero: {
+        eyebrow: "PRENSA",
+        title: "Prensa",
+        subtitle:
+          "Artículos, entrevistas y cobertura mediática sobre nowgo ai y su fundador, Hélio Guilherme Dias Silva — con foco en operación AI Native, soberanía digital e infraestructura embebida para ciudades, empresas y servicios públicos.",
+      },
+      intro: {
+        body: [
+          "Aquí reunimos artículos publicados en medios aliados, entrevistas y análisis que ayudan a contar, en la práctica, qué significa construir una AI Native Company brasileña. Para solicitudes de prensa, entrevistas o temas, escribe a imprensa@nowgo.com.br.",
+        ],
+      },
+      articles: [
+        {
+          outlet: "Gazeta Mercantil",
+          category: "Magazine · Tecnología",
+          date: "17 de abril de 2026",
+          title:
+            "Del hype a la práctica: cómo la inteligencia artificial ya está transformando la educación en el mundo",
+          summary:
+            "Análisis crítico sobre cómo la IA está cambiando la educación en la práctica — combinando evidencia científica (npj Science of Learning), casos internacionales (ASU, Duolingo, Brookings) y brasileños (SESI-SP LEIA, FATEC Pompeia, MEC), con discusión sobre gobernanza, soberanía de LLM en portugués y el papel de la infraestructura embebida como base para la próxima etapa del sector.",
+          url: "https://www.gazetamercantil.digital/do-hype-a-pratica-como-a-inteligencia-artificial-ja-esta-transformando-a-educacao-no-mundo/",
+          ctaLabel: "Leer artículo en Gazeta Mercantil",
+        },
+        {
+          outlet: "Próximas publicaciones",
+          category: "En agenda",
+          date: "2026",
+          title: "Próximamente más artículos y entrevistas",
+          summary:
+            "Estamos preparando nuevas publicaciones sobre IA soberana, ciudades inteligentes, salud pública y operación AI Native junto a medios brasileños e internacionales.",
+          upcoming: true,
+          upcomingLabel: "Próximamente",
+        },
+      ],
+      contactCta: {
+        title: "Contacto de prensa",
+        subtitle:
+          "Para entrevistas, temas, datos, declaraciones o material institucional, escribe a imprensa@nowgo.com.br. Respondemos en hasta dos días hábiles.",
+        primary: "Escribir a imprensa@nowgo.com.br",
         secondary: "Hablar por WhatsApp",
       },
     },

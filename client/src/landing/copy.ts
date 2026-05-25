@@ -261,7 +261,7 @@ export const copy = {
           { label: "Sobre", href: "/sobre" },
           { label: "Cases", href: "#cases" },
           { label: "Carreiras", href: "/carreiras" },
-          { label: "Imprensa", href: "mailto:imprensa@nowgo.com.br" },
+          { label: "Imprensa", href: "/imprensa" },
         ],
       },
       colC: {
@@ -522,7 +522,7 @@ export const copy = {
           { label: "About", href: "/sobre" },
           { label: "Cases", href: "#cases" },
           { label: "Careers", href: "/carreiras" },
-          { label: "Press", href: "mailto:imprensa@nowgo.com.br" },
+          { label: "Press", href: "/imprensa" },
         ],
       },
       colC: {
@@ -783,7 +783,7 @@ export const copy = {
           { label: "Acerca de", href: "/sobre" },
           { label: "Casos", href: "#cases" },
           { label: "Carreras", href: "/carreiras" },
-          { label: "Prensa", href: "mailto:imprensa@nowgo.com.br" },
+          { label: "Prensa", href: "/imprensa" },
         ],
       },
       colC: {

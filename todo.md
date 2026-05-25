@@ -599,3 +599,15 @@ Acoes imediatas:
 - [ ] Validar /carreiras em produção (PT/EN/ES) e usabilidade do dropdown
 - [ ] Coletar Pipeline via Notion MCP (paralelo limitado)
 - [ ] Entregar tabela Top 5 + candidatos ordenada por Score
+
+## F40 — Página /imprensa (PT/EN/ES) com artigo Gazeta Mercantil
+- [x] Adicionar tipos PressArticle e ImprensaContent em copyPages.ts
+- [x] Adicionar bloco imprensa em PT/EN/ES (copyPages.ts) com artigo Gazeta Mercantil + placeholder Em breve
+- [x] Criar client/src/pages/Imprensa.tsx com cards escaláveis (link externo target=_blank + estado upcoming)
+- [x] Adicionar estilos .ng-press-list / .ng-press-card / .ng-press-meta / .ng-press-badge-soon em design-system.css
+- [x] Registrar rotas /imprensa, /press, /prensa em App.tsx
+- [x] Atualizar link "Imprensa/Press/Prensa" do footer.colB de mailto: para /imprensa em copy.ts (PT/EN/ES)
+- [x] Build TypeScript + Vite + testes vitest (31 passed)
+- [ ] Commit + push (helio@nowgo.com.br)
+- [ ] Aguardar deploy Vercel READY (~3 min)
+- [ ] Validar /imprensa em produção (PT/EN/ES) e link externo Gazeta Mercantil
