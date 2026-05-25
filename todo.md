@@ -500,3 +500,30 @@ Acoes imediatas:
 - [ ] Otimizar tokens de saída
 - [ ] Avaliar barge-in
 - [ ] Documentar baseline e ganhos
+
+
+## F35 — Landing: rodapé funcional + páginas institucionais
+
+### Entrega 1 (rodapé funcional + privacidade)
+- [ ] Refatorar `client/src/landing/copy.ts`: footer.colA/colB/colC com objetos {label, href} ao invés de strings
+- [ ] Renderizar links do rodapé como `<a href>` reais
+- [ ] Coluna A (Plataforma): todos âncoram para #platform / #verticals
+- [ ] Coluna B (Empresa): Sobre→/sobre, Cases→#cases, Carreiras→mailto, Imprensa→mailto
+- [ ] Coluna C (Recursos): Cockpit→/cockpit, Manifesto→/manifesto, Privacidade→/privacidade, Contato→#contact
+- [ ] Criar `client/src/pages/Privacidade.tsx` com texto LGPD/GDPR padrão (PT) e suporte EN
+- [ ] Adicionar rota `/privacidade` em App.tsx
+- [ ] Footer suporta âncoras (#) e rotas (/) via `<a>` simples (âncoras) ou `<Link>` (rotas internas)
+
+### Entrega 2 (páginas /sobre e /manifesto + ajustes hero/CTA)
+- [ ] Criar `client/src/pages/Sobre.tsx` (bio narrativa + propósito + reconhecimentos) bilíngue
+- [ ] Criar `client/src/pages/Manifesto.tsx` (Construtor de Futuro completo, estilo lousa) bilíngue
+- [ ] Adicionar rotas `/sobre` e `/manifesto` em App.tsx
+- [ ] Hero: ajustar subtítulo PT/EN para incluir "empresas" + "invisíveis e vulneráveis"
+- [ ] Final CTA: trocar título PT/EN para "Construir hoje o futuro que vale a pena."
+- [ ] Manifesto inclui: Enterprise AI-Native + Dignidade para os invisíveis 👑
+
+### Validação
+- [ ] Build sem warnings
+- [ ] Tsc strict OK
+- [ ] Testes verde
+- [ ] Smoke test em produção (todos os 12 links funcionais)

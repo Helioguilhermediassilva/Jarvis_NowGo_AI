@@ -68,28 +68,23 @@ export default function LandingPage() {
             <a href="#platform">{t.nav.platform}</a>
             <a href="#verticals">{t.nav.verticals}</a>
             <a href="#cases">{t.nav.cases}</a>
+            <a href="#ecosystem">{t.nav.ecosystem}</a>
             <a href="#pricing">{t.nav.pricing}</a>
           </nav>
           <div className="ng-header-actions">
             <div className="ng-lang-toggle" role="tablist" aria-label="Language">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={lang === "pt"}
-                className={lang === "pt" ? "active" : ""}
-                onClick={() => setLang("pt")}
-              >
-                PT
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={lang === "en"}
-                className={lang === "en" ? "active" : ""}
-                onClick={() => setLang("en")}
-              >
-                EN
-              </button>
+              {(["pt", "en", "es"] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  role="tab"
+                  aria-selected={lang === code}
+                  className={lang === code ? "active" : ""}
+                  onClick={() => setLang(code)}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
             </div>
             <Link href="/cockpit" className="btn-primary ng-cta">
               {t.nav.cockpitCta}
@@ -152,14 +147,37 @@ export default function LandingPage() {
             <h2 className="ng-h2">{t.verticals.title}</h2>
             <p className="ng-section-sub">{t.verticals.subtitle}</p>
           </div>
-          <div className="ng-verticals-grid">
-            {t.verticals.items.map((v, i) => (
-              <article key={i} className="ng-vertical reveal" style={{ transitionDelay: `${i * 60}ms` }}>
-                <div className="ng-vertical-num">{String(i + 1).padStart(2, "0")}</div>
-                <h3 className="ng-vertical-name">{v.name}</h3>
-                <p className="ng-vertical-desc">{v.desc}</p>
-              </article>
-            ))}
+
+          {/* Smart Cities (frente pública) em destaque */}
+          <div className="ng-vertical-feature reveal">
+            <div className="ng-vertical-feature-head">
+              <span className="ng-vertical-feature-kicker">{t.verticals.smartCity.kicker}</span>
+              <h3 className="ng-vertical-feature-name">{t.verticals.smartCity.name}</h3>
+            </div>
+            <p className="ng-vertical-feature-desc">{t.verticals.smartCity.desc}</p>
+            <ul className="ng-vertical-feature-bullets">
+              {t.verticals.smartCity.bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Enterprise (frente privada) */}
+          <div className="ng-vertical-enterprise reveal">
+            <div className="ng-vertical-enterprise-head">
+              <span className="ng-vertical-feature-kicker">{t.verticals.enterprise.kicker}</span>
+              <h3 className="ng-vertical-feature-name">{t.verticals.enterprise.name}</h3>
+              <p className="ng-vertical-feature-desc">{t.verticals.enterprise.desc}</p>
+            </div>
+            <div className="ng-verticals-grid">
+              {t.verticals.enterprise.items.map((v, i) => (
+                <article key={i} className="ng-vertical reveal" style={{ transitionDelay: `${i * 60}ms` }}>
+                  <div className="ng-vertical-num">{String(i + 1).padStart(2, "0")}</div>
+                  <h3 className="ng-vertical-name">{v.name}</h3>
+                  <p className="ng-vertical-desc">{v.desc}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -205,6 +223,50 @@ export default function LandingPage() {
                 <p className="ng-seal-desc">{s.desc}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ECOSYSTEM (NVIDIA Partner Expert) */}
+      <section id="ecosystem" className="ng-section">
+        <div className="ng-section-inner">
+          <div className="ng-section-head reveal">
+            <span className="tagline">{t.ecosystem.eyebrow}</span>
+            <h2 className="ng-h2">{t.ecosystem.title}</h2>
+            <p className="ng-section-sub">{t.ecosystem.subtitle}</p>
+          </div>
+          <div className="ng-ecosystem-grid">
+            {t.ecosystem.items.map((c, i) => (
+              <a
+                key={i}
+                href={c.href}
+                target="_blank"
+                rel="noreferrer"
+                className="ng-eco reveal"
+                style={{ transitionDelay: `${i * 60}ms` }}
+              >
+                <span className="ng-eco-tag">{c.tag}</span>
+                <h3 className="ng-eco-title">{c.title}</h3>
+                <p
+                  className="ng-eco-desc"
+                  dangerouslySetInnerHTML={{
+                    __html: c.desc.replace(/\*([^*]+)\*/g, "<em>$1</em>"),
+                  }}
+                />
+                <span className="ng-eco-link">{t.ecosystem.cta} ↗</span>
+              </a>
+            ))}
+          </div>
+          <p className="ng-cases-footer reveal">{t.ecosystem.footer}</p>
+          <div className="ng-section-cta reveal">
+            <a
+              href={t.ecosystem.ctaHref}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary"
+            >
+              {t.ecosystem.cta} ↗
+            </a>
           </div>
         </div>
       </section>
@@ -259,7 +321,31 @@ export default function LandingPage() {
             {[t.footer.colA, t.footer.colB, t.footer.colC].map((col, i) => (
               <div key={i} className="ng-footer-col">
                 <h4>{col.title}</h4>
-                <ul>{col.links.map((l, j) => <li key={j}>{l}</li>)}</ul>
+                <ul>
+                  {col.links.map((l, j) => {
+                    const href = l.href;
+                    const isAnchor = href.startsWith("#");
+                    const isMail = href.startsWith("mailto:");
+                    const isInternal = href.startsWith("/");
+                    if (isInternal) {
+                      return (
+                        <li key={j}>
+                          <Link href={href}>{l.label}</Link>
+                        </li>
+                      );
+                    }
+                    return (
+                      <li key={j}>
+                        <a
+                          href={href}
+                          {...(isMail || isAnchor ? {} : { target: "_blank", rel: "noreferrer" })}
+                        >
+                          {l.label}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             ))}
           </div>

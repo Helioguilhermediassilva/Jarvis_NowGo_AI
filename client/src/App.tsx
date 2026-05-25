@@ -8,6 +8,9 @@ import Home from "@/pages/Home";
 import Cockpit from "@/pages/Cockpit";
 import Welcome from "@/pages/Welcome";
 import LandingPage from "@/pages/LandingPage";
+import Sobre from "@/pages/Sobre";
+import Manifesto from "@/pages/Manifesto";
+import Privacidade from "@/pages/Privacidade";
 import RequireAuth from "@/components/RequireAuth";
 
 function Router() {
@@ -28,6 +31,13 @@ function Router() {
 
       {/* Jarvis cívico (legado, preservado em /civic) */}
       <Route path={"/civic"} component={Home} />
+
+      {/* Páginas institucionais públicas (PT/EN/ES) */}
+      <Route path={"/sobre"} component={Sobre} />
+      <Route path={"/about"} component={Sobre} />
+      <Route path={"/manifesto"} component={Manifesto} />
+      <Route path={"/privacidade"} component={Privacidade} />
+      <Route path={"/privacy"} component={Privacidade} />
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
