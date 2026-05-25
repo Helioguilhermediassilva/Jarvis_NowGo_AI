@@ -539,6 +539,6 @@ Acoes imediatas:
 - [x] Remover links externos "Ver mais cases na NVIDIA" dos 8 cases da seção Ecossistema (PT/EN/ES)
 - [x] Remover frase final "Cases listados na página oficial da NVIDIA…" da seção Ecossistema (PT/EN/ES)
 - [x] Build TypeScript + Vite + testes (31 passed, 6 skipped)
-- [ ] Commit e push com email helio@nowgo.com.br
-- [ ] Aguardar deploy Vercel READY
-- [ ] Validar em produção: /sobre, verticais com 8 cards, ecossistema sem links externos
+- [x] Commit e push com email helio@nowgo.com.br (commit 0037643)
+- [x] Aguardar deploy Vercel READY (bundle index-C1y5VzY1.js em produção)
+- [x] Validar em produção: /sobre, verticais com 8 cards, ecossistema sem links externos
