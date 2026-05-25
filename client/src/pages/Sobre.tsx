@@ -25,7 +25,7 @@ export default function Sobre() {
         </div>
       </section>
 
-      <section className="ng-section">
+      <section className="ng-section-content">
         <div className="ng-container">
           <div className="ng-page-content reveal">
             <article className="ng-page-block">
@@ -52,24 +52,22 @@ export default function Sobre() {
         </div>
       </section>
 
-      <section className="ng-section ng-final-cta">
-        <div className="ng-container">
-          <div className="ng-final-cta-inner reveal">
-            <h2 className="ng-final-cta-title">{t.contactCta.title}</h2>
-            <p className="ng-final-cta-subtitle">{t.contactCta.subtitle}</p>
-            <div className="ng-hero-actions">
-              <a href="mailto:helio@nowgo.com.br" className="btn-primary">
-                {t.contactCta.primary}
-              </a>
-              <a
-                href="https://wa.me/5561998887766"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-ghost"
-              >
-                {t.contactCta.secondary}
-              </a>
-            </div>
+      <section id="contact" className="ng-final-cta">
+        <div className="ng-section-inner reveal">
+          <h2 className="ng-h2 ng-final-h2">{t.contactCta.title}</h2>
+          <p className="ng-section-sub ng-final-sub">{t.contactCta.subtitle}</p>
+          <div className="ng-hero-actions">
+            <a href="mailto:helio@nowgo.com.br" className="btn-primary">
+              {t.contactCta.primary}
+            </a>
+            <a
+              href="https://wa.me/5561992509494"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary"
+            >
+              {t.contactCta.secondary}
+            </a>
           </div>
         </div>
       </section>

@@ -598,6 +598,46 @@
   line-height: 1.15; color: var(--text-primary);
   margin: 0;
 }
+/* Páginas institucionais (Sobre, Manifesto, Privacidade) — seções mais compactas */
+.nowgoai-landing .ng-section-content {
+  position: relative; z-index: 2;
+  padding: 4rem 2rem 6rem;
+}
+@media (max-width: 900px) {
+  .nowgoai-landing .ng-section-content { padding: 3rem 1.25rem 4rem; }
+}
+
+/* Aliases páginas institucionais: classes legadas mapeadas para o design system */
+.nowgoai-landing .ng-final-cta-inner {
+  max-width: 1280px; margin: 0 auto; text-align: center;
+}
+.nowgoai-landing .ng-final-cta-title {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  line-height: 1.15; font-weight: 500; letter-spacing: -0.02em;
+  color: var(--text-main); margin: 0 0 1rem; max-width: 820px;
+  margin-left: auto; margin-right: auto;
+}
+.nowgoai-landing .ng-final-cta-subtitle {
+  font-size: 1.05rem; line-height: 1.6; color: var(--text-dim);
+  max-width: 720px; margin: 0 auto 2.5rem;
+}
+/* Botão ghost (alias para secondary) */
+.nowgoai-landing .btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: "Outfit", sans-serif; font-weight: 500; font-size: 0.92rem;
+  padding: 0.85rem 1.6rem; border-radius: 999px;
+  text-decoration: none; cursor: pointer;
+  transition: transform 0.2s var(--easing-smooth), box-shadow 0.3s var(--easing-smooth), background 0.3s var(--easing-smooth);
+  background: rgba(255, 255, 255, 0.04); color: var(--text-main);
+  border: 1px solid var(--border-mid); backdrop-filter: blur(8px);
+}
+.nowgoai-landing .btn-ghost:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.nowgoai-landing .btn-ghost:active { transform: scale(0.97); }
 .nowgoai-landing .ng-page-subtitle {
   font-size: clamp(1rem, 1.4vw, 1.125rem);
   line-height: 1.6; color: var(--text-secondary);
