@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import "@/landing/styles/design-system.css";
 import { useLang } from "@/landing/useLang";
 import { copy } from "@/landing/copy";
+import CompanyDropdown from "@/landing/CompanyDropdown";
 
 /**
  * LandingShell — wrapper visual reutilizado pelas páginas institucionais
@@ -65,21 +66,11 @@ export default function LandingShell({ children, activeNav: _activeNav }: Props)
             <span className="ng-brand-text">nowgo ai</span>
           </Link>
           <nav className="ng-nav-links" aria-label="primary">
-            <div className="ng-nav-dropdown">
-              <button type="button" className="ng-nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-                {t.footer.colB.title}
-                <span className="ng-nav-dropdown-caret" aria-hidden="true">⌄</span>
-              </button>
-              <div className="ng-nav-dropdown-menu" role="menu">
-                {t.footer.colB.links.map((link) => (
-                  link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-                    <Link key={link.label} href={link.href} role="menuitem">{link.label}</Link>
-                  ) : (
-                    <a key={link.label} href={link.href.startsWith("#") ? `/${link.href}` : link.href} role="menuitem">{link.label}</a>
-                  )
-                ))}
-              </div>
-            </div>
+            <CompanyDropdown
+              title={t.footer.colB.title}
+              links={t.footer.colB.links}
+              anchorPrefix="/"
+            />
             <a href="/#platform">{t.nav.platform}</a>
             <a href="/#verticals">{t.nav.verticals}</a>
             <a href="/#cases">{t.nav.cases}</a>

@@ -4,6 +4,7 @@ import "@/landing/styles/design-system.css";
 import { useHeroGlobe } from "@/landing/useHeroGlobe";
 import { useLang } from "@/landing/useLang";
 import { copy } from "@/landing/copy";
+import CompanyDropdown from "@/landing/CompanyDropdown";
 
 /**
  * LandingPage — landing pública da nowgo ai em cockpitcrmnowgoai.com (rota /).
@@ -65,21 +66,10 @@ export default function LandingPage() {
             <span className="ng-brand-text">nowgo ai</span>
           </a>
           <nav className="ng-nav-links" aria-label="primary">
-            <div className="ng-nav-dropdown">
-              <button type="button" className="ng-nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-                {t.footer.colB.title}
-                <span className="ng-nav-dropdown-caret" aria-hidden="true">⌄</span>
-              </button>
-              <div className="ng-nav-dropdown-menu" role="menu">
-                {t.footer.colB.links.map((link) => (
-                  link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-                    <Link key={link.label} href={link.href} role="menuitem">{link.label}</Link>
-                  ) : (
-                    <a key={link.label} href={link.href} role="menuitem">{link.label}</a>
-                  )
-                ))}
-              </div>
-            </div>
+            <CompanyDropdown
+              title={t.footer.colB.title}
+              links={t.footer.colB.links}
+            />
             <a href="#platform">{t.nav.platform}</a>
             <a href="#verticals">{t.nav.verticals}</a>
             <a href="#cases">{t.nav.cases}</a>

@@ -11,6 +11,7 @@ import LandingPage from "@/pages/LandingPage";
 import Sobre from "@/pages/Sobre";
 import Manifesto from "@/pages/Manifesto";
 import Privacidade from "@/pages/Privacidade";
+import Carreiras from "@/pages/Carreiras";
 import RequireAuth from "@/components/RequireAuth";
 
 function Router() {
@@ -38,6 +39,9 @@ function Router() {
       <Route path={"/manifesto"} component={Manifesto} />
       <Route path={"/privacidade"} component={Privacidade} />
       <Route path={"/privacy"} component={Privacidade} />
+      <Route path={"/carreiras"} component={Carreiras} />
+      <Route path={"/careers"} component={Carreiras} />
+      <Route path={"/carreras"} component={Carreiras} />
 
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

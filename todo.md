@@ -585,3 +585,17 @@ Acoes imediatas:
 - [x] Aplicar correção no Notion: zerar MRR do deal Lead (Notion como fonte de verdade)
 - [x] Validar em produção via /api/financial/kpis: MRR 33.500→3.500, ARR 402.000→42.000, dealsComRecorrencia 2→1
 - [x] Política: MRR só preenchido quando status = Closed 💪 (contrato assinado)
+
+
+## F38 — Página /carreiras + UX dropdown Empresa + Pipeline via MCP
+
+- [ ] Corrigir usabilidade do dropdown Empresa (bridge hover + toggle por click + fechar ao clicar fora + Escape)
+- [ ] Criar página /carreiras (PT/EN/ES) com 2 vagas: Estágio ADM e Dev AI First
+- [ ] Registrar rota /carreiras em App.tsx
+- [ ] Atualizar link footer.colB "Carreiras" para /carreiras nos 3 idiomas (PT/EN/ES)
+- [ ] Build TypeScript + Vite + testes vitest
+- [ ] Commit + push (helio@nowgo.com.br)
+- [ ] Aguardar deploy Vercel READY
+- [ ] Validar /carreiras em produção (PT/EN/ES) e usabilidade do dropdown
+- [ ] Coletar Pipeline via Notion MCP (paralelo limitado)
+- [ ] Entregar tabela Top 5 + candidatos ordenada por Score

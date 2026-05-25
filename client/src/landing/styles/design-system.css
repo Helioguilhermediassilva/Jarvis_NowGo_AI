@@ -737,6 +737,25 @@
  * =========================================================== */
 .nowgoai-landing .ng-nav-dropdown { position: relative; display: inline-flex; }
 
+/* Bridge invisível entre trigger e menu: preenche o gap de 0.6rem para que o
+ * cursor não perca o hover ao mover do botão até o submenu. Não interfere
+ * com cliques porque fica atrás do menu (z-index menor) e só aparece quando o
+ * dropdown está aberto/focado. */
+.nowgoai-landing .ng-nav-dropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 0.6rem;
+  pointer-events: none;
+}
+.nowgoai-landing .ng-nav-dropdown:hover::after,
+.nowgoai-landing .ng-nav-dropdown:focus-within::after,
+.nowgoai-landing .ng-nav-dropdown.is-open::after {
+  pointer-events: auto;
+}
+
 .nowgoai-landing .ng-nav-dropdown-trigger {
   display: inline-flex;
   align-items: center;
@@ -752,7 +771,8 @@
 
 .nowgoai-landing .ng-nav-dropdown-trigger:hover,
 .nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-trigger,
-.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-trigger {
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-trigger,
+.nowgoai-landing .ng-nav-dropdown.is-open .ng-nav-dropdown-trigger {
   color: var(--text-main);
 }
 
@@ -764,7 +784,8 @@
 }
 
 .nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-caret,
-.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-caret {
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-caret,
+.nowgoai-landing .ng-nav-dropdown.is-open .ng-nav-dropdown-caret {
   transform: translateY(0) rotate(180deg);
 }
 
@@ -792,7 +813,8 @@
 }
 
 .nowgoai-landing .ng-nav-dropdown:hover .ng-nav-dropdown-menu,
-.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-menu {
+.nowgoai-landing .ng-nav-dropdown:focus-within .ng-nav-dropdown-menu,
+.nowgoai-landing .ng-nav-dropdown.is-open .ng-nav-dropdown-menu {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
@@ -818,5 +840,70 @@
   .nowgoai-landing .ng-nav-dropdown-caret,
   .nowgoai-landing .ng-nav-dropdown-menu {
     transition: none;
+  }
+}
+
+/* ============================================================
+   /carreiras — job cards
+   ============================================================ */
+.ng-job-card {
+  padding: 2.25rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  margin-bottom: 1.75rem;
+}
+.ng-job-area {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(116, 197, 255, 0.85);
+}
+.ng-job-role {
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+}
+.ng-job-meta {
+  margin: 0 0 1.2rem;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+.ng-job-intro {
+  margin: 0 0 1.5rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+.ng-job-section-title {
+  margin: 1.6rem 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.92);
+}
+.ng-job-list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.2rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.65;
+}
+.ng-job-list li {
+  margin-bottom: 0.35rem;
+}
+.ng-job-apply {
+  margin: 1.5rem 0 1rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.65;
+}
+.ng-job-cta {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.4rem;
+}
+@media (max-width: 720px) {
+  .ng-job-card {
+    padding: 1.6rem 1.25rem;
   }
 }

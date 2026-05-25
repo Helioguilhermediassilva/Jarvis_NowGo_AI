@@ -260,7 +260,7 @@ export const copy = {
         links: [
           { label: "Sobre", href: "/sobre" },
           { label: "Cases", href: "#cases" },
-          { label: "Carreiras", href: "mailto:talentos@nowgo.com.br" },
+          { label: "Carreiras", href: "/carreiras" },
           { label: "Imprensa", href: "mailto:imprensa@nowgo.com.br" },
         ],
       },
@@ -521,7 +521,7 @@ export const copy = {
         links: [
           { label: "About", href: "/sobre" },
           { label: "Cases", href: "#cases" },
-          { label: "Careers", href: "mailto:talentos@nowgo.com.br" },
+          { label: "Careers", href: "/carreiras" },
           { label: "Press", href: "mailto:imprensa@nowgo.com.br" },
         ],
       },
@@ -782,7 +782,7 @@ export const copy = {
         links: [
           { label: "Acerca de", href: "/sobre" },
           { label: "Casos", href: "#cases" },
-          { label: "Carreras", href: "mailto:talentos@nowgo.com.br" },
+          { label: "Carreras", href: "/carreiras" },
           { label: "Prensa", href: "mailto:imprensa@nowgo.com.br" },
         ],
       },

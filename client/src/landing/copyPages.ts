@@ -60,10 +60,45 @@ type PrivacyContent = {
   sections: Section[];
 };
 
+type CarreiraVaga = {
+  area: string; // ex: "Estágio · Administrativo"
+  role: string; // ex: "Estagiário(a) Administrativo e Financeiro"
+  meta: string; // ex: "Brasília · Presencial / Híbrido · Início: Jun/2026"
+  intro: string;
+  responsibilities: { title: string; items: string[] };
+  requirements: { title: string; items: string[] };
+  notRequired?: { title: string; items: string[] };
+  differentials?: { title: string; items: string[] };
+  apply: {
+    text: string; // texto do parágrafo final com instruções
+    subject: string; // assunto do email
+    cta: string; // texto do botão
+  };
+};
+
+type CarreirasContent = {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  intro: {
+    body: string[];
+  };
+  vagas: CarreiraVaga[];
+  contactCta: {
+    title: string;
+    subtitle: string;
+    primary: string;
+    secondary: string;
+  };
+};
+
 type PagesCopy = {
   sobre: SobreContent;
   manifesto: ManifestoContent;
   privacidade: PrivacyContent;
+  carreiras: CarreirasContent;
 };
 
 export const pagesCopy: Record<Lang, PagesCopy> = {
@@ -267,6 +302,109 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         },
       ],
     },
+    carreiras: {
+      hero: {
+        eyebrow: "CARREIRAS",
+        title: "Faça parte da nowgo ai",
+        subtitle:
+          "Construímos infraestrutura operacional soberana de inteligência artificial para tornar visível quem sempre foi invisível para as políticas públicas. Buscamos pessoas com fome de aprender, humildade real e conexão genuína com essa missão.",
+      },
+      intro: {
+        body: [
+          "Não buscamos currículos perfeitos. Buscamos pessoas que acordam pensando em como a tecnologia pode reduzir sofrimento humano — e que têm coragem de construir algo que ainda não existe.",
+        ],
+      },
+      vagas: [
+        {
+          area: "Estágio · Administrativo",
+          role: "Estagiário(a) Administrativo e Financeiro",
+          meta: "Brasília · Presencial / Híbrido · Início: Jun/2026",
+          intro:
+            "Você vai estar no coração da operação da nowgo ai — organizando processos, gerenciando ferramentas, apoiando o time e garantindo que nada se perca no meio do crescimento acelerado. É uma posição para quem gosta de deixar tudo em ordem e quer aprender como uma empresa de tecnologia de impacto funciona por dentro.",
+          responsibilities: {
+            title: "O que você vai fazer",
+            items: [
+              "Gerenciar e alimentar o NowGo Brain — nossa base de conhecimento e memória operacional",
+              "Acompanhar contratos, parceiros e processos administrativos do dia a dia",
+              "Apoiar o controle financeiro básico: fluxo de caixa, pagamentos, notas fiscais",
+              "Organizar agenda, reuniões e materiais do fundador",
+              "Usar ferramentas de IA no trabalho desde o primeiro dia",
+            ],
+          },
+          requirements: {
+            title: "O que buscamos",
+            items: [
+              "Cursando administração, ciências contábeis, direito ou área correlata",
+              "Organização e atenção a detalhes que outros não percebem",
+              "Vontade genuína de aprender — não apenas executar tarefas",
+              "Identificação com a missão de usar tecnologia para quem mais precisa",
+              "Disposição para trabalhar num ambiente que ainda está sendo construído",
+            ],
+          },
+          notRequired: {
+            title: "O que não é requisito",
+            items: [
+              "Experiência anterior — ensinamos o que você não sabe",
+              "Histórico específico ou origem social — o que importa é quem você é, não de onde veio",
+            ],
+          },
+          apply: {
+            text: "Para se candidatar, envie um e-mail para carreiras@nowgoai.com com o assunto \"Estágio ADM\" e conte, em poucas linhas, por que essa missão faz sentido para você.",
+            subject: "Estágio ADM",
+            cta: "Candidatar-se — Estágio ADM",
+          },
+        },
+        {
+          area: "Tecnologia · AI First",
+          role: "Desenvolvedor(a) de Software AI First",
+          meta: "Brasília / Remoto · Início: Jun/2026",
+          intro:
+            "Você vai construir a camada técnica da plataforma nowgo ai — agentes de inteligência artificial, integrações com sistemas públicos e hospitalares, automações e interfaces que chegam onde a tecnologia ainda não chega. Trabalhará diretamente com o arquiteto técnico da empresa em projetos que impactam cidadãos reais.",
+          responsibilities: {
+            title: "O que você vai fazer",
+            items: [
+              "Desenvolver e manter AI Workers especializados por domínio operacional",
+              "Integrar a plataforma nowgo com sistemas externos — prontuários, BI governamental, APIs públicas",
+              "Evoluir o stack proprietário de voz em português brasileiro",
+              "Implementar specs técnicas com arquitetura modular e spec-driven development",
+              "Garantir soberania de dados, conformidade LGPD e processamento local",
+            ],
+          },
+          requirements: {
+            title: "O que buscamos",
+            items: [
+              "Experiência sólida com Python e/ou TypeScript / Node.js",
+              "Familiaridade real com LLMs, RAG, agentes de IA e orquestração",
+              "Conhecimento de APIs REST, integrações e infraestrutura cloud (Google Cloud preferencial)",
+              "Mentalidade AI First — usa IA no próprio processo de desenvolvimento",
+              "Humildade técnica: sabe o que não sabe e pergunta antes de assumir",
+              "Identificação com o propósito — tecnologia como instrumento de dignidade humana",
+            ],
+          },
+          differentials: {
+            title: "Diferenciais",
+            items: [
+              "Experiência com processamento de voz, STT/TTS ou NLP em português",
+              "Conhecimento de NVIDIA NIMs, Triton ou modelos de linguagem locais",
+              "Experiência com sistemas hospitalares ou governamentais",
+              "Participação em projetos de impacto social com tecnologia",
+            ],
+          },
+          apply: {
+            text: "Para se candidatar, envie um e-mail para carreiras@nowgoai.com com o assunto \"Dev AI First\" e inclua exemplos do que você já construiu — links, repositórios ou projetos que mostram como você pensa.",
+            subject: "Dev AI First",
+            cta: "Candidatar-se — Dev AI First",
+          },
+        },
+      ],
+      contactCta: {
+        title: "Não achou sua vaga?",
+        subtitle:
+          "Se você acredita na missão e tem algo a contribuir, escreva mesmo assim. Estamos sempre abertos a conversar com quem soma.",
+        primary: "Enviar candidatura espontânea",
+        secondary: "Falar pelo WhatsApp",
+      },
+    },
   },
 
   en: {
@@ -469,6 +607,109 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
         },
       ],
     },
+    carreiras: {
+      hero: {
+        eyebrow: "CAREERS",
+        title: "Join nowgo ai",
+        subtitle:
+          "We build sovereign operational infrastructure of artificial intelligence to make visible those who have always been invisible to public policies. We seek people hungry to learn, with real humility and genuine connection to this mission.",
+      },
+      intro: {
+        body: [
+          "We do not look for perfect résumés. We look for people who wake up thinking about how technology can reduce human suffering — and who have the courage to build something that does not yet exist.",
+        ],
+      },
+      vagas: [
+        {
+          area: "Internship · Administrative",
+          role: "Administrative & Finance Intern",
+          meta: "Brasília · On-site / Hybrid · Start: Jun/2026",
+          intro:
+            "You will be at the heart of nowgo ai's operation — organizing processes, managing tools, supporting the team and making sure nothing falls through the cracks during accelerated growth. It is a position for those who like to keep everything in order and want to learn how an impact-focused technology company works from the inside.",
+          responsibilities: {
+            title: "What you will do",
+            items: [
+              "Manage and feed NowGo Brain — our knowledge base and operational memory",
+              "Follow up contracts, partners and day-to-day administrative processes",
+              "Support basic financial control: cash flow, payments, invoices",
+              "Organize the founder's schedule, meetings and materials",
+              "Use AI tools at work from day one",
+            ],
+          },
+          requirements: {
+            title: "What we look for",
+            items: [
+              "Studying business administration, accounting, law or related fields",
+              "Organization and attention to details that others miss",
+              "Genuine willingness to learn — not just execute tasks",
+              "Identification with the mission of using technology for those who need it most",
+              "Willingness to work in an environment that is still being built",
+            ],
+          },
+          notRequired: {
+            title: "What is not required",
+            items: [
+              "Previous experience — we teach what you do not know",
+              "Specific background or social origin — what matters is who you are, not where you come from",
+            ],
+          },
+          apply: {
+            text: "To apply, send an email to carreiras@nowgoai.com with the subject \"Internship ADM\" and tell us, in a few lines, why this mission makes sense to you.",
+            subject: "Internship ADM",
+            cta: "Apply — Internship ADM",
+          },
+        },
+        {
+          area: "Technology · AI First",
+          role: "AI First Software Developer",
+          meta: "Brasília / Remote · Start: Jun/2026",
+          intro:
+            "You will build the technical layer of the nowgo ai platform — AI agents, integrations with public and hospital systems, automations and interfaces that reach where technology has not yet arrived. You will work directly with the company's technical architect on projects that impact real citizens.",
+          responsibilities: {
+            title: "What you will do",
+            items: [
+              "Develop and maintain AI Workers specialized by operational domain",
+              "Integrate the nowgo platform with external systems — medical records, governmental BI, public APIs",
+              "Evolve the proprietary voice stack in Brazilian Portuguese",
+              "Implement technical specs with modular architecture and spec-driven development",
+              "Ensure data sovereignty, LGPD compliance and local processing",
+            ],
+          },
+          requirements: {
+            title: "What we look for",
+            items: [
+              "Solid experience with Python and/or TypeScript / Node.js",
+              "Real familiarity with LLMs, RAG, AI agents and orchestration",
+              "Knowledge of REST APIs, integrations and cloud infrastructure (Google Cloud preferred)",
+              "AI First mindset — uses AI in the development process itself",
+              "Technical humility: knows what they do not know and asks before assuming",
+              "Identification with the purpose — technology as an instrument of human dignity",
+            ],
+          },
+          differentials: {
+            title: "Differentials",
+            items: [
+              "Experience with voice processing, STT/TTS or NLP in Portuguese",
+              "Knowledge of NVIDIA NIMs, Triton or local language models",
+              "Experience with hospital or governmental systems",
+              "Participation in social impact projects through technology",
+            ],
+          },
+          apply: {
+            text: "To apply, send an email to carreiras@nowgoai.com with the subject \"Dev AI First\" and include examples of what you have already built — links, repositories or projects that show how you think.",
+            subject: "Dev AI First",
+            cta: "Apply — Dev AI First",
+          },
+        },
+      ],
+      contactCta: {
+        title: "Did not find your role?",
+        subtitle:
+          "If you believe in the mission and have something to contribute, write to us anyway. We are always open to talking with people who add value.",
+        primary: "Send spontaneous application",
+        secondary: "Reach us on WhatsApp",
+      },
+    },
   },
 
   es: {
@@ -670,6 +911,109 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           ],
         },
       ],
+    },
+    carreiras: {
+      hero: {
+        eyebrow: "CARRERAS",
+        title: "Forma parte de nowgo ai",
+        subtitle:
+          "Construimos infraestructura operacional soberana de inteligencia artificial para hacer visibles a quienes siempre fueron invisibles para las políticas públicas. Buscamos personas con hambre de aprender, humildad real y conexión genuina con esta misión.",
+      },
+      intro: {
+        body: [
+          "No buscamos currículos perfectos. Buscamos personas que se despiertan pensando en cómo la tecnología puede reducir el sufrimiento humano — y que tienen el coraje de construir algo que aún no existe.",
+        ],
+      },
+      vagas: [
+        {
+          area: "Pasantía · Administrativo",
+          role: "Pasante Administrativo y Financiero",
+          meta: "Brasília · Presencial / Híbrido · Inicio: Jun/2026",
+          intro:
+            "Estarás en el corazón de la operación de nowgo ai — organizando procesos, gestionando herramientas, apoyando al equipo y asegurando que nada se pierda en medio del crecimiento acelerado. Es una posición para quien le gusta dejar todo en orden y quiere aprender cómo funciona por dentro una empresa de tecnología de impacto.",
+          responsibilities: {
+            title: "Lo que harás",
+            items: [
+              "Gestionar y alimentar NowGo Brain — nuestra base de conocimiento y memoria operacional",
+              "Acompañar contratos, socios y procesos administrativos del día a día",
+              "Apoyar el control financiero básico: flujo de caja, pagos, facturas",
+              "Organizar la agenda, reuniones y materiales del fundador",
+              "Usar herramientas de IA en el trabajo desde el primer día",
+            ],
+          },
+          requirements: {
+            title: "Lo que buscamos",
+            items: [
+              "Cursando administración, ciencias contables, derecho o área afin",
+              "Organización y atención a detalles que otros no notan",
+              "Voluntad genuina de aprender — no solo ejecutar tareas",
+              "Identificación con la misión de usar tecnología para quienes más la necesitan",
+              "Disposición para trabajar en un entorno que todavía se está construyendo",
+            ],
+          },
+          notRequired: {
+            title: "Lo que no es requisito",
+            items: [
+              "Experiencia previa — enseñamos lo que no sabes",
+              "Historial específico u origen social — lo que importa es quién eres, no de dónde vienes",
+            ],
+          },
+          apply: {
+            text: "Para postularte, envía un correo a carreiras@nowgoai.com con el asunto \"Pasantía ADM\" y cuéntanos, en pocas líneas, por qué esta misión tiene sentido para ti.",
+            subject: "Pasantía ADM",
+            cta: "Postular — Pasantía ADM",
+          },
+        },
+        {
+          area: "Tecnología · AI First",
+          role: "Desarrollador(a) de Software AI First",
+          meta: "Brasília / Remoto · Inicio: Jun/2026",
+          intro:
+            "Construirás la capa técnica de la plataforma nowgo ai — agentes de inteligencia artificial, integraciones con sistemas públicos y hospitalarios, automatizaciones e interfaces que llegan donde la tecnología aún no llega. Trabajarás directamente con el arquitecto técnico de la empresa en proyectos que impactan a ciudadanos reales.",
+          responsibilities: {
+            title: "Lo que harás",
+            items: [
+              "Desarrollar y mantener AI Workers especializados por dominio operacional",
+              "Integrar la plataforma nowgo con sistemas externos — historias clínicas, BI gubernamental, APIs públicas",
+              "Evolucionar el stack propietario de voz en portugués brasileño",
+              "Implementar specs técnicas con arquitectura modular y spec-driven development",
+              "Garantizar soberanía de datos, conformidad LGPD y procesamiento local",
+            ],
+          },
+          requirements: {
+            title: "Lo que buscamos",
+            items: [
+              "Experiencia sólida con Python y/o TypeScript / Node.js",
+              "Familiaridad real con LLMs, RAG, agentes de IA y orquestación",
+              "Conocimiento de APIs REST, integraciones e infraestructura cloud (Google Cloud preferentemente)",
+              "Mentalidad AI First — usa IA en el propio proceso de desarrollo",
+              "Humildad técnica: sabe lo que no sabe y pregunta antes de asumir",
+              "Identificación con el propósito — tecnología como instrumento de dignidad humana",
+            ],
+          },
+          differentials: {
+            title: "Diferenciales",
+            items: [
+              "Experiencia con procesamiento de voz, STT/TTS o NLP en portugués",
+              "Conocimiento de NVIDIA NIMs, Triton o modelos de lenguaje locales",
+              "Experiencia con sistemas hospitalarios o gubernamentales",
+              "Participación en proyectos de impacto social con tecnología",
+            ],
+          },
+          apply: {
+            text: "Para postularte, envía un correo a carreiras@nowgoai.com con el asunto \"Dev AI First\" e incluye ejemplos de lo que ya has construido — enlaces, repositorios o proyectos que muestren cómo piensas.",
+            subject: "Dev AI First",
+            cta: "Postular — Dev AI First",
+          },
+        },
+      ],
+      contactCta: {
+        title: "¿No encontraste tu vacante?",
+        subtitle:
+          "Si crees en la misión y tienes algo que aportar, escríbenos igualmente. Siempre estamos abiertos a conversar con quienes suman.",
+        primary: "Enviar candidatura espontánea",
+        secondary: "Hablar por WhatsApp",
+      },
     },
   },
 };
