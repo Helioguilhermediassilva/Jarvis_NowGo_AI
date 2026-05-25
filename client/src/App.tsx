@@ -14,6 +14,7 @@ import Privacidade from "@/pages/Privacidade";
 import Carreiras from "@/pages/Carreiras";
 import Imprensa from "@/pages/Imprensa";
 import RequireAuth from "@/components/RequireAuth";
+import { LangProvider } from "@/landing/useLang";
 
 function Router() {
   return (
@@ -57,10 +58,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <LangProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </LangProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

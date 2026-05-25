@@ -92,7 +92,8 @@ export default function LandingShell({ children, activeNav: _activeNav }: Props)
                 </button>
               ))}
             </div>
-            <Link href="/cockpit" className="btn-primary ng-cta">
+            <Link href="/cockpit" className="ng-header-login" aria-label="Login restrito">
+              <span aria-hidden="true" className="ng-header-login-lock">▢</span>
               {t.nav.cockpitCta}
             </Link>
           </div>
