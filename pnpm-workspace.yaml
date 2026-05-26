@@ -1,6 +1,7 @@
 packages:
   - .
 allowBuilds:
+  argon2: true
   esbuild: set this to true or false
 onlyBuiltDependencies:
   - esbuild
