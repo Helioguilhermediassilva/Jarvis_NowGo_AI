@@ -697,3 +697,80 @@ Acoes imediatas:
 - [ ] Paywall após 14 dias de trial
 - [ ] Gestão de assinatura (upgrade, downgrade, cancelamento)
 - [ ] Vitest de webhooks e estados de assinatura
+
+
+## F47 — Cockpit para clientes externos (convite + Google OAuth + e-mail/senha + CRUD multi-tenant)
+
+Doc de arquitetura: `docs/F47-arquitetura.md`. Premissa: tenant interno `nowgo-ai` permanece intocado, lendo do Notion via `NotionBrainRepository`; clientes externos vivem apenas no Postgres.
+
+### Diretiva visual (CRÍTICA, não-negociável — confirmada pelo Hélio em 2026-05-26)
+
+- [ ] Garantir que **nenhuma** mudança de layout, cores, tipografia, paleta, espaçamento, ícones ou estrutura visual atual do Cockpit seja introduzida pela F47
+- [ ] **Não criar** páginas novas como `/cockpit/portfolio` ou `/cockpit/deal-rooms` separadas — os componentes existentes ganham apenas capacidade de edição inline ou via drawer/modal usando exclusivamente os componentes shadcn/ui já presentes
+- [ ] **Não adicionar** botão "Cadastrar" em lugar nenhum — entrada só por convite emitido pelo Hélio; botão "Entrar" deve usar exatamente os mesmos estilos já aplicados no header atual
+- [ ] Páginas novas obrigatórias por serem fluxos inéditos (`/convite/<token>`, `/login`, `/mfa/setup`, `/mfa/challenge`, `/admin/convites`) devem usar **estritamente os componentes shadcn/ui já presentes no projeto**, com a mesma paleta e tipografia do site atual, sem criatividade visual
+- [ ] Comando de voz (Jarvis) deve invocar o mesmo backend tRPC dos botões de edição, sem qualquer UI nova — reuso total da camada de mutation
+- [ ] Antes de qualquer commit de frontend, comparar visualmente página por página contra o estado pré-F47 e abortar se houver diferença estética não intencional
+
+### Fase 2 — Arquitetura
+- [x] Ler blueprint operacional NowGo Brain no Notion e extrair fórmula oficial de scoring (U·0,20 + IF·0,25 + IE·0,25 + R·0,10 + D·0,10 + P·0,10) e categorias (Foco Imediato > 85, Radar 60-85, Backlog < 60)
+- [x] Escrever `docs/F47-arquitetura.md` com decisões de produto, modelo de dados, fluxo de auth, engine de classificação e critérios de aceitação
+
+### Fase 3 — Migrações
+- [x] Criar `db/migrations/0005_f47_invitations_sessions_deal_rooms.sql` adicionando 6 tabelas novas (invitations, sessions, password_credentials, mfa_credentials, deal_rooms, deal_room_audit) e estendendo opportunities com 6 colunas de vetores + computed_score + priority_category
+- [x] Habilitar RLS por tenant_id em deal_rooms e deal_room_audit, e RLS service-role-only (deny-all) em invitations, sessions, password_credentials, mfa_credentials
+- [x] Aplicar migração via MCP Supabase (apply_migration) e validar via list_tables + execute_sql (18 tabelas no schema, todas com RLS)
+- [x] Adicionar trigger `recompute_opportunity_score` que aplica fórmula oficial automaticamente no banco (defesa em profundidade)
+- [x] Validar exemplo do blueprint: GDF/FAP-DF (U=70, IF=100, IE=100, R=70, D=70, P=100) = 88.00 → 🔥 Foco Imediato
+- [x] Atualizar `server/db/schema.ts` (Drizzle) com as 6 tabelas novas e as 8 colunas adicionadas em opportunities
+- [x] Validar tsc --noEmit limpo + 38 testes vitest passing (zero regressão)
+
+### Fase 4 — Engine de classificação e backend de auth
+- [ ] Criar `server/brain/scoringEngine.ts` (função pura `computeOpportunityScore`) + vitest com casos do blueprint (ex: GDF/FAP-DF score 88)
+- [ ] Criar `server/brain/dealRoomPromoter.ts` (promoção automática em transação serializável) + vitest cobrindo race conditions e slot cheio
+- [ ] Criar `server/auth/invitations.ts` (criar/validar/aceitar/revogar) com hash SHA-256 do token bruto
+- [ ] Criar `server/auth/passwordCredentials.ts` (Argon2id, política de senha, rate limit, verificação de e-mail)
+- [ ] Criar `server/auth/googleOAuth.ts` consumindo OAUTH_SERVER_URL existente, com validação de e-mail vs destinatário do convite
+- [ ] Criar `server/auth/sessions.ts` (cookie httpOnly Secure SameSite=Lax, TTL 7d renovável)
+- [ ] Adicionar pacote `argon2` ao package.json e validar `tsc --noEmit`
+
+### Fase 5 — Backend CRUD multi-tenant
+- [ ] Criar `server/routers/opportunities.ts` (tRPC): list / create / update / delete com Zod, validação dos 6 vetores e cálculo automático de score
+- [ ] Criar `server/routers/dealRooms.ts` (tRPC): list / promote / resolve / lose / pause + invocação automática do promoter
+- [ ] Criar `server/routers/invitations.ts` (tRPC): list / create / revoke (apenas para superadmin/owner)
+- [ ] Estender `NowGoBrainRepository` com métodos createOpportunity/updateOpportunity/deleteOpportunity/listDealRooms/promoteDealRoom/resolveDealRoom e implementar em `PostgresBrainRepository`
+- [ ] Smoke tests Postgres cobrindo cada novo método via withTenant()
+
+### Fase 6 — Frontend
+- [ ] Criar página `/convite/<token>` com validação no servidor e botões Google + Senha
+- [ ] Criar página `/login` com Google + Senha (formulário, recuperação de senha, link para "Esqueci minha senha")
+- [ ] Criar página `/cockpit/portfolio` com tabela paginada, sliders dos 6 vetores, score em tempo real e botão "Promover a Deal Room"
+- [ ] Criar página `/cockpit/deal-rooms` com card por deal room, owner, ações de resolver/perder/pausar
+- [ ] Criar página `/admin/convites` (gated por superadmin/owner) com criar/listar/revogar convite
+- [ ] Criar página `/mfa/setup` (QR code TOTP + confirmação de código + exibição dos 8 backup codes para download)
+- [ ] Criar página `/mfa/challenge` (campo de 6 dígitos no segundo passo de login para roles com MFA)
+- [ ] Adicionar botão "Entrar" no header do site público (NÃO adicionar botão "Cadastrar" — entrada só via convite)
+- [ ] Garantir que o cockpit interno do Hélio (que lê do Notion) continua intocado: nenhuma rota nova deve interferir nas rotas legadas
+
+### Fase 7 — Segurança e observabilidade
+- [ ] Rate limit por IP e por e-mail nos endpoints de login e de aceite de convite
+- [ ] Bloqueio anti-enumeração: respostas de "convite inválido" e "credencial inválida" indistinguíveis temporalmente
+- [ ] Recuperação de senha por e-mail com token único, expiração 1h, uso único
+- [ ] Verificação de e-mail obrigatória antes do primeiro login com senha local
+- [ ] Audit log entry em cada: convite criado/usado/revogado, login bem-sucedido, login falhado, mudança de senha, mudança de role
+- [ ] Endpoint /api/brain/repo-info ganha campo `dealRoomsActiveCount` quando modo for postgres/shadow
+
+### Fase 8 — Testes
+- [ ] Vitest do scoringEngine (5+ casos do blueprint)
+- [ ] Vitest do dealRoomPromoter (slot cheio, race condition, demote manual)
+- [ ] Vitest dos routers de auth (convite válido/expirado/usado/revogado, Google OAuth happy path, senha local com argon2, e-mail mismatch)
+- [ ] Vitest do CRUD com RLS verificando isolamento entre dois tenants
+- [ ] Vitest de anti-replay (mesmo token usado 2x deve falhar)
+- [ ] Suíte completa passing (`tsc --noEmit` + `vitest run`) com zero regressão nos 38 testes anteriores
+
+### Fase 9 — Deploy e entrega operacional
+- [ ] Commit + push de cada fase como unidade revisável (não um commit gigante no final)
+- [ ] Smoke test em produção: criar convite via `/admin/convites`, aceitar com Google em outro browser, criar oportunidade, promover, resolver, verificar promoção automática
+- [ ] Documentar em `docs/F47-runbook.md` o procedimento para o Hélio emitir o primeiro convite real (passo-a-passo, screenshots se necessário)
+- [ ] Validar com Hélio que o cockpit interno (Notion) continua igual ao que ele usa hoje
+- [ ] Convidar o primeiro cliente externo real

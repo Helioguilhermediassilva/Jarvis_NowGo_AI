@@ -16,9 +16,20 @@ import {
   jsonb,
   numeric,
   date,
+  smallint,
+  integer,
+  inet,
+  customType,
   uniqueIndex,
   index,
 } from "drizzle-orm/pg-core";
+
+// Tipo customizado para bytea (segredo TOTP criptografado)
+const bytea = customType<{ data: Uint8Array; driverData: Buffer }>({
+  dataType() {
+    return "bytea";
+  },
+});
 
 export const nowgoBrain = pgSchema("nowgo_brain");
 
@@ -120,6 +131,15 @@ export const opportunities = nowgoBrain.table(
     empresaIds: jsonb("empresa_ids").default([]),
     projetoIds: jsonb("projeto_ids").default([]),
     dataCriacao: date("data_criacao"),
+    // F47 — 6 vetores oficiais do blueprint NowGo Brain
+    urgencyScore: smallint("urgency_score"),
+    financialImpactScore: smallint("financial_impact_score"),
+    strategicImpactScore: smallint("strategic_impact_score"),
+    riskScore: smallint("risk_score"),
+    dependencyScore: smallint("dependency_score"),
+    probabilityScore: smallint("probability_score"),
+    computedScore: numeric("computed_score"),
+    priorityCategory: text("priority_category"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -334,3 +354,174 @@ export type NewRiskRow = typeof risks.$inferInsert;
 
 export type FinancialEntryRow = typeof financialEntries.$inferSelect;
 export type NewFinancialEntryRow = typeof financialEntries.$inferInsert;
+
+
+// =============================================================================
+// F47 — Tabelas de auth e CRUD multi-tenant
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// invitations
+// ---------------------------------------------------------------------------
+export const invitations = nowgoBrain.table(
+  "invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tokenHash: text("token_hash").notNull().unique(),
+    email: text("email").notNull(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    invitedBy: uuid("invited_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    usedBy: uuid("used_by").references(() => users.id, { onDelete: "set null" }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byEmail: index("idx_invitations_email_drz").on(t.email),
+    byTenant: index("idx_invitations_tenant_drz").on(t.tenantId),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// sessions
+// ---------------------------------------------------------------------------
+export const sessions = nowgoBrain.table(
+  "sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    sessionTokenHash: text("session_token_hash").notNull().unique(),
+    ip: inet("ip"),
+    userAgent: text("user_agent"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => ({
+    byUser: index("idx_sessions_user_drz").on(t.userId),
+    byTenant: index("idx_sessions_tenant_drz").on(t.tenantId),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// password_credentials
+// ---------------------------------------------------------------------------
+export const passwordCredentials = nowgoBrain.table("password_credentials", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  argon2Hash: text("argon2_hash").notNull(),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  verificationTokenHash: text("verification_token_hash"),
+  verificationSentAt: timestamp("verification_sent_at", { withTimezone: true }),
+  passwordChangedAt: timestamp("password_changed_at", { withTimezone: true }).notNull().defaultNow(),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
+  resetTokenHash: text("reset_token_hash"),
+  resetTokenExpiresAt: timestamp("reset_token_expires_at", { withTimezone: true }),
+});
+
+// ---------------------------------------------------------------------------
+// mfa_credentials
+// ---------------------------------------------------------------------------
+export const mfaCredentials = nowgoBrain.table("mfa_credentials", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  totpSecretEncrypted: bytea("totp_secret_encrypted").notNull(),
+  // Array de strings nativo do Postgres é declarado como jsonb no Drizzle quando
+  // não temos pg_array helper específico para text[]; usamos jsonb como wrapper.
+  backupCodesHashed: jsonb("backup_codes_hashed").notNull(),
+  enabledAt: timestamp("enabled_at", { withTimezone: true }).notNull().defaultNow(),
+  lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  resetCount: integer("reset_count").notNull().default(0),
+});
+
+// ---------------------------------------------------------------------------
+// deal_rooms
+// ---------------------------------------------------------------------------
+export const dealRooms = nowgoBrain.table(
+  "deal_rooms",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    opportunityId: uuid("opportunity_id")
+      .notNull()
+      .references(() => opportunities.id, { onDelete: "restrict" }),
+    ownerUserId: uuid("owner_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    status: text("status").notNull(),
+    promotedAt: timestamp("promoted_at", { withTimezone: true }).notNull().defaultNow(),
+    scoreAtPromotion: numeric("score_at_promotion").notNull(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolutionNotes: text("resolution_notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byTenantStatus: index("idx_deal_rooms_tenant_status_drz").on(t.tenantId, t.status),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// deal_room_audit
+// ---------------------------------------------------------------------------
+export const dealRoomAudit = nowgoBrain.table(
+  "deal_room_audit",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    dealRoomId: uuid("deal_room_id")
+      .notNull()
+      .references(() => dealRooms.id, { onDelete: "cascade" }),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status").notNull(),
+    scoreSnapshot: numeric("score_snapshot").notNull(),
+    triggeredBy: uuid("triggered_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byTenantDealRoom: index("idx_deal_room_audit_tenant_drz").on(t.tenantId, t.dealRoomId),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// Tipos exportados — F47
+// ---------------------------------------------------------------------------
+export type InvitationRow = typeof invitations.$inferSelect;
+export type NewInvitationRow = typeof invitations.$inferInsert;
+
+export type SessionRow = typeof sessions.$inferSelect;
+export type NewSessionRow = typeof sessions.$inferInsert;
+
+export type PasswordCredentialRow = typeof passwordCredentials.$inferSelect;
+export type NewPasswordCredentialRow = typeof passwordCredentials.$inferInsert;
+
+export type MfaCredentialRow = typeof mfaCredentials.$inferSelect;
+export type NewMfaCredentialRow = typeof mfaCredentials.$inferInsert;
+
+export type DealRoomRow = typeof dealRooms.$inferSelect;
+export type NewDealRoomRow = typeof dealRooms.$inferInsert;
+
+export type DealRoomAuditRow = typeof dealRoomAudit.$inferSelect;
+export type NewDealRoomAuditRow = typeof dealRoomAudit.$inferInsert;
