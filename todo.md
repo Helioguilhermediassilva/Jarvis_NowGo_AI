@@ -646,3 +646,52 @@ Acoes imediatas:
 - [ ] Build TS + Vite + testes vitest
 - [ ] Commit + push + validar em produção
 - [ ] Reportar delta do pipeline ao usuário
+
+
+## F45 — Arquitetura multi-tenant + portabilidade NVIDIA/Nomad (estratégica)
+- [ ] Diagnosticar arquitetura atual (Notion como database) e gargalos para multi-tenant
+- [ ] Avaliar Supabase vs alternativas (PostgreSQL gerenciado, Neon, RDS)
+- [ ] Modelar isolamento multi-tenant (RLS vs schema-per-tenant vs database-per-tenant)
+- [ ] Definir camada de abstração de repositório agnóstica (interfaces TS + DI)
+- [ ] Garantir que contratos permitam swap futuro: Supabase → on-prem NVIDIA Enterprise
+- [ ] Apresentar análise estratégica + roadmap em fases ao usuário para aprovação
+
+
+## F46 — Multi-tenant + Supabase + Drizzle (Fase 1.1)
+- [x] Receber secrets multi-tenant configuradas no Vercel (NOWGO_BRAIN_DB_URL, NOWGO_BRAIN_DB_PUBLIC_KEY, NOWGO_BRAIN_DB_SECRET_KEY, NOWGO_BRAIN_PG_URL)
+- [x] Criar projeto Supabase Cockpit_NowGo (jfeqkgdimjhbwaqmzxpu, us-west-1, PostgreSQL 17.6)
+- [x] Aplicar migração 0001 — schema `nowgo_brain` + tabelas tenants/users/tenant_members/audit_log
+- [x] Aplicar migração 0002 — 8 tabelas de domínio (opportunities, crm_assets, projects, companies, tasks, documents, risks, financial_entries) com RLS por tenant_id e triggers updated_at
+- [x] Aplicar migração 0003 — RLS deny-all em tenants/users/tenant_members (defesa em profundidade)
+- [x] Aplicar migração 0004 — seed do tenant `nowgo-ai` + superadmin `helio@nowgo.com.br` + audit_log de bootstrap
+- [x] Validar 12 tabelas e dados do seed via MCP (`list_tables` + `execute_sql`)
+- [x] Instalar dependências `pg`, `drizzle-orm`, `drizzle-kit`, `@types/pg`
+- [x] Criar Drizzle schema TS espelhando as 12 tabelas em `server/db/schema.ts`
+- [x] Criar cliente Postgres com Pool singleton + helper `withTenant()` para `SET LOCAL app.current_tenant_id` em `server/db/client.ts`
+- [x] Criar interface `NowGoBrainRepository` (contrato agnóstico de fornecedor) em `server/nowgoBrainRepository.ts`
+- [x] Criar `PostgresBrainRepository` (implementação Drizzle) em `server/postgresBrainRepository.ts`
+- [x] Criar `NotionBrainRepository` (adapta `brainQueries.ts` à interface) em `server/notionBrainRepository.ts`
+- [x] Criar `brainRepositoryFactory.ts` (escolha por env `NOWGO_BRAIN_REPO=notion|postgres|shadow`)
+- [x] Vitest smoke do schema PostgreSQL em `server/postgresBrainRepository.smoke.test.ts` (skipa se `NOWGO_BRAIN_PG_URL` ausente)
+- [x] Validar `tsc --noEmit` limpo + 31 testes passando (zero regressão)
+- [ ] Refatorar consumidores existentes (financialKpis, jarvisBrainTools, dashboards) para usar `getBrainRepository()`
+- [ ] Implementar shadow mirror real: writes Notion também escrevem em Postgres (Fase 1.2)
+- [ ] Validar smoke test rodando contra Supabase em produção (Vercel) após deploy
+- [ ] Commit + push + deploy (zero impacto operacional visível ao Hélio)
+
+## F47 — Onboarding self-service (Fase 1.2)
+- [ ] Página `/criar-cockpit` com captura de e-mail/empresa
+- [ ] Signup Google OAuth com criação automática de tenant
+- [ ] Provisionamento automático: tenant + primeiro deal room demo + missão exemplo
+- [ ] Dashboard de gestão de tenant (apenas leitura inicial)
+- [ ] Trial gratuito de 14 dias (sem cobrança)
+- [ ] Vitest end-to-end do fluxo de signup
+
+## F48 — Cobrança Stripe (Fase 1.3)
+- [ ] Setup Stripe via webdev_add_feature(feature="stripe")
+- [ ] Definir planos: Starter (R$ 297/mês), Pro (R$ 997/mês), Enterprise (sob consulta)
+- [ ] Página `/pricing` com toggle mensal/anual
+- [ ] Checkout Stripe + webhooks de sucesso/falha
+- [ ] Paywall após 14 dias de trial
+- [ ] Gestão de assinatura (upgrade, downgrade, cancelamento)
+- [ ] Vitest de webhooks e estados de assinatura
