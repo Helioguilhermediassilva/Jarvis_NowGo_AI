@@ -812,3 +812,26 @@ Doc de arquitetura: `docs/F47-arquitetura.md`. Premissa: tenant interno `nowgo-a
 - [ ] Documentar em `docs/F47-runbook.md` o procedimento para o Hélio emitir o primeiro convite real (passo-a-passo, screenshots se necessário)
 - [ ] Validar com Hélio que o cockpit interno (Notion) continua igual ao que ele usa hoje
 - [ ] Convidar o primeiro cliente externo real
+
+
+## F47 Fase 5.1 — Deploy em produção (jarvis.nowgoai.com)
+
+- [ ] Auditar envs do projeto no Vercel (`JWT_SECRET`, `MFA_ENCRYPTION_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NOWGO_COOKIE_DOMAIN`, `COCKPIT_NOWGO_DATABASE_URL`)
+- [ ] Reportar diff de envs ao Hélio e pedir confirmação antes de qualquer alteração em produção
+- [ ] Aplicar migração Drizzle no Postgres de produção (`pnpm db:push` apontando para `COCKPIT_NOWGO_DATABASE_URL` de prod)
+- [ ] Disparar deploy de produção no Vercel
+- [ ] Smoke test em produção: `/api/auth/v2/me` (401 sem cookie), `/api/auth/v2/logout` (200 idempotente), `/api/auth/v2/password/reset-request` (200 anti-enumeração)
+
+
+## F47 Fase 5.1 — Deploy em produção (concluído em 2026-05-26)
+
+- [x] Identificar projeto Vercel servindo cockpitcrmnowgoai.com (`nowgo/jarvis-now-go-ai`)
+- [x] Setar JWT_SECRET (32 bytes b64, dedicado ao F47)
+- [x] Setar MFA_ENCRYPTION_KEY (32 bytes b64, AES-GCM para TOTP)
+- [x] Setar RESEND_API_KEY
+- [x] Setar RESEND_FROM_EMAIL=noreply@cockpitcrmnowgoai.com (domínio verificado no Resend)
+- [x] Migração Drizzle F47 já estava aplicada no Supabase Cockpit_NowGo
+- [x] Corrigir NOWGO_BRAIN_PG_URL: host `aws-1-us-west-1.pooler.supabase.com` (não `aws-0-sa-east-1`)
+- [x] Senha do banco resetada para senha gerada pelo Supabase
+- [x] Smoke test dos 13 endpoints F47 em produção
+- [x] Remover endpoint debug temporário /api/auth/v2/debug-invite
