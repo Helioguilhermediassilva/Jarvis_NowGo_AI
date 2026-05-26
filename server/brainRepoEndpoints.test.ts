@@ -83,10 +83,29 @@ describe("/api/brain/repo-info", () => {
     expect(statusFn).toHaveBeenCalledWith(200);
     const body = (jsonFn as any).mock.calls[0][0];
     expect(body.activeImplementation).toBe("notion");
+    expect(body.activeMode).toBe("notion");
     expect(body.healthy).toBe(true);
     expect(body.smokeOpportunitiesCount).toBe(1);
     expect(body.internalTenant.slug).toBe("nowgo-ai");
+    expect(body.internalTenant.source).toBe("notion-fallback");
+    expect(body.internalTenant.id).toBe("nowgo-ai");
+    expect(body.internalTenant.error).toBeNull();
     expect(body.pgUrlConfigured).toBe(false);
+  });
+
+  it("em modo postgres sem PG_URL, marca internalTenant como skipped e não roda smoke", async () => {
+    vi.stubEnv("NOWGO_BRAIN_REPO", "postgres");
+    vi.stubEnv("NOWGO_BRAIN_PG_URL", "");
+    const { default: handler } = await import("../api/brain/repo-info.js");
+    const { req, res, statusFn, jsonFn } = mockReqRes("GET");
+    await handler(req, res);
+    expect(statusFn).toHaveBeenCalledWith(200);
+    const body = (jsonFn as any).mock.calls[0][0];
+    expect(body.activeMode).toBe("postgres");
+    expect(body.internalTenant.source).toBe("skipped");
+    expect(body.internalTenant.id).toBeNull();
+    expect(body.smokeOpportunitiesCount).toBeNull();
+    expect(body.smokeMs).toBeNull();
   });
 });
 
