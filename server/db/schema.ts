@@ -525,3 +525,6 @@ export type NewDealRoomRow = typeof dealRooms.$inferInsert;
 
 export type DealRoomAuditRow = typeof dealRoomAudit.$inferSelect;
 export type NewDealRoomAuditRow = typeof dealRoomAudit.$inferInsert;
+
+export type TenantRow = typeof tenants.$inferSelect;
+export type NewTenantRow = typeof tenants.$inferInsert;
