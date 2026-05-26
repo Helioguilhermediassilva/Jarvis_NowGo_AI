@@ -674,7 +674,9 @@ Acoes imediatas:
 - [x] Criar `brainRepositoryFactory.ts` (escolha por env `NOWGO_BRAIN_REPO=notion|postgres|shadow`)
 - [x] Vitest smoke do schema PostgreSQL em `server/postgresBrainRepository.smoke.test.ts` (skipa se `NOWGO_BRAIN_PG_URL` ausente)
 - [x] Validar `tsc --noEmit` limpo + 31 testes passando (zero regressão)
-- [ ] Refatorar consumidores existentes (financialKpis, jarvisBrainTools, dashboards) para usar `getBrainRepository()`
+- [x] Adicionar endpoints proof-of-concept que consomem a fábrica: `GET /api/brain/repo-info` (health + identificação da implementação ativa) e `GET /api/brain/opportunities-via-repo` (lê via interface)
+- [x] Vitest cobrindo os dois endpoints novos com mock da fábrica (6 testes; total 37 testes passando)
+- [ ] Refatorar consumidores existentes (financialKpis, jarvisBrainTools, dashboards) para usar `getBrainRepository()` — pendente Fase 1.2 (após paridade da interface)
 - [ ] Implementar shadow mirror real: writes Notion também escrevem em Postgres (Fase 1.2)
 - [ ] Validar smoke test rodando contra Supabase em produção (Vercel) após deploy
 - [ ] Commit + push + deploy (zero impacto operacional visível ao Hélio)
