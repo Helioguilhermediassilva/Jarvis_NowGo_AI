@@ -29,7 +29,12 @@ import { generateTokenPair, hashToken } from "./tokens.js";
 // ---------------------------------------------------------------------------
 
 export const SESSION_TTL_MS = 7 * 24 * 60 * 60_000; // 7 dias
-export const COOKIE_NAME = "nowgo_session";
+/**
+ * Cookie F47 separado do `nowgo_session` (JWT pre-existente em server/auth.ts).
+ * Coexistência por path: F47 atende /api/cockpit/* e /api/auth/v2/*; o sistema
+ * antigo continua em /cockpit e /api/auth/* (Google+Notion+JWT).
+ */
+export const COOKIE_NAME = "nowgo_session_v2";
 export const COOKIE_PATH = "/";
 export const COOKIE_SAMESITE = "Lax" as const;
 

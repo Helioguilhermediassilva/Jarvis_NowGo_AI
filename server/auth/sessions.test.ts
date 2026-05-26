@@ -32,7 +32,7 @@ describe("Constantes", () => {
     expect(SESSION_TTL_MS).toBe(7 * 24 * 60 * 60_000);
   });
   it("nome de cookie e SameSite batem com a doc", () => {
-    expect(COOKIE_NAME).toBe("nowgo_session");
+    expect(COOKIE_NAME).toBe("nowgo_session_v2");
     expect(_internal.COOKIE_SAMESITE).toBe("Lax");
     expect(_internal.COOKIE_PATH).toBe("/");
   });
@@ -43,7 +43,7 @@ describe("serializeCookie", () => {
 
   it("inclui flags de segurança por padrão", () => {
     const c = serializeCookie({ rawToken: "abc123", expiresAt });
-    expect(c).toContain("nowgo_session=abc123");
+    expect(c).toContain("nowgo_session_v2=abc123");
     expect(c).toContain("Path=/");
     expect(c).toContain("HttpOnly");
     expect(c).toContain("SameSite=Lax");
@@ -97,16 +97,16 @@ describe("parseSessionCookie", () => {
   });
 
   it("extrai e URL-decoda o valor", () => {
-    expect(parseSessionCookie("nowgo_session=abc123")).toBe("abc123");
-    expect(parseSessionCookie("nowgo_session=a%2Fb%2Bc%3Dd")).toBe("a/b+c=d");
+    expect(parseSessionCookie("nowgo_session_v2=abc123")).toBe("abc123");
+    expect(parseSessionCookie("nowgo_session_v2=a%2Fb%2Bc%3Dd")).toBe("a/b+c=d");
   });
 
   it("ignora espaços e outras chaves", () => {
-    expect(parseSessionCookie("foo=bar;  nowgo_session=tok ;baz=qux")).toBe("tok ");
+    expect(parseSessionCookie("foo=bar;  nowgo_session_v2=tok ;baz=qux")).toBe("tok ");
   });
 
   it("preserva sinal de igual no valor", () => {
-    expect(parseSessionCookie("nowgo_session=base64==")).toBe("base64==");
+    expect(parseSessionCookie("nowgo_session_v2=base64==")).toBe("base64==");
   });
 });
 

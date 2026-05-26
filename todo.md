@@ -734,12 +734,50 @@ Doc de arquitetura: `docs/F47-arquitetura.md`. Premissa: tenant interno `nowgo-a
 - [ ] Criar `server/auth/sessions.ts` (cookie httpOnly Secure SameSite=Lax, TTL 7d renovável)
 - [ ] Adicionar pacote `argon2` ao package.json e validar `tsc --noEmit`
 
-### Fase 5 — Backend CRUD multi-tenant
-- [ ] Criar `server/routers/opportunities.ts` (tRPC): list / create / update / delete com Zod, validação dos 6 vetores e cálculo automático de score
-- [ ] Criar `server/routers/dealRooms.ts` (tRPC): list / promote / resolve / lose / pause + invocação automática do promoter
-- [ ] Criar `server/routers/invitations.ts` (tRPC): list / create / revoke (apenas para superadmin/owner)
-- [ ] Estender `NowGoBrainRepository` com métodos createOpportunity/updateOpportunity/deleteOpportunity/listDealRooms/promoteDealRoom/resolveDealRoom e implementar em `PostgresBrainRepository`
-- [ ] Smoke tests Postgres cobrindo cada novo método via withTenant()
+### Fase 5 — Vercel API Routes REST (CRUD multi-tenant)
+
+> **Descoberta na fase 5:** o projeto Jarvis_NowGo_AI usa Vercel API Routes (`api/*.ts` com `@vercel/node`), não tRPC. Adaptamos.
+
+#### 5.0 — Infra compartilhada
+- [ ] Criar `server/http/handlerFactory.ts`: factory comum para Vercel handlers com método allowlist, validação Zod do body/query, parse de cookies, classes de erro tipadas mapeadas para HTTP status, log estruturado e CORS quando aplicável
+- [ ] Criar `server/http/authMiddleware.ts`: extrai sessão do cookie via `parseSessionCookie` + `loadSessionByRawToken`, popula `req.context.userId/tenantId/role`, recusa com 401 se inválida
+- [ ] Criar `server/http/rateLimit.ts`: token bucket em memória por (IP, endpoint) com fallback graceful em serverless (cold start = bucket cheio)
+- [ ] Adicionar `zod` às dependências se ainda não existir e validar `tsc --noEmit`
+
+#### 5.1 — Endpoints de auth
+- [ ] `POST /api/auth/invite/create` (auth: superadmin/owner) — emite convite via `createInvitation()` e dispara e-mail via `sendEmail`+`renderInviteEmail`
+- [ ] `GET  /api/auth/invite/validate?token=...` (público) — valida token sem consumir, retorna `{tenantName, role, expiresAt}` ou 410/404 anti-enumeração
+- [ ] `POST /api/auth/invite/accept` (público) — consome convite + cria user + senha (Argon2id) ou marca pronto-para-Google + emite verificação de e-mail
+- [ ] `POST /api/auth/email/verify` (público) — confirma token de verificação de e-mail e libera login
+- [ ] `POST /api/auth/login` (público, rate-limited) — e-mail+senha; se MFA exigido, retorna `mfa_required` com `mfa_token` de 5min; senão emite cookie de sessão
+- [ ] `POST /api/auth/login/mfa` (público, rate-limited) — valida código TOTP ou backup code e finaliza login
+- [ ] `POST /api/auth/logout` (auth) — revoga sessão atual + cookie clear
+- [ ] `GET  /api/auth/me` (auth) — retorna user/tenant/role/mfaEnabled
+- [ ] `POST /api/auth/password/reset-request` (público, rate-limited) — sempre 200 (anti-enumeração), envia link via Resend se e-mail existir
+- [ ] `POST /api/auth/password/reset-confirm` (público) — valida token + troca senha + revoga sessões ativas (`revokeAllUserSessions`)
+- [ ] `POST /api/auth/mfa/setup-init` (auth) — retorna QR + URI + secret temporário
+- [ ] `POST /api/auth/mfa/setup-confirm` (auth) — confirma código, persiste segredo cifrado, emite 8 backup codes (única vez)
+- [ ] `POST /api/admin/mfa/reset` (auth: superadmin) — reset administrativo de MFA de outro usuário (audit log obrigatório)
+
+#### 5.2 — Endpoints de cockpit (CRUD multi-tenant)
+- [ ] `GET  /api/cockpit/portfolio` (auth) — lista oportunidades do tenant atual com `withTenant()`, filtros por categoria/score, paginação
+- [ ] `POST /api/cockpit/portfolio` (auth) — cria oportunidade; trigger SQL recalcula score automático
+- [ ] `PATCH /api/cockpit/portfolio/:id` (auth) — atualiza vetores; pode disparar `recomputeAndPromoteDealRooms` se score >= 85
+- [ ] `DELETE /api/cockpit/portfolio/:id` (auth) — soft delete (status=cancelled)
+- [ ] `GET  /api/cockpit/deal-rooms` (auth) — lista os 5 ativos + 3 candidatos próximos (preview da fila)
+- [ ] `POST /api/cockpit/deal-rooms/:id/resolve` (auth) — marca como `won`/`lost`/`paused` e dispara reposição automática
+- [ ] `POST /api/admin/invitations` (auth: superadmin/owner) — lista/revoga convites do tenant
+
+#### 5.3 — Estender NowGoBrainRepository (paridade Notion vs Postgres)
+- [ ] Adicionar métodos: `createOpportunity`, `updateOpportunity`, `deleteOpportunity`, `listDealRooms`, `resolveDealRoom`, `listInvitationsByTenant`
+- [ ] Implementar tudo em `PostgresBrainRepository` (com `withTenant()`)
+- [ ] Stubs em `NotionBrainRepository` que lançam `NotImplementedError` (cliente externo não usa Notion como source-of-truth, então tudo bem)
+
+#### 5.4 — Cobertura de testes
+- [ ] Vitest unit do `handlerFactory` (allowlist HTTP, Zod fail → 400, classes de erro → status correto)
+- [ ] Vitest unit do `authMiddleware` (sem cookie, cookie inválido, sessão expirada — todos 401)
+- [ ] Vitest unit do `rateLimit` (bucket inicial cheio, esgotado → 429, token-refill via tempo)
+- [ ] Smoke tests com `it.skipIf(!NOWGO_BRAIN_PG_URL)` para cada endpoint crítico (login, invite accept, mfa setup-confirm, deal-room resolve)
 
 ### Fase 6 — Frontend
 - [ ] Criar página `/convite/<token>` com validação no servidor e botões Google + Senha
