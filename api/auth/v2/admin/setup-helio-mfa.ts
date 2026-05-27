@@ -135,11 +135,19 @@ export default createApiHandler<Input, Output>({
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const stack = err instanceof Error ? err.stack : undefined;
+      const cause = (err as { cause?: unknown })?.cause;
+      const causeMsg =
+        cause instanceof Error
+          ? `${cause.name}: ${cause.message}`
+          : cause
+            ? String(cause)
+            : null;
       // eslint-disable-next-line no-console
-      console.error("setup-helio-mfa error:", msg, stack);
+      console.error("setup-helio-mfa error:", msg, causeMsg, stack);
       res.status(500).json({
         error: "internal_error",
-        detail: msg,
+        detail: msg.slice(0, 200),
+        cause: causeMsg,
       });
       return undefined as unknown as Output;
     }
