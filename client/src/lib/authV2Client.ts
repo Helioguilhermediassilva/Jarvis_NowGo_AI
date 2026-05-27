@@ -171,11 +171,29 @@ export interface LoginMfaInput {
 }
 
 export async function loginMfaV2(input: LoginMfaInput): Promise<AuthV2User> {
-  const j = await request<{ ok: true; user: AuthV2User }>("/api/auth/v2/login/mfa", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
-  return j.user;
+  // Servidor (api/auth/v2/login/mfa.ts) aceita { ticket, code } para TOTP ou
+  // { ticket, backupCode } para backup — não aceita campo "method" nem "mfaTicket".
+  const body =
+    input.method === "backup"
+      ? { ticket: input.mfaTicket, backupCode: input.code }
+      : { ticket: input.mfaTicket, code: input.code };
+  await request<{ ok: true; userId: string; tenantId: string }>(
+    "/api/auth/v2/login/mfa",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+  );
+  // Servidor não devolve "user"; carregamos via /me que agora tem cookie ativo.
+  const me = await getMeV2();
+  if (!me) {
+    const err: ApiError = {
+      code: "unknown_error",
+      message: "MFA confirmado, mas a sessão não pode ser carregada",
+    };
+    throw err;
+  }
+  return me;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
