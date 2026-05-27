@@ -862,3 +862,12 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [ ] Corrigir o layout do header se necessário (responsividade, ordem, contraste) sem alterar identidade visual
 - [ ] Semear usuário `helio@nowgo.com.br` como superadmin no tenant `nowgo-ai` em produção (sem nunca trafegar senha pelo chat) e disparar fluxo de criação de senha por e-mail
 - [ ] Validar com o founder que o login + criação de convites funcionam fim-a-fim
+
+
+## F47 Fase 5.3 — Correção #4 (MFA setup vs challenge)
+
+- [ ] Diagnosticar por que login do superadmin Hélio cai em /mfa/desafio em vez de /mfa/configurar (provavelmente backend retorna `mfa_required` mesmo sem TOTP configurado)
+- [ ] Corrigir Login.tsx para detectar "MFA exigido mas não configurado" e redirecionar para /mfa/configurar
+- [ ] Garantir que /mfa/configurar funcione mesmo quando o usuário tem apenas challenge token (sem sessão V2 completa)
+- [ ] Adicionar link "Não tenho código ainda — configurar MFA" na tela /mfa/desafio como saída de emergência
+- [ ] Deploy + roteiro de validação fim-a-fim

@@ -92,21 +92,72 @@ export type LoginResult =
   | { kind: "mfa_required"; mfaTicket: string; intent: "challenge" }
   | { kind: "mfa_setup_required"; mfaTicket: string; intent: "setup" };
 
+/**
+ * Contrato real retornado por POST /api/auth/v2/login (status 200):
+ *  - Sessão emitida (cookie nowgo_session_v2 setado pelo backend):
+ *      { ok: true; userId; tenantId; requiresMfa: false; requiresMfaSetup: false }
+ *  - MFA exigido (usuário já tem TOTP cadastrado):
+ *      { ok: false; requiresMfa: true; requiresMfaSetup: false; mfaTicket }
+ *  - MFA requer cadastro inicial (role superadmin/owner/admin sem TOTP):
+ *      { ok: false; requiresMfa: false; requiresMfaSetup: true; mfaTicket }
+ */
+interface LoginSessionResponse {
+  ok: true;
+  userId: string;
+  tenantId: string;
+  requiresMfa: false;
+  requiresMfaSetup: false;
+}
+interface LoginMfaRequiredResponse {
+  ok: false;
+  requiresMfa: true;
+  requiresMfaSetup: false;
+  mfaTicket: string;
+}
+interface LoginMfaSetupResponse {
+  ok: false;
+  requiresMfa: false;
+  requiresMfaSetup: true;
+  mfaTicket: string;
+}
+type LoginRawResponse =
+  | LoginSessionResponse
+  | LoginMfaRequiredResponse
+  | LoginMfaSetupResponse;
+
 export async function loginV2(input: LoginInput): Promise<LoginResult> {
-  const j = await request<
-    | { ok: true; user: AuthV2User }
-    | { ok: true; mfaTicket: string; intent: "challenge" | "setup" }
-  >("/api/auth/v2/login", {
+  const j = await request<LoginRawResponse>("/api/auth/v2/login", {
     method: "POST",
     body: JSON.stringify(input),
   });
-  if ("user" in j) {
-    return { kind: "session", user: j.user };
+
+  if (j.requiresMfaSetup) {
+    return {
+      kind: "mfa_setup_required",
+      mfaTicket: j.mfaTicket,
+      intent: "setup",
+    };
   }
-  if (j.intent === "setup") {
-    return { kind: "mfa_setup_required", mfaTicket: j.mfaTicket, intent: "setup" };
+  if (j.requiresMfa) {
+    return {
+      kind: "mfa_required",
+      mfaTicket: j.mfaTicket,
+      intent: "challenge",
+    };
   }
-  return { kind: "mfa_required", mfaTicket: j.mfaTicket, intent: "challenge" };
+
+  // Sessão emitida diretamente: o backend setou o cookie HttpOnly
+  // nowgo_session_v2; carregamos os dados completos via /api/auth/v2/me.
+  const me = await fetchMeV2();
+  if (!me) {
+    const err: ApiError = {
+      status: 500,
+      code: "session_load_failed",
+      message: "login bem-sucedido porém sessão não pode ser carregada",
+    };
+    throw err;
+  }
+  return { kind: "session", user: me };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
