@@ -139,9 +139,11 @@ describe("Constantes de política", () => {
     expect(LOCKOUT_DURATION_MS).toBe(15 * 60_000);
     expect(RESET_TOKEN_TTL_MS).toBe(60 * 60_000);
     expect(VERIFICATION_TOKEN_TTL_MS).toBe(24 * 60 * 60_000);
-    expect(ARGON2_OPTS.memoryCost).toBe(65_536);
-    expect(ARGON2_OPTS.timeCost).toBe(3);
-    expect(ARGON2_OPTS.parallelism).toBe(4);
+    // 2026-05-27: reduzido de 64MiB/3/4 para 19MiB/2/1 para compatibilidade
+    // com cap de 256MB de RAM da Vercel serverless (Hotfix #6 — caso Serena).
+    expect(ARGON2_OPTS.memoryCost).toBe(19_456);
+    expect(ARGON2_OPTS.timeCost).toBe(2);
+    expect(ARGON2_OPTS.parallelism).toBe(1);
   });
 });
 
