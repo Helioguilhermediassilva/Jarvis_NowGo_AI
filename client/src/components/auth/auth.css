@@ -1,0 +1,215 @@
+/* ─────────────────────────────────────────────────────────────────────────
+ * Estilos das telas de autenticação V2 da F47
+ *
+ * Tudo é escopado por .nowgoai-landing para herdar tokens (cores, fontes,
+ * easings) do design-system principal sem vazar para o cockpit.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.nowgoai-landing .ng-auth-main {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7rem 1.25rem 4rem;
+}
+
+.nowgoai-landing .ng-auth-shell {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+}
+
+.nowgoai-landing .ng-auth-tagline {
+  display: inline-block;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(51, 210, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(51, 210, 255, 0.04);
+  margin-bottom: 1.25rem;
+}
+
+.nowgoai-landing .ng-auth-title {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.85rem;
+  line-height: 1.2;
+  color: var(--text-main);
+}
+
+.nowgoai-landing .ng-auth-title .accent {
+  color: var(--accent-cyan);
+}
+
+.nowgoai-landing .ng-auth-subtitle {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin: 0 0 1.6rem;
+}
+
+.nowgoai-landing .ng-auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  text-align: left;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.nowgoai-landing .ng-auth-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.nowgoai-landing .ng-auth-field-label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+}
+
+.nowgoai-landing .ng-auth-input {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  transition:
+    border-color 180ms var(--easing-smooth),
+    background 180ms var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-auth-input::placeholder {
+  color: var(--text-muted);
+}
+
+.nowgoai-landing .ng-auth-input:focus {
+  outline: none;
+  border-color: rgba(51, 210, 255, 0.55);
+  background: rgba(51, 210, 255, 0.04);
+}
+
+.nowgoai-landing .ng-auth-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nowgoai-landing .ng-auth-submit {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--text-main);
+  color: var(--bg-base);
+  border: none;
+  border-radius: 999px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--easing-smooth),
+    box-shadow 180ms var(--easing-smooth);
+  box-shadow: 0 8px 32px rgba(51, 210, 255, 0.12);
+}
+
+.nowgoai-landing .ng-auth-submit:hover:not(:disabled) {
+  box-shadow: 0 12px 40px rgba(51, 210, 255, 0.22);
+}
+
+.nowgoai-landing .ng-auth-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.nowgoai-landing .ng-auth-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nowgoai-landing .ng-auth-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(255, 88, 88, 0.06);
+  border: 1px solid rgba(255, 88, 88, 0.28);
+  color: #ff8888;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.nowgoai-landing .ng-auth-success {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(51, 210, 255, 0.06);
+  border: 1px solid rgba(51, 210, 255, 0.28);
+  color: var(--accent-cyan);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.nowgoai-landing .ng-auth-help {
+  margin: 0.85rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.nowgoai-landing .ng-auth-footer {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.nowgoai-landing .ng-auth-footer a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: color 180ms var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-auth-footer a:hover {
+  color: var(--accent-blue);
+}
+
+.nowgoai-landing .ng-auth-mfa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.85rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  font-family: "Menlo", "Consolas", monospace;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.nowgoai-landing .ng-auth-qr {
+  display: block;
+  margin: 0.5rem auto;
+  width: 200px;
+  height: 200px;
+  background: white;
+  padding: 8px;
+  border-radius: 8px;
+}

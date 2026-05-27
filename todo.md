@@ -835,3 +835,22 @@ Doc de arquitetura: `docs/F47-arquitetura.md`. Premissa: tenant interno `nowgo-a
 - [x] Senha do banco resetada para senha gerada pelo Supabase
 - [x] Smoke test dos 13 endpoints F47 em produção
 - [x] Remover endpoint debug temporário /api/auth/v2/debug-invite
+
+
+## F47 Fase 5.3 — Frontend de autenticação V2 (em andamento)
+
+Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, identidade visual ou conteúdo do cockpit/landing existente**. Apenas adicionar telas novas reaproveitando paleta NowGo, fontes e componentes shadcn/ui já em uso.
+
+- [x] Mapear estrutura do frontend (Vite/React/wouter/AuthProvider/roteamento)
+- [x] AuthV2Provider + hook useAuthV2 + cliente HTTP /api/auth/v2/*
+- [x] Tela /login (email+senha; branch para MFA quando aplicável)
+- [x] Tela /aceitar-convite/:token (valida token, formulário de senha, aceita)
+- [x] Tela /verificar-email/:token
+- [x] Tela /esqueci-senha
+- [x] Tela /redefinir-senha/:token
+- [x] Tela /mfa/configurar (setup TOTP + backup codes)
+- [x] Tela /mfa/desafio (login challenge)
+- [x] Guard RequireAuthV2 em rotas protegidas (sem alterar /cockpit existente — só adicionar guard)
+- [x] Tela /admin/usuarios para convidar membros (somente superadmin/owner/admin)
+- [x] Vitest da suíte completa rodando sem regressão (204 passed, 16 skipped)
+- [ ] Commit, push, deploy via Vercel API e smoke test E2E manual via browser

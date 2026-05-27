@@ -4,6 +4,7 @@ import "@/landing/styles/design-system.css";
 import { useLang } from "@/landing/useLang";
 import { copy } from "@/landing/copy";
 import CompanyDropdown from "@/landing/CompanyDropdown";
+import AuthHeaderButtons from "@/components/auth/AuthHeaderButtons";
 
 /**
  * LandingShell — wrapper visual reutilizado pelas páginas institucionais
@@ -92,10 +93,7 @@ export default function LandingShell({ children, activeNav: _activeNav }: Props)
                 </button>
               ))}
             </div>
-            <Link href="/cockpit" className="ng-header-login" aria-label="Login restrito">
-              <span aria-hidden="true" className="ng-header-login-lock">▢</span>
-              {t.nav.cockpitCta}
-            </Link>
+            <AuthHeaderButtons cockpitLabel={t.nav.cockpitCta} />
           </div>
         </div>
       </header>
