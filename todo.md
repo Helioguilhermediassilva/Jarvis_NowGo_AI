@@ -879,3 +879,12 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [ ] Subir o endpoint para produção (push para main; deploy automático Vercel)
 - [ ] Executar e entregar QR code ao founder; aguardar validação
 - [ ] Remover endpoint admin temporário e commitar
+
+
+## F47 Fase 5.3 — Correção #6 (login da Serena após accept-invite + decisão de tenancy)
+
+- [ ] Endpoint admin temporário `/api/auth/v2/admin/diag-user-state` para inspecionar password_credentials/users/tenant_members/invitations da Serena
+- [ ] Identificar bug do fluxo accept-invite que deixa o usuário sem credencial válida
+- [ ] Corrigir handler ou estado da Serena para destravar login dela
+- [ ] Alinhar com founder o modelo de tenancy (1 cockpit isolado por cliente externo vs cockpit compartilhado da NowGo)
+- [ ] Validar login da Serena em produção e remover endpoint admin
