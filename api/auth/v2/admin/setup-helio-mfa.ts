@@ -60,74 +60,88 @@ export default createApiHandler<Input, Output>({
   methods: ["POST"],
   schema: InputSchema,
   tag: "auth.v2.admin.setup_helio_mfa",
-  handler: async ({ input }) => {
-    const expected = process.env.JWT_SECRET;
-    if (!expected || expected.length < 16) {
-      throw new Error("JWT_SECRET ausente ou muito curto");
+  handler: async ({ res, input }) => {
+    try {
+      const expected = process.env.JWT_SECRET;
+      if (!expected || expected.length < 16) {
+        res.status(500).json({ error: "JWT_SECRET ausente ou muito curto" });
+        return undefined as unknown as Output;
+      }
+      if (!timingEqual(input.adminToken, expected)) {
+        res.status(401).json({ error: "forbidden" });
+        return undefined as unknown as Output;
+      }
+
+      // Localiza o superadmin Hélio
+      const userRows = await db()
+        .select()
+        .from(users)
+        .where(eq(users.email, TARGET_EMAIL))
+        .limit(1);
+      const user = userRows[0];
+      if (!user) {
+        res.status(404).json({
+          error: "user_not_found",
+          detail: `usuário ${TARGET_EMAIL} não existe no banco; rode o bootstrap antes.`,
+        });
+        return undefined as unknown as Output;
+      }
+
+      // Apaga credencial MFA antiga (se houver) para permitir setup limpo
+      await db()
+        .delete(mfaCredentials)
+        .where(eq(mfaCredentials.userId, user.id));
+
+      // Gera secret + URI + QR
+      const secret = generateSecret();
+      const otpauthUri = generateURI({
+        strategy: "totp",
+        issuer: input.issuer ?? "NowGo Cockpit",
+        label: TARGET_EMAIL,
+        secret,
+        digits: 6,
+        period: 30,
+      });
+      const qrCodePngDataUrl = await QRCode.toDataURL(otpauthUri);
+
+      // Persiste cifrado + backup codes
+      const encrypted = encryptSecret(secret);
+      const backupCodes = generateBackupCodes();
+      const hashed = backupCodes.map((c) => ({
+        hash: hashBackupCode(c),
+        used: false,
+      }));
+
+      await db().insert(mfaCredentials).values({
+        userId: user.id,
+        totpSecretEncrypted: encrypted,
+        backupCodesHashed: hashed,
+        enabledAt: new Date(),
+        lastUsedAt: null,
+        resetCount: 0,
+      });
+
+      return {
+        ok: true,
+        userId: user.id,
+        email: TARGET_EMAIL,
+        secret,
+        otpauthUri,
+        qrCodePngDataUrl,
+        backupCodes,
+        warning:
+          "Endpoint temporário — remover após o setup do founder ser concluído. Guarde os backup codes em local seguro: cada um só pode ser usado uma vez.",
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const stack = err instanceof Error ? err.stack : undefined;
+      // eslint-disable-next-line no-console
+      console.error("setup-helio-mfa error:", msg, stack);
+      res.status(500).json({
+        error: "internal_error",
+        detail: msg,
+      });
+      return undefined as unknown as Output;
     }
-    if (!timingEqual(input.adminToken, expected)) {
-      const err: Error & { code?: string } = new Error("forbidden");
-      err.code = "invalid_credentials";
-      throw err;
-    }
-
-    // Localiza o superadmin Hélio
-    const userRows = await db()
-      .select()
-      .from(users)
-      .where(eq(users.email, TARGET_EMAIL))
-      .limit(1);
-    const user = userRows[0];
-    if (!user) {
-      throw new Error(
-        `usuário ${TARGET_EMAIL} não existe no banco; rode o bootstrap antes.`,
-      );
-    }
-
-    // Apaga credencial MFA antiga (se houver) para permitir setup limpo
-    await db()
-      .delete(mfaCredentials)
-      .where(eq(mfaCredentials.userId, user.id));
-
-    // Gera secret + URI + QR
-    const secret = generateSecret();
-    const otpauthUri = generateURI({
-      strategy: "totp",
-      issuer: input.issuer ?? "NowGo Cockpit",
-      label: TARGET_EMAIL,
-      secret,
-      digits: 6,
-      period: 30,
-    });
-    const qrCodePngDataUrl = await QRCode.toDataURL(otpauthUri);
-
-    // Persiste cifrado + backup codes
-    const encrypted = encryptSecret(secret);
-    const backupCodes = generateBackupCodes();
-    const hashed = backupCodes.map((c) => ({
-      hash: hashBackupCode(c),
-      used: false,
-    }));
-
-    await db().insert(mfaCredentials).values({
-      userId: user.id,
-      totpSecretEncrypted: encrypted,
-      backupCodesHashed: hashed,
-      enabledAt: new Date(),
-      lastUsedAt: null,
-      resetCount: 0,
-    });
-
-    return {
-      ok: true,
-      userId: user.id,
-      email: TARGET_EMAIL,
-      secret,
-      otpauthUri,
-      qrCodePngDataUrl,
-      backupCodes,
-      warning:
-        "Endpoint temporário — remover após o setup do founder ser concluído. Guarde os backup codes em local seguro: cada um só pode ser usado uma vez.",
-    };
   },
 });
