@@ -5,6 +5,7 @@ import { useHeroGlobe } from "@/landing/useHeroGlobe";
 import { useLang } from "@/landing/useLang";
 import { copy } from "@/landing/copy";
 import CompanyDropdown from "@/landing/CompanyDropdown";
+import AuthHeaderButtons from "@/components/auth/AuthHeaderButtons";
 
 /**
  * LandingPage — landing pública da NowGo AI em cockpitcrmnowgoai.com (rota /).
@@ -91,10 +92,7 @@ export default function LandingPage() {
                 </button>
               ))}
             </div>
-            <Link href="/cockpit" className="ng-header-login" aria-label="Login restrito">
-              <span aria-hidden="true" className="ng-header-login-lock">▢</span>
-              {t.nav.cockpitCta}
-            </Link>
+            <AuthHeaderButtons cockpitLabel={t.nav.cockpitCta} />
           </div>
         </div>
       </header>

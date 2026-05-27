@@ -854,3 +854,11 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [x] Tela /admin/usuarios para convidar membros (somente superadmin/owner/admin)
 - [x] Vitest da suíte completa rodando sem regressão (204 passed, 16 skipped)
 - [x] Commit (d61bf69) + push origin/main + deploy via API Vercel (dpl_UDkBDk5axPdNE2ZMWmbWjoviGRxF READY) + smoke test em produção
+
+
+## F47 Fase 5.3 — Correções pós-deploy (reportadas pelo founder em 2026-05-27)
+
+- [ ] Investigar por que o botão Cadastro não aparece visivelmente ao lado do Login no header em produção
+- [ ] Corrigir o layout do header se necessário (responsividade, ordem, contraste) sem alterar identidade visual
+- [ ] Semear usuário `helio@nowgo.com.br` como superadmin no tenant `nowgo-ai` em produção (sem nunca trafegar senha pelo chat) e disparar fluxo de criação de senha por e-mail
+- [ ] Validar com o founder que o login + criação de convites funcionam fim-a-fim
