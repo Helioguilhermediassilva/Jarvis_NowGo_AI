@@ -185,9 +185,10 @@ export async function loginMfaV2(input: LoginMfaInput): Promise<AuthV2User> {
     },
   );
   // Servidor não devolve "user"; carregamos via /me que agora tem cookie ativo.
-  const me = await getMeV2();
+  const me = await fetchMeV2();
   if (!me) {
     const err: ApiError = {
+      status: 500,
       code: "unknown_error",
       message: "MFA confirmado, mas a sessão não pode ser carregada",
     };
