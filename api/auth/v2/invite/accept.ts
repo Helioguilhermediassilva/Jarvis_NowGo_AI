@@ -41,10 +41,9 @@ import {
   consumeInvitation,
 } from "../../../../server/auth/invitations.js";
 import { createPasswordCredential } from "../../../../server/auth/passwordCredentials.js";
-import {
-  renderVerifyEmail,
-  sendEmail,
-} from "../../../../server/email/resendClient.js";
+// renderVerifyEmail/sendEmail removidos: e-mail de verificação não é enviado
+// no fluxo de aceitar convite (a posse do endereço já foi provada pelo recebimento
+// do convite). Mantemos requiresEmailVerification=false por compatibilidade de schema.
 
 const InputSchema = z.discriminatedUnion("mode", [
   z.object({
@@ -111,30 +110,30 @@ export default createApiHandler<Input, Output>({
     );
 
     // 3) Credencial local apenas no mode=password
-    let requiresEmailVerification = false;
+    // IMPORTANTE: o convite é enviado para o e-mail do destinatário, ou seja,
+    // ter recebido o link já prova posse do endereço. Por isso não exigimos
+    // verificação adicional de e-mail aqui — marcamos verifiedAt=now() já na
+    // criação da credencial. Isso evita o problema de o usuário definir senha
+    // e não conseguir logar enquanto o e-mail de verificação não for clicado.
     if (input.mode === "password" && created) {
       // Só cria credencial em conta nova: se já existia user (Google prévio),
       // não sobrescreve. UI deve detectar isso e oferecer "associar Google".
-      const cred = await createPasswordCredential({
-        userId,
-        password: input.password,
-        requireEmailVerification: true,
-      });
-      requiresEmailVerification = true;
-
-      // 5) Enviar e-mail de verificação
-      if (cred.verificationRawToken) {
-        const verifyUrl = `${input.origin.replace(/\/$/, "")}/verificar-email/${cred.verificationRawToken}`;
-        const tpl = renderVerifyEmail({ to: invitation.email, verifyUrl });
-        await sendEmail({
-          to: invitation.email,
-          subject: tpl.subject,
-          html: tpl.html,
-          text: tpl.text,
-          tag: "f47.verify",
+      // Faz isto ANTES de consumir o convite, para que falhas (e.g. argon2
+      // estourando RAM serverless) não deixem o usuário sem credencial mas
+      // com tenant_members criado.
+      try {
+        await createPasswordCredential({
+          userId,
+          password: input.password,
+          requireEmailVerification: false,
         });
+      } catch (err) {
+        // Re-lança com contexto para não ser engolido pelo handlerFactory
+        const msg = err instanceof Error ? err.message : String(err);
+        throw new Error(`accept-invite credential failed: ${msg}`);
       }
     }
+    const requiresEmailVerification = false;
 
     // 4) Consumir convite + criar tenant_members em transação atômica
     const consumed = await consumeInvitation({

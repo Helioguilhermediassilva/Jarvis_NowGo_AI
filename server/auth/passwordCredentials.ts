@@ -41,12 +41,20 @@ export const LOCKOUT_DURATION_MS = 15 * 60_000; // 15 min
 export const RESET_TOKEN_TTL_MS = 60 * 60_000; // 1h
 export const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60_000; // 24h
 
-/** Configuração Argon2id alinhada à OWASP 2026 (m=64MiB, t=3, p=4). */
+/**
+ * Configuração Argon2id alinhada à OWASP 2026 (m=19MiB, t=2, p=1).
+ *
+ * Reduzido de 64MiB/3/4 para 19MiB/2/1 em 2026-05-27 porque a Vercel
+ * serverless tem cap de 256MB de RAM por instância e o argon2 com 64MiB
+ * estourava silenciosamente em accept-invite (issue Serena), deixando
+ * usuários sem credencial. 19MiB/2/1 ainda atende a recomendação mínima
+ * OWASP 2026 e oferece custo compatível com timeout de 10s da Vercel.
+ */
 export const ARGON2_OPTS = {
   type: argon2.argon2id,
-  memoryCost: 65_536, // 64 MiB
-  timeCost: 3,
-  parallelism: 4,
+  memoryCost: 19_456, // 19 MiB
+  timeCost: 2,
+  parallelism: 1,
 } as const;
 
 // ---------------------------------------------------------------------------
