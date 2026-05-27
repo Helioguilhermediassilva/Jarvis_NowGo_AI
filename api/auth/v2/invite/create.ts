@@ -72,7 +72,7 @@ export default createApiHandler<Input, {
     });
 
     // 4) Enviar e-mail (log-only se RESEND_API_KEY ausente)
-    const inviteUrl = `${input.origin.replace(/\/$/, "")}/convite/${created.rawToken}`;
+    const inviteUrl = `${input.origin.replace(/\/$/, "")}/aceitar-convite/${created.rawToken}`;
     const tpl = renderInviteEmail({
       to: input.email,
       inviterName: ctx.email,

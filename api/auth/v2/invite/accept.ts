@@ -124,7 +124,7 @@ export default createApiHandler<Input, Output>({
 
       // 5) Enviar e-mail de verificação
       if (cred.verificationRawToken) {
-        const verifyUrl = `${input.origin.replace(/\/$/, "")}/auth/verify?token=${cred.verificationRawToken}`;
+        const verifyUrl = `${input.origin.replace(/\/$/, "")}/verificar-email/${cred.verificationRawToken}`;
         const tpl = renderVerifyEmail({ to: invitation.email, verifyUrl });
         await sendEmail({
           to: invitation.email,

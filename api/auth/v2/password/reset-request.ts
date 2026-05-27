@@ -72,7 +72,7 @@ export default createApiHandler<Input, { ok: true }>({
       throw err;
     }
 
-    const resetUrl = `${input.origin.replace(/\/$/, "")}/auth/reset-password?token=${rawToken}&email=${encodeURIComponent(email)}`;
+    const resetUrl = `${input.origin.replace(/\/$/, "")}/redefinir-senha/${rawToken}?email=${encodeURIComponent(email)}`;
     const tpl = renderResetPasswordEmail({ to: email, resetUrl });
     await sendEmail({
       to: email,
