@@ -871,3 +871,11 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [ ] Garantir que /mfa/configurar funcione mesmo quando o usuário tem apenas challenge token (sem sessão V2 completa)
 - [ ] Adicionar link "Não tenho código ainda — configurar MFA" na tela /mfa/desafio como saída de emergência
 - [ ] Deploy + roteiro de validação fim-a-fim
+
+
+## F47 Fase 5.3 — Correção #5 (Desbloquear MFA do superadmin sem re-deploy do front)
+
+- [ ] Criar endpoint admin temporário /api/auth/v2/admin/setup-helio-mfa que provisiona TOTP e devolve otpauth URI/QR
+- [ ] Subir o endpoint para produção (push para main; deploy automático Vercel)
+- [ ] Executar e entregar QR code ao founder; aguardar validação
+- [ ] Remover endpoint admin temporário e commitar
