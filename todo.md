@@ -853,4 +853,4 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [x] Guard RequireAuthV2 em rotas protegidas (sem alterar /cockpit existente — só adicionar guard)
 - [x] Tela /admin/usuarios para convidar membros (somente superadmin/owner/admin)
 - [x] Vitest da suíte completa rodando sem regressão (204 passed, 16 skipped)
-- [ ] Commit, push, deploy via Vercel API e smoke test E2E manual via browser
+- [x] Commit (d61bf69) + push origin/main + deploy via API Vercel (dpl_UDkBDk5axPdNE2ZMWmbWjoviGRxF READY) + smoke test em produção
