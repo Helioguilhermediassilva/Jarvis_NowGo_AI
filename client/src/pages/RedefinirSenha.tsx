@@ -7,7 +7,7 @@
  * e redireciona para /login com mensagem de sucesso.
  */
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 import AuthShell from "@/components/auth/AuthShell";
 import { confirmPasswordResetV2, type ApiError } from "@/lib/authV2Client";
@@ -28,6 +28,15 @@ export default function RedefinirSenhaPage() {
   const [, params] = useRoute<{ token: string }>("/redefinir-senha/:token");
   const token = params?.token ?? null;
 
+  // E-mail vem como query string ?email=... no link enviado por e-mail.
+  // Fallback: campo manual abaixo, caso o link tenha sido encurtado/copy-paste.
+  const initialEmail = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    const sp = new URLSearchParams(window.location.search);
+    return (sp.get("email") ?? "").trim().toLowerCase();
+  }, []);
+
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -42,6 +51,11 @@ export default function RedefinirSenhaPage() {
       setError("Token ausente. Use o link enviado por e-mail.");
       return;
     }
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !/.+@.+\..+/.test(cleanEmail)) {
+      setError("Informe o e-mail associado a esta redefinição.");
+      return;
+    }
     if (password.length < 12) {
       setError(ERROR_LABELS.weak_password);
       return;
@@ -53,7 +67,7 @@ export default function RedefinirSenhaPage() {
 
     setSubmitting(true);
     try {
-      await confirmPasswordResetV2({ token, password });
+      await confirmPasswordResetV2({ email: cleanEmail, token, password });
       setSuccess(true);
       setTimeout(() => navigate("/login"), 3000);
     } catch (e) {
@@ -104,6 +118,20 @@ export default function RedefinirSenhaPage() {
     >
       <form onSubmit={handleSubmit} noValidate>
         {error && <div className="ng-auth-error" role="alert">{error}</div>}
+        <label className="ng-auth-field">
+          <span className="ng-auth-field-label">E-mail</span>
+          <input
+            type="email"
+            className="ng-auth-input"
+            value={email}
+            onChange={(ev) => setEmail(ev.target.value)}
+            placeholder="voce@empresa.com.br"
+            autoComplete="email"
+            required
+            disabled={submitting || !!initialEmail}
+            readOnly={!!initialEmail}
+          />
+        </label>
         <label className="ng-auth-field">
           <span className="ng-auth-field-label">Nova senha</span>
           <input

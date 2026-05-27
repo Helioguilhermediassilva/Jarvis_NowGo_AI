@@ -224,19 +224,24 @@ export async function requestPasswordResetV2(input: {
 // /api/auth/v2/password/reset-confirm
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function passwordResetConfirmV2(token: string, newPassword: string): Promise<{ ok: true }> {
+export async function passwordResetConfirmV2(
+  email: string,
+  token: string,
+  newPassword: string,
+): Promise<{ ok: true }> {
   return request<{ ok: true }>("/api/auth/v2/password/reset-confirm", {
     method: "POST",
-    body: JSON.stringify({ token, newPassword }),
+    body: JSON.stringify({ email, token, newPassword }),
   });
 }
 
 // Alias com payload em objeto, usado pelas telas /redefinir-senha.
 export async function confirmPasswordResetV2(input: {
+  email: string;
   token: string;
   password: string;
 }): Promise<{ ok: true }> {
-  return passwordResetConfirmV2(input.token, input.password);
+  return passwordResetConfirmV2(input.email, input.token, input.password);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
