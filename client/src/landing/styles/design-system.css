@@ -1256,3 +1256,49 @@
     transition: none;
   }
 }
+
+/* ============================================================
+ * Founder LinkedIn pill button (only on /sobre)
+ * Discreto, alinhado ao tom institucional, com cor LinkedIn.
+ * ============================================================ */
+.nowgoai-landing .ng-founder-linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.25rem 0 1.5rem 0;
+  padding: 0.55rem 1.05rem;
+  border-radius: 999px;
+  background: #0a66c2;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    background-color 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 1px 2px rgba(10, 102, 194, 0.18);
+}
+.nowgoai-landing .ng-founder-linkedin:hover {
+  background: #0958a8;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.28);
+  text-decoration: none;
+}
+.nowgoai-landing .ng-founder-linkedin:active { transform: scale(0.97); }
+.nowgoai-landing .ng-founder-linkedin:focus-visible {
+  outline: 2px solid #0a66c2;
+  outline-offset: 3px;
+}
+.nowgoai-landing .ng-founder-linkedin-icon { flex-shrink: 0; color: #ffffff; }
+@media (max-width: 540px) {
+  .nowgoai-landing .ng-founder-linkedin {
+    font-size: 0.88rem;
+    padding: 0.5rem 0.95rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nowgoai-landing .ng-founder-linkedin { transition: none; }
+  .nowgoai-landing .ng-founder-linkedin:active { transform: none; }
+}

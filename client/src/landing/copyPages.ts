@@ -12,6 +12,10 @@ type Section = {
   body: string[]; // parágrafos
 };
 
+type FounderSection = Section & {
+  linkedin?: { url: string; label: string };
+};
+
 type SobreContent = {
   hero: {
     eyebrow: string;
@@ -19,7 +23,7 @@ type SobreContent = {
     subtitle: string;
   };
   bio: Section;
-  founder: Section;
+  founder: FounderSection;
   philosophy: Section;
   contactCta: {
     title: string;
@@ -158,6 +162,10 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "É presidente do Conselho Deliberativo e Fiscal da AACMB — Associação dos ex-alunos do Colégio Militar de Brasília, rede de cerca de 80 mil famílias que inclui empresários, artistas, ministros e o atual governador de São Paulo. É também Embaixador Brasileiro e Global Board Member do Global Financial Literacy Movement, iniciativa global que alcança 14 universidades africanas, mais de 40 parceiros de mídia e 12 milhões de pessoas em escala global — com expansão ativa nos Estados Unidos, Europa, África e Ásia. Coopera ainda com o MEC e o Centro de Estudos Estratégicos Brasileiros para o desenvolvimento de LLMs em português.",
           "Como autor, publicou <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Desenvolvendo oportunidades além do Vale do Silício</a></em> (Editora Trampolim), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024) e <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Sistemas Computacionais: Fundamentos e Aplicações Inovadoras</a></em> (2024) — obras que consolidam sua trajetória entre tecnologia, empreendedorismo e visão de país.",
         ],
+        linkedin: {
+          url: "https://www.linkedin.com/in/helioguilherme/",
+          label: "Conectar no LinkedIn",
+        },
       },
       philosophy: {
         title: "Como pensamos",
@@ -508,6 +516,10 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "He is chairman of the Deliberative and Fiscal Council of AACMB — the alumni association of the Brasília Military College, a network of around 80,000 families that includes entrepreneurs, artists, ministers and the current governor of São Paulo. He also serves as Brazilian Ambassador and Global Board Member of the Global Financial Literacy Movement, a global initiative that reaches 14 African universities, 40+ media partners and 12 million+ people worldwide — actively expanding across the United States, Europe, Africa and Asia. He further cooperates with Brazil's Ministry of Education and the Brazilian Strategic Studies Center on the development of Portuguese-language LLMs.",
           "As an author, he has published <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Developing opportunities beyond Silicon Valley</a></em> (Trampolim Publishing), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024), and <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Computational Systems: Foundations and Innovative Applications</a></em> (2024) — works that consolidate his journey across technology, entrepreneurship and national vision.",
         ],
+        linkedin: {
+          url: "https://www.linkedin.com/in/helioguilherme/",
+          label: "Connect on LinkedIn",
+        },
       },
       philosophy: {
         title: "How we think",
@@ -858,6 +870,10 @@ export const pagesCopy: Record<Lang, PagesCopy> = {
           "Es presidente del Consejo Deliberativo y Fiscal de la AACMB — Asociación de exalumnos del Colegio Militar de Brasilia, red de cerca de 80 mil familias que incluye empresarios, artistas, ministros y el actual gobernador de São Paulo. Es además Embajador Brasileño y Global Board Member del Global Financial Literacy Movement, iniciativa global que alcanza 14 universidades africanas, más de 40 socios de medios y 12 millones de personas a escala global — con expansión activa en Estados Unidos, Europa, África y Asia. Coopera además con el MEC y el Centro de Estudios Estratégicos Brasileños para el desarrollo de LLMs en portugués.",
           "Como autor, ha publicado <em><a href=\"https://www.amazon.com.br/Vale-Aprendi-Desenvolvendo-Oportunidades-Sil%C3%ADcio/dp/8592864089\" target=\"_blank\" rel=\"noopener noreferrer\">Vale o que aprendi — Desarrollando oportunidades más allá de Silicon Valley</a></em> (Editorial Trampolim), <em><a href=\"https://www.amazon.com.br/dp/B0DLP1CR61\" target=\"_blank\" rel=\"noopener noreferrer\">Next-Gen AI Automation: Frameworks and Tools for Machine Learning Mastery</a></em> (2024) y <em><a href=\"https://www.amazon.com.br/dp/B0DJV1JLXB\" target=\"_blank\" rel=\"noopener noreferrer\">Sistemas Computacionales: Fundamentos y Aplicaciones Innovadoras</a></em> (2024) — obras que consolidan su trayectoria entre tecnología, emprendimiento y visión de país.",
         ],
+        linkedin: {
+          url: "https://www.linkedin.com/in/helioguilherme/",
+          label: "Conectar en LinkedIn",
+        },
       },
       philosophy: {
         title: "Cómo pensamos",
