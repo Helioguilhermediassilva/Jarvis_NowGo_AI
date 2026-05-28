@@ -98,10 +98,10 @@ export const copy = {
       items: [
         {
           tag: "SMART CITY",
-          title: "Smart City — Plataforma Pública Integrada",
+          title: "Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Smart City",
-          desc: "Plataforma Pública Integrada pronta para implantação — gabinete digital, atendimento ao cidadão e operação 24/7, escopo dimensionado por território, secretarias e sistemas legados.",
+          desc: "Pronta para implantação — gabinete digital, atendimento ao cidadão e operação 24/7, escopo dimensionado por território, secretarias e sistemas legados.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -358,10 +358,10 @@ export const copy = {
       items: [
         {
           tag: "SMART CITY",
-          title: "Smart City — Integrated Public Platform",
+          title: "Integrated Public Platform",
           metric: "",
           metricLabel: "Smart City",
-          desc: "Integrated Public Platform ready for deployment — digital cabinet, citizen services and 24/7 operation, scope sized by territory, departments and legacy systems.",
+          desc: "Ready for deployment — digital cabinet, citizen services and 24/7 operation, scope sized by territory, departments and legacy systems.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -618,10 +618,10 @@ export const copy = {
       items: [
         {
           tag: "SMART CITY",
-          title: "Smart City — Plataforma Pública Integrada",
+          title: "Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Smart City",
-          desc: "Plataforma Pública Integrada lista para despliegue — gabinete digital, atención al ciudadano y operación 24/7, alcance dimensionado por territorio, secretarías y sistemas legados.",
+          desc: "Lista para despliegue — gabinete digital, atención al ciudadano y operación 24/7, alcance dimensionado por territorio, secretarías y sistemas legados.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
