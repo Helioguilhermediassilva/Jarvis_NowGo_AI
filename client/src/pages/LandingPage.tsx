@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import "@/landing/styles/design-system.css";
 import { useHeroGlobe } from "@/landing/useHeroGlobe";
@@ -22,9 +22,30 @@ import AuthHeaderButtons from "@/components/auth/AuthHeaderButtons";
 export default function LandingPage() {
   const { lang, setLang } = useLang();
   const t = copy[lang];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useHeroGlobe(canvasRef);
+
+  // Fecha o menu mobile ao redimensionar para desktop, ao trocar de idioma
+  // ou ao clicar em qualquer link âncora.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onResize = () => {
+      if (window.innerWidth > 980) setMobileMenuOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Bloqueia scroll do body quando o drawer está aberto.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   // Carregar Outfit + Inter do Google Fonts uma única vez.
   useEffect(() => {
@@ -77,6 +98,18 @@ export default function LandingPage() {
             <a href="#ecosystem">{t.nav.ecosystem}</a>
             <a href="#pricing">{t.nav.pricing}</a>
           </nav>
+          <button
+            type="button"
+            className={`ng-menu-toggle${mobileMenuOpen ? " is-open" : ""}`}
+            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="ng-mobile-drawer"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+          >
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+          </button>
           <div className="ng-header-actions">
             <div className="ng-lang-toggle" role="tablist" aria-label="Language">
               {(["pt", "en", "es"] as const).map((code) => (
@@ -95,6 +128,36 @@ export default function LandingPage() {
             <AuthHeaderButtons cockpitLabel={t.nav.cockpitCta} />
           </div>
         </div>
+        {/* Mobile drawer */}
+        <div
+          id="ng-mobile-drawer"
+          className={`ng-mobile-drawer${mobileMenuOpen ? " is-open" : ""}`}
+          aria-hidden={!mobileMenuOpen}
+        >
+          <nav
+            className="ng-mobile-nav"
+            aria-label="primary mobile"
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.tagName === "A") setMobileMenuOpen(false);
+            }}
+          >
+            <a href="#platform">{t.nav.platform}</a>
+            <a href="#verticals">{t.nav.verticals}</a>
+            <a href="#cases">{t.nav.cases}</a>
+            <a href="#ecosystem">{t.nav.ecosystem}</a>
+            <a href="#pricing">{t.nav.pricing}</a>
+            <div className="ng-mobile-divider" aria-hidden="true" />
+            {t.footer.colB.links.map((link) => (
+              <a key={link.href} href={link.href}>{link.label}</a>
+            ))}
+          </nav>
+        </div>
+        <div
+          className={`ng-mobile-backdrop${mobileMenuOpen ? " is-open" : ""}`}
+          aria-hidden="true"
+          onClick={() => setMobileMenuOpen(false)}
+        />
       </header>
 
       {/* HERO */}

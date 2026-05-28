@@ -1068,3 +1068,135 @@
     font-size: 0.72rem;
   }
 }
+
+
+/* =====================================================================
+   Mobile menu (hamburger + drawer) — adicionado em F47.5
+   Não altera desktop: o botão é display:none acima de 980px.
+   Os links continuam exatamente os mesmos do header desktop.
+   ===================================================================== */
+
+.nowgoai-landing .ng-menu-toggle {
+  display: none; /* desktop intacto */
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 0.5rem;
+  transition: border-color 0.2s var(--easing-smooth), background 0.2s var(--easing-smooth);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nowgoai-landing .ng-menu-toggle:hover,
+.nowgoai-landing .ng-menu-toggle:focus-visible {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nowgoai-landing .ng-menu-toggle span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--text-main, #fff);
+  border-radius: 2px;
+  transition: transform 0.25s var(--easing-smooth), opacity 0.2s var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-menu-toggle.is-open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.nowgoai-landing .ng-menu-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+.nowgoai-landing .ng-menu-toggle.is-open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+.nowgoai-landing .ng-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(82vw, 360px);
+  background: rgba(8, 12, 20, 0.96);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  transform: translateX(100%);
+  transition: transform 0.32s var(--easing-smooth);
+  z-index: 1200;
+  padding: 88px 1.5rem 2rem;
+  overflow-y: auto;
+  visibility: hidden;
+}
+
+.nowgoai-landing .ng-mobile-drawer.is-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.nowgoai-landing .ng-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nowgoai-landing .ng-mobile-nav a {
+  color: var(--text-main, #fff);
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 0.85rem 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  transition: color 0.2s var(--easing-smooth), padding-left 0.2s var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-mobile-nav a:hover {
+  color: var(--accent, #6ad1ff);
+  padding-left: 0.6rem;
+}
+
+.nowgoai-landing .ng-mobile-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0.75rem 0;
+}
+
+.nowgoai-landing .ng-mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--easing-smooth);
+  z-index: 1100;
+}
+
+.nowgoai-landing .ng-mobile-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 980px) {
+  .nowgoai-landing .ng-menu-toggle {
+    display: inline-flex;
+  }
+  /* Botão entra entre nav (oculto) e header-actions. Mantemos o seletor
+     de idioma + auth visíveis ao lado do hamburger, sem alterar nada
+     mais do layout existente. */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nowgoai-landing .ng-mobile-drawer,
+  .nowgoai-landing .ng-mobile-backdrop,
+  .nowgoai-landing .ng-menu-toggle span {
+    transition: none;
+  }
+}
