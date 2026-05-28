@@ -207,7 +207,9 @@ export default function LandingPage() {
               </article>
             ))}
           </div>
-          <p className="ng-cases-footer reveal">{t.cases.footer}</p>
+          {t.cases.footer ? (
+            <p className="ng-cases-footer reveal">{t.cases.footer}</p>
+          ) : null}
         </div>
       </section>
 

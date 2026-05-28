@@ -100,7 +100,7 @@ export const copy = {
           tag: "SMART CITY",
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
-          metricLabel: "Fase 1",
+          metricLabel: "Smart City",
           desc: "Plataforma Pública Integrada pronta para implantação — gabinete digital, atendimento ao cidadão e operação 24/7, escopo dimensionado por território, secretarias e sistemas legados.",
         },
         {
@@ -118,8 +118,7 @@ export const copy = {
           desc: "Primeiro de uma série planejada de automações documentais e fluxos cartoriais. Caso de validação rápida com expansão regional.",
         },
       ],
-      footer:
-        "Cases ativos com contratos formais em curso. Pipeline aberto e métricas detalhadas disponíveis sob NDA mediante solicitação.",
+      footer: "",
     },
     seals: {
       eyebrow: "PARCERIAS E RECONHECIMENTOS",
@@ -361,7 +360,7 @@ export const copy = {
           tag: "SMART CITY",
           title: "Smart City — Integrated Public Platform",
           metric: "",
-          metricLabel: "Phase 1",
+          metricLabel: "Smart City",
           desc: "Integrated Public Platform ready for deployment — digital cabinet, citizen services and 24/7 operation, scope sized by territory, departments and legacy systems.",
         },
         {
@@ -379,8 +378,7 @@ export const copy = {
           desc: "First of a planned series of document automations and notary workflows. Fast validation case with regional expansion roadmap.",
         },
       ],
-      footer:
-        "Active cases with formal contracts in progress. Open pipeline and detailed metrics available under NDA upon request.",
+      footer: "",
     },
     seals: {
       eyebrow: "PARTNERSHIPS AND RECOGNITION",
@@ -622,7 +620,7 @@ export const copy = {
           tag: "SMART CITY",
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
-          metricLabel: "Fase 1",
+          metricLabel: "Smart City",
           desc: "Plataforma Pública Integrada lista para despliegue — gabinete digital, atención al ciudadano y operación 24/7, alcance dimensionado por territorio, secretarías y sistemas legados.",
         },
         {
@@ -640,8 +638,7 @@ export const copy = {
           desc: "Primero de una serie planeada de automatizaciones documentales y flujos notariales. Caso de validación rápida con expansión regional.",
         },
       ],
-      footer:
-        "Casos activos con contratos formales en curso. Pipeline abierto y métricas detalladas disponibles bajo NDA por solicitud.",
+      footer: "",
     },
     seals: {
       eyebrow: "ALIANZAS Y RECONOCIMIENTOS",
