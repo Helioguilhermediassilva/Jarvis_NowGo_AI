@@ -172,7 +172,7 @@ export default function LandingPage() {
             <p className="ng-hero-sub">{t.hero.subtitle}</p>
             <div className="ng-hero-actions">
               <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.hero.ctaPrimary}</a>
-              <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.hero.ctaSecondary}</a>
+              <a href="https://wa.me/5561999708833?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20Intelig%C3%AAncia%20soberana%20para%20empresas%20e%20governos%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.hero.ctaSecondary}</a>
             </div>
             <div className="ng-hero-kpis">
               <div className="ng-hero-kpi"><span>•</span>{t.hero.kpiA}</div>
@@ -358,7 +358,7 @@ export default function LandingPage() {
           <p className="ng-section-sub ng-final-sub">{t.finalCta.subtitle}</p>
           <div className="ng-hero-actions">
             <a href="https://cal.com/helio-guilherme-jnrivp" target="_blank" rel="noreferrer" className="btn-primary">{t.finalCta.ctaPrimary}</a>
-            <a href="https://wa.me/5561999708833?text=Ol%C3%A1%2C%20H%C3%A9lio!%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20%5BSmart%20City%20%2F%20Enterprise%20%2F%20Outro%5D%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
+            <a href="https://wa.me/5561999708833?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20NowGo%20AI.%20Tenho%20interesse%20em%20Intelig%C3%AAncia%20soberana%20para%20empresas%20e%20governos%20e%20gostaria%20de%20conversar." target="_blank" rel="noreferrer" className="btn-secondary">{t.finalCta.ctaSecondary}</a>
           </div>
         </div>
       </section>
