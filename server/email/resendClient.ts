@@ -12,8 +12,10 @@
  * Decisões de produto (Hélio, 2026-05-26):
  *   • Provedor: Resend (free tier 3k e-mails/mês).
  *   • Domínio remetente: parametrizado via env `RESEND_FROM_EMAIL`.
- *     Default: `noreply@nowgoai.com.br`.
- *   • Reply-to: parametrizado via `RESEND_REPLY_TO` (default: undefined).
+ *     Default: `noreply@nowgoai.com`.
+ *   • Reply-to: parametrizado via `RESEND_REPLY_TO`.
+ *     Default: `contato@nowgo.com.br` (caixa institucional monitorada).
+ *     Pode ser sobrescrito por chamada via `input.replyTo`.
  *   • Templates: render via funções TS puras em `templates.ts`. NÃO usar
  *     templates do Resend dashboard (templates ficam no repo, versionados).
  *
@@ -65,10 +67,15 @@ export class EmailDeliveryError extends Error {
 // Implementação
 // ---------------------------------------------------------------------------
 
-const DEFAULT_FROM = "noreply@nowgoai.com.br";
+const DEFAULT_FROM = "noreply@nowgoai.com";
+const DEFAULT_REPLY_TO = "contato@nowgo.com.br";
 
 function getFrom(): string {
   return process.env.RESEND_FROM_EMAIL ?? DEFAULT_FROM;
+}
+
+function getReplyTo(): string {
+  return process.env.RESEND_REPLY_TO ?? DEFAULT_REPLY_TO;
 }
 
 function isProduction(): boolean {
@@ -118,7 +125,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     subject: input.subject,
     html: input.html,
     text: input.text,
-    replyTo: input.replyTo ?? process.env.RESEND_REPLY_TO,
+    replyTo: input.replyTo ?? getReplyTo(),
   });
 
   if (error) {
@@ -158,7 +165,7 @@ function htmlShell(title: string, bodyHtml: string): string {
 <h2 style="margin:0 0 16px">${safeTitle}</h2>
 ${bodyHtml}
 <hr style="margin:32px 0;border:0;border-top:1px solid #e2e8f0">
-<p style="font-size:12px;color:#64748b">NowGo AI · cockpitcrmnowgoai.com</p>
+<p style="font-size:12px;color:#64748b">NowGo AI · nowgoai.com</p>
 </body></html>`;
 }
 

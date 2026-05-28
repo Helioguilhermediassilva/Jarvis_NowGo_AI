@@ -144,12 +144,12 @@ describe("renderInviteEmail", () => {
       to: "convidado@cliente.com",
       inviterName: "Hélio",
       tenantName: "GDF Saúde",
-      inviteUrl: "https://cockpitcrmnowgoai.com/convite/abc123",
+      inviteUrl: "https://nowgoai.com/convite/abc123",
       expiresAt,
     });
     expect(r.subject).toContain("GDF Saúde");
     expect(r.html).toContain("Hélio");
-    expect(r.html).toContain("https://cockpitcrmnowgoai.com/convite/abc123");
+    expect(r.html).toContain("https://nowgoai.com/convite/abc123");
     expect(r.text).toContain("Aceitar:");
   });
 
