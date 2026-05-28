@@ -101,7 +101,7 @@ export const copy = {
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Fase 1",
-          desc: "Implementação inicial em curso na esfera de governo, com escopo de expansão direto por fases subsequentes — gabinete digital, atendimento ao cidadão e operação 24/7.",
+          desc: "Implantação em estruturação na esfera de governo, com escopo previsto em fases sucessivas — gabinete digital, atendimento ao cidadão e operação 24/7.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -221,7 +221,7 @@ export const copy = {
           name: "Programa Smart City",
           price: "Sob consulta",
           period: "Programa plurianual por fases",
-          desc: "Plataforma Pública Integrada para governos. Fase 1 contratada com expansão programada por etapas — escopo dimensionado conforme território, secretarias e sistemas legados.",
+          desc: "Plataforma Pública Integrada para governos, com implantação por fases sucessivas — escopo dimensionado conforme território, secretarias e sistemas legados.",
           features: [
             "Gabinete digital + atendimento ao cidadão",
             "Agentes autônomos por secretaria",
@@ -362,7 +362,7 @@ export const copy = {
           title: "Smart City — Integrated Public Platform",
           metric: "",
           metricLabel: "Phase 1",
-          desc: "Initial implementation underway at the government level, with planned expansion across subsequent phases — digital cabinet, citizen services and 24/7 operation.",
+          desc: "Deployment being structured at the government level, with planned expansion across subsequent phases — digital cabinet, citizen services and 24/7 operation.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -482,7 +482,7 @@ export const copy = {
           name: "Smart City Program",
           price: "On request",
           period: "Multi-year phased program",
-          desc: "Integrated Public Platform for governments. Phase 1 contracted with planned multi-stage expansion — scope sized by territory, departments and legacy systems.",
+          desc: "Integrated Public Platform for governments, deployed in successive phases — scope sized by territory, departments and legacy systems.",
           features: [
             "Digital cabinet + citizen services",
             "Autonomous agents per department",
@@ -623,7 +623,7 @@ export const copy = {
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Fase 1",
-          desc: "Implementación inicial en curso a nivel de gobierno, con expansión planificada por fases sucesivas — gabinete digital, atención al ciudadano y operación 24/7.",
+          desc: "Despliegue en estructuración a nivel de gobierno, con expansión prevista por fases sucesivas — gabinete digital, atención al ciudadano y operación 24/7.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -743,7 +743,7 @@ export const copy = {
           name: "Programa Smart City",
           price: "A consultar",
           period: "Programa plurianual por fases",
-          desc: "Plataforma Pública Integrada para gobiernos. Fase 1 contratada con expansión planificada por etapas — alcance dimensionado según territorio, secretarías y sistemas legados.",
+          desc: "Plataforma Pública Integrada para gobiernos, con despliegue en fases sucesivas — alcance dimensionado según territorio, secretarías y sistemas legados.",
           features: [
             "Gabinete digital + atención al ciudadano",
             "Agentes autónomos por secretaría",
