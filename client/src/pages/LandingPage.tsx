@@ -147,10 +147,12 @@ export default function LandingPage() {
             <a href="#cases">{t.nav.cases}</a>
             <a href="#ecosystem">{t.nav.ecosystem}</a>
             <a href="#pricing">{t.nav.pricing}</a>
-            <div className="ng-mobile-divider" aria-hidden="true" />
-            {t.footer.colB.links.map((link) => (
-              <a key={link.href} href={link.href}>{link.label}</a>
-            ))}
+            <div className="ng-mobile-section">
+              <span className="ng-mobile-section-title">{t.footer.colB.title}</span>
+              {t.footer.colB.links.map((link) => (
+                <a key={link.href} href={link.href} className="ng-mobile-subitem">{link.label}</a>
+              ))}
+            </div>
           </nav>
         </div>
         <div
