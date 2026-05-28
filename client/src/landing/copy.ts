@@ -266,7 +266,6 @@ export const copy = {
       colC: {
         title: "Recursos",
         links: [
-          { label: "Cockpit interno", href: "/cockpit" },
           { label: "Manifesto", href: "/manifesto" },
           { label: "Política de Privacidade", href: "/privacidade" },
           { label: "Contato", href: "#contact" },
@@ -526,7 +525,6 @@ export const copy = {
       colC: {
         title: "Resources",
         links: [
-          { label: "Internal cockpit", href: "/cockpit" },
           { label: "Manifesto", href: "/manifesto" },
           { label: "Privacy policy", href: "/privacy" },
           { label: "Contact", href: "#contact" },
@@ -786,8 +784,7 @@ export const copy = {
       colC: {
         title: "Recursos",
         links: [
-          { label: "Cockpit interno", href: "/cockpit" },
-          { label: "Manifiesto", href: "/manifesto" },
+          { label: "Manifesto", href: "/manifesto" },
           { label: "Política de Privacidad", href: "/privacidade" },
           { label: "Contacto", href: "#contact" },
         ],

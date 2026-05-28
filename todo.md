@@ -888,3 +888,56 @@ Restrição reforçada pelo founder em 2026-05-26: **NÃO alterar layout atual, 
 - [ ] Corrigir handler ou estado da Serena para destravar login dela
 - [ ] Alinhar com founder o modelo de tenancy (1 cockpit isolado por cliente externo vs cockpit compartilhado da NowGo)
 - [ ] Validar login da Serena em produção e remover endpoint admin
+
+
+## F47 Fase 5.2 — Multi-tenant com cockpit isolado por cliente
+
+Restrição não-negociável (founder, 2026-05-27): a identidade visual do cockpit
+atual permanece **integralmente preservada** — paleta NowGo (cyan #33D2FF,
+fundo cosmic), tipografia Outfit, componentes e layout existentes. As mudanças
+desta fase são estruturais (schema, queries, contexto de auth, isolamento) e
+não devem tocar em CSS/design tokens nem reorganizar telas existentes.
+
+- [ ] Alinhar com o founder as 6 decisões de produto/arquitetura (modelo de convite externo, isolamento de leads, billing, ownership, dados iniciais, switch entre tenants)
+- [ ] Mapear superfície de código afetada (schema, queries, endpoints, contexto de auth, frontend, roteamento)
+- [ ] Schema: garantir tenantId obrigatório em todas as tabelas de negócio (deal_rooms, portfolio, leads, etc.)
+- [ ] Helpers de query em server/db.ts com filtro automático por tenantId
+- [ ] Endpoint /api/auth/v2/invite/create com modo external (cria novo tenant zerado)
+- [ ] Middleware/contexto de auth que injeta tenantId ativo na sessão
+- [ ] Frontend: AuthV2Context expondo activeTenant
+- [ ] Frontend: switch de tenant para superadmin (sem alterar identidade visual)
+- [ ] Migrations idempotentes + backfill (todo dado sem tenantId vai para nowgo-ai)
+- [ ] Vitest cobrindo isolamento entre tenants
+- [ ] Deploy em produção e smoke test E2E (convidar cliente externo, validar cockpit zerado, validar nowgo-ai intacto)
+- [ ] Reportar entrega com checklist e roteiro de validação
+
+
+### F47 Fase 5.2 — Decisões fechadas com o founder (2026-05-27)
+
+| # | Decisão | Resposta |
+|---|---|---|
+| 1 | Onde o convite externo cria o cockpit isolado | Seletor explícito `internal` vs `external` no formulário de convite |
+| 2 | Granularidade do tenant externo | 1 tenant por empresa cliente |
+| 3 | Isolamento de dados | Tudo isolado por tenantId (deal rooms, portfólio, leads, anexos, tarefas) |
+| 4 | Owner do tenant externo | Convidado vira `owner`; founder permanece `superadmin` invisível com visão global |
+| 5 | Dados iniciais ao criar tenant cliente | Cockpit totalmente zerado |
+| 6 | Navegação do superadmin entre tenants | Switch discreto no header + página `/admin/tenants` |
+
+Restrição não-negociável: **identidade visual do cockpit atual permanece integralmente preservada** — paleta NowGo (cyan #33D2FF, fundo cosmic), tipografia Outfit, componentes e layout existentes. Mudanças desta fase são estruturais (schema, queries, contexto de auth, isolamento) e não devem tocar em CSS/design tokens.
+
+Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, schema `nowgo_brain`). Sem trocar provider.
+
+
+## Sessão 28/mai/2026 — Limpeza rodapé + migração de e-mails
+
+- [ ] Remover link "Cockpit interno" do rodapé (coluna Recursos) nos três idiomas (PT/EN/ES) em `client/src/landing/copy.ts`
+- [ ] Commit + push da remoção do link "Cockpit interno"
+- [ ] Levantar uso atual do remetente `noreply@cockpitcrmnowgoai.com` no código (Resend SDK, endpoints, ENVs)
+- [ ] Propor plano de migração Resend para `noreply@nowgoai.com` (domínio + DNS GoDaddy + ENVs + código) e aguardar aprovação
+- [ ] Adicionar domínio `nowgoai.com` no Resend (caso ainda não exista) e obter registros DNS de verificação (SPF/DKIM/DMARC/MX se necessário)
+- [ ] Configurar registros DNS no GoDaddy conforme orientação do Resend
+- [ ] Validar verificação do domínio no Resend (status: Verified)
+- [ ] Atualizar variáveis de ambiente do projeto (FROM_EMAIL ou equivalente) para `noreply@nowgoai.com`
+- [ ] Atualizar código (server) onde o remetente esteja hardcoded
+- [ ] Disparar e-mail de teste com novo remetente e confirmar entrega (inbox + headers SPF/DKIM PASS)
+- [ ] Manter `noreply@cockpitcrmnowgoai.com` ativo em paralelo por um período (rollback) antes de remover
