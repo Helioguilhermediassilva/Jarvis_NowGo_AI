@@ -142,17 +142,17 @@ export default function LandingPage() {
               if (target.tagName === "A") setMobileMenuOpen(false);
             }}
           >
-            <a href="#platform">{t.nav.platform}</a>
-            <a href="#verticals">{t.nav.verticals}</a>
-            <a href="#cases">{t.nav.cases}</a>
-            <a href="#ecosystem">{t.nav.ecosystem}</a>
-            <a href="#pricing">{t.nav.pricing}</a>
-            <div className="ng-mobile-section">
+            <div className="ng-mobile-section ng-mobile-section-first">
               <span className="ng-mobile-section-title">{t.footer.colB.title}</span>
               {t.footer.colB.links.map((link) => (
                 <a key={link.href} href={link.href} className="ng-mobile-subitem">{link.label}</a>
               ))}
             </div>
+            <a href="#platform">{t.nav.platform}</a>
+            <a href="#verticals">{t.nav.verticals}</a>
+            <a href="#cases">{t.nav.cases}</a>
+            <a href="#ecosystem">{t.nav.ecosystem}</a>
+            <a href="#pricing">{t.nav.pricing}</a>
           </nav>
         </div>
         <div
