@@ -101,7 +101,7 @@ export const copy = {
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Fase 1",
-          desc: "Implantação em estruturação na esfera de governo, com escopo previsto em fases sucessivas — gabinete digital, atendimento ao cidadão e operação 24/7.",
+          desc: "Plataforma Pública Integrada pronta para implantação — gabinete digital, atendimento ao cidadão e operação 24/7, escopo dimensionado por território, secretarias e sistemas legados.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -362,7 +362,7 @@ export const copy = {
           title: "Smart City — Integrated Public Platform",
           metric: "",
           metricLabel: "Phase 1",
-          desc: "Deployment being structured at the government level, with planned expansion across subsequent phases — digital cabinet, citizen services and 24/7 operation.",
+          desc: "Integrated Public Platform ready for deployment — digital cabinet, citizen services and 24/7 operation, scope sized by territory, departments and legacy systems.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
@@ -623,7 +623,7 @@ export const copy = {
           title: "Smart City — Plataforma Pública Integrada",
           metric: "",
           metricLabel: "Fase 1",
-          desc: "Despliegue en estructuración a nivel de gobierno, con expansión prevista por fases sucesivas — gabinete digital, atención al ciudadano y operación 24/7.",
+          desc: "Plataforma Pública Integrada lista para despliegue — gabinete digital, atención al ciudadano y operación 24/7, alcance dimensionado por territorio, secretarías y sistemas legados.",
         },
         {
           tag: "ENTERPRISE · FINTECH",
