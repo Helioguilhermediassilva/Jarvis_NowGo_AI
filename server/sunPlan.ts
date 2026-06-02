@@ -45,10 +45,13 @@ export interface SunMission {
   };
 }
 
+export type SunFaixa = "EXECUCAO" | "ESTRATEGICA";
+
 export interface SunDealRoom {
   id: string;
   nome: string;
   missao: 1 | 2 | 3;
+  faixa: SunFaixa;
   sponsor: string;
   stakeholders: string;
   status: string;
@@ -153,13 +156,14 @@ const MISSIONS: SunMission[] = [
     id: 3,
     nome: "Health/Voice Replicável",
     oportunidadesAgrupadas: [
+      "Dr. Roberto — NowGo Expert AI (Verbal Closed)",
       "Hospital 100% IA (Joás)",
       "WLM — NowGo Voice + Produto",
     ],
     porqueAtivaAgora:
-      "Cria arquétipo replicável de AI-native health/voice, mas precisa ser limitado para não virar múltiplas customizações clínicas.",
+      "Cria arquétipo replicável de AI-native health/voice. O fechamento do Dr. Roberto (Perícias Médicas) já valida a tese; Joás e WLM seguem em discovery/qualificação e não devem ser tratados como execução de fechamento.",
     limiteOperacional:
-      "Um piloto health/voice por vez; sem abrir novos hospitais ou clínicas como missão ativa.",
+      "Um piloto health/voice por vez; Joás e WLM em fase inicial (discovery/qualificação) — não calibrar proposta antes de mapear dores reais.",
     criterios: {
       reduzComplexidade: "Sim, se impedir múltiplos pilotos clínicos paralelos.",
       reduzFounderOverload: "Sim, se founder não operar implantação.",
@@ -305,8 +309,22 @@ const OPS_SMART_CITY_2036: SunOpportunity[] = [
 const DEAL_ROOMS: SunDealRoom[] = [
   {
     id: "DR1",
+    nome: "Dr. Roberto Rodrigues — NowGo Expert AI (Perícias Médicas)",
+    missao: 3,
+    faixa: "EXECUCAO",
+    sponsor: "Dr. Roberto Rodrigues",
+    stakeholders: "Dr. Roberto Rodrigues, jurídico (estruturação SCP), onboarding técnico",
+    status: "Fechamento verbal (30/05) — formalização em curso",
+    risco: "Atraso na formalização contratual e na estruturação da SCP 50/50",
+    proximoPasso: "Assinar contrato de prestação de serviços e estruturar SCP com counsel",
+    owner: "Founder / Revenue Lead",
+    necessidadeDoFounder: "Alta — relação direta e fechamento dos termos",
+  },
+  {
+    id: "DR2",
     nome: "Smart City — Plataforma Pública Integrada",
     missao: 1,
+    faixa: "EXECUCAO",
     sponsor: "Governo do DF — gabinete + secretarias-chave",
     stakeholders: "GDF, FAP, jurídico/procurement, parceiros técnicos (cliente: Governo do DF)",
     status: "Decision pending",
@@ -316,9 +334,10 @@ const DEAL_ROOMS: SunDealRoom[] = [
     necessidadeDoFounder: "Alta apenas em narrativa e abertura institucional",
   },
   {
-    id: "DR2",
+    id: "DR3",
     nome: "NVIDIA — Infraestrutura Soberana",
     missao: 2,
+    faixa: "EXECUCAO",
     sponsor: "NVIDIA LATAM",
     stakeholders: "NVAITC, parceiros de energia, Smart City Infra",
     status: "Discovery técnica",
@@ -328,33 +347,36 @@ const DEAL_ROOMS: SunDealRoom[] = [
     necessidadeDoFounder: "Alta apenas em validação técnica e narrativa",
   },
   {
-    id: "DR3",
+    id: "DR4",
     nome: "Joás — Hospital 100% IA",
     missao: 3,
+    faixa: "ESTRATEGICA",
     sponsor: "Grupo Joás",
     stakeholders: "Diretoria clínica, TI, jurídico",
-    status: "Proposta fase 1 em elaboração",
-    risco: "Escopo clínico crescer demais",
-    proximoPasso: "Fechar proposta fase 1 com escopo mínimo viável",
+    status: "Discovery — mensagem enviada ao Joás",
+    risco: "Alto valor estratégico (case flagship global) vs. baixa maturidade de execução — calibrar proposta cedo demais pode queimar o lead",
+    proximoPasso: "Realizar call de discovery para mapear necessidades reais e definir escopo mínimo viável (quais salas/serviços primeiro)",
     owner: "Health Lead",
-    necessidadeDoFounder: "Média — aprovar tese e limites de escopo",
-  },
-  {
-    id: "DR4",
-    nome: "WLM — NowGo Voice + Produto",
-    missao: 3,
-    sponsor: "WLM",
-    stakeholders: "Diretoria comercial, produto, jurídico",
-    status: "Term sheet em negociação",
-    risco: "Diluição em multi-produto",
-    proximoPasso: "Fechar exclusividade por vertical e primeira unidade",
-    owner: "Revenue Lead",
-    necessidadeDoFounder: "Média — fechar termos de exclusividade",
+    necessidadeDoFounder: "Média — conduzir discovery e validar tese de longo prazo",
   },
   {
     id: "DR5",
+    nome: "WLM — NowGo Voice + Produto",
+    missao: 3,
+    faixa: "ESTRATEGICA",
+    sponsor: "WLM (Nícolas Lemos)",
+    stakeholders: "Diretoria comercial, produto, jurídico",
+    status: "Qualificação — Nícolas avaliando as dores da WLM",
+    risco: "Diluição em multi-produto — necessário focar em UMA dor prioritária antes de propor portfólio amplo",
+    proximoPasso: "Nícolas mapear dores reais da WLM para apresentarmos soluções direcionadas",
+    owner: "Revenue Lead",
+    necessidadeDoFounder: "Baixa — Nícolas conduz mapeamento de dores",
+  },
+  {
+    id: "DR6",
     nome: "Energia — Piloto 10 unidades LLM air-gapped",
     missao: 2,
+    faixa: "ESTRATEGICA",
     sponsor: "Operador de energia parceiro",
     stakeholders: "Engenharia, regulatório, NVIDIA",
     status: "One-page em elaboração",
@@ -423,8 +445,9 @@ const NEXT_7_DAYS: SunDayAction[] = [
   { dia: 2, acao: "Criar matriz Ativa/Radar/Pausada/Descartada", owner: "Ops Lead", saida: "Pipeline limpo." },
   { dia: 3, acao: "Finalizar one-page Smart City integrado", owner: "Government Lead", saida: "Material para sponsor/procurement." },
   { dia: 3, acao: "Finalizar briefing NVIDIA/Infra", owner: "Partner Lead", saida: "Agenda com decisão esperada." },
-  { dia: 4, acao: "Finalizar proposta fase 1 Joás", owner: "Health Lead", saida: "Escopo mínimo health." },
-  { dia: 4, acao: "Finalizar term sheet WLM", owner: "Revenue Lead", saida: "Base de negociação." },
+  { dia: 4, acao: "Formalizar contrato Dr. Roberto (Perícias Médicas) + estruturar SCP com counsel", owner: "Founder / Revenue Lead", saida: "Contrato assinado e SCP em estruturação." },
+  { dia: 4, acao: "Agendar call de discovery com Joás (mapear necessidades reais)", owner: "Health Lead", saida: "Discovery agendado; sem proposta prematura." },
+  { dia: 5, acao: "Apoiar Nícolas no mapeamento das dores da WLM", owner: "Revenue Lead", saida: "Dores priorizadas para proposta direcionada." },
   { dia: 5, acao: "Finalizar one-page Energia piloto 10 unidades", owner: "Infra Lead", saida: "Piloto mínimo validável." },
   { dia: 6, acao: "Enviar follow-ups pendentes dos Deal Rooms", owner: "Owners", saida: "Próximos atos formais." },
   { dia: 7, acao: "Revenue War Room de fechamento da semana", owner: "Revenue Lead", saida: "Avanços, bloqueios, pausas e decisões." },

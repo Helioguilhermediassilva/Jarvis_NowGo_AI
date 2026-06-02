@@ -35,10 +35,13 @@ export interface SunMission {
   };
 }
 
+export type SunFaixa = "EXECUCAO" | "ESTRATEGICA";
+
 export interface SunDealRoom {
   id: string;
   nome: string;
   missao: 1 | 2 | 3;
+  faixa: SunFaixa;
   sponsor: string;
   stakeholders: string;
   status: string;

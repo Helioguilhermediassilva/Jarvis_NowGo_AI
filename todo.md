@@ -941,3 +941,17 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [ ] Atualizar código (server) onde o remetente esteja hardcoded
 - [ ] Disparar e-mail de teste com novo remetente e confirmar entrega (inbox + headers SPF/DKIM PASS)
 - [ ] Manter `noreply@cockpitcrmnowgoai.com` ativo em paralelo por um período (rollback) antes de remover
+
+
+## F-Missoes — Reestruturação do quadro de missões em duas faixas (02/06/2026)
+
+- [x] Adicionar campo `faixa: "EXECUCAO" | "ESTRATEGICA"` ao tipo SunDealRoom (sunTypes.ts + sunPlan.ts)
+- [x] Corrigir Joás para Discovery: status, risco, próximo passo + faixa ESTRATEGICA
+- [x] Corrigir WLM para Qualificação (Nícolas avaliando dores) + faixa ESTRATEGICA
+- [x] Adicionar DR1 Dr. Roberto (Verbal Closed — formalização) como faixa EXECUCAO
+- [x] Classificar Smart City/NVIDIA/Energia nas faixas adequadas
+- [x] Atualizar plano 7 dias (remover "proposta fase 1 Joás" e "term sheet WLM")
+- [x] Renderizar separação visual em SunControlPanel.tsx (duas seções de Deal Rooms)
+- [x] Build local + verificar typecheck (tsc EXIT 0, vite build EXIT 0)
+- [x] Teste vitest de faixas (6/6 passou)
+- [ ] Commit + push para Helioguilhermediassilva/Jarvis_NowGo_AI

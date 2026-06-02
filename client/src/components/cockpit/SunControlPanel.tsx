@@ -1,5 +1,6 @@
 import type {
   SunDealRoom,
+  SunFaixa,
   SunRitual,
   SunDayAction,
   SunRemoveItem,
@@ -41,64 +42,16 @@ export default function SunControlPanel({
         padding: 14,
       }}
     >
-      {/* Deal Rooms */}
-      <Block title="Top 5 Deal Rooms" accent="#00d4ff">
-        {dealRooms.map((dr) => (
-          <div
-            key={dr.id}
-            style={{
-              background: "rgba(0,20,30,0.4)",
-              border: "1px solid rgba(0,212,255,0.18)",
-              borderLeft: `3px solid ${MISSION_COLOR[dr.missao]}`,
-              borderRadius: 6,
-              padding: "8px 10px",
-              marginBottom: 8,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 4,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 9,
-                  letterSpacing: 1.4,
-                  color: MISSION_COLOR[dr.missao],
-                  fontWeight: 700,
-                }}
-              >
-                {dr.id} · MISSÃO {dr.missao}
-              </span>
-              <span style={{ fontSize: 9, color: "#5ab8cc", letterSpacing: 0.6 }}>
-                {dr.owner}
-              </span>
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "#d8f8ff",
-                fontWeight: 600,
-                marginBottom: 4,
-                lineHeight: 1.3,
-              }}
-            >
-              {dr.nome}
-            </div>
-            <div style={{ fontSize: 10, color: "#8ffcff", opacity: 0.8, marginBottom: 3 }}>
-              <span style={{ color: "#3a8a9a" }}>STATUS:</span> {dr.status}
-            </div>
-            <div style={{ fontSize: 10, color: "#ffc880", opacity: 0.85, marginBottom: 3 }}>
-              <span style={{ color: "#3a8a9a" }}>RISCO:</span> {dr.risco}
-            </div>
-            <div style={{ fontSize: 10, color: "#00ffaa", opacity: 0.9 }}>
-              <span style={{ color: "#3a8a9a" }}>PRÓXIMO:</span> {dr.proximoPasso}
-            </div>
-          </div>
-        ))}
+      {/* Deal Rooms — separados em duas faixas */}
+      <Block title="Deal Rooms" accent="#00d4ff">
+        <FaixaGroup
+          faixa="EXECUCAO"
+          dealRooms={dealRooms.filter((dr) => dr.faixa === "EXECUCAO")}
+        />
+        <FaixaGroup
+          faixa="ESTRATEGICA"
+          dealRooms={dealRooms.filter((dr) => dr.faixa === "ESTRATEGICA")}
+        />
       </Block>
 
       {/* Cadência operacional */}
@@ -263,6 +216,128 @@ function Block({
         {title}
       </h3>
       {children}
+    </div>
+  );
+}
+
+const FAIXA_META: Record<
+  SunFaixa,
+  { label: string; accent: string; sub: string }
+> = {
+  EXECUCAO: {
+    label: "Críticas de Execução",
+    accent: "#00ffaa",
+    sub: "Ação imediata · deal quente · fechamento próximo",
+  },
+  ESTRATEGICA: {
+    label: "Estratégicas de Longo Prazo",
+    accent: "#bb88ff",
+    sub: "Alto valor · execução inicial · cultivar sem pressa",
+  },
+};
+
+function FaixaGroup({
+  faixa,
+  dealRooms,
+}: {
+  faixa: SunFaixa;
+  dealRooms: SunDealRoom[];
+}) {
+  if (dealRooms.length === 0) return null;
+  const meta = FAIXA_META[faixa];
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 8,
+          marginBottom: 6,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 10,
+            letterSpacing: 1.2,
+            color: meta.accent,
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}
+        >
+          {meta.label}
+        </span>
+        <span
+          style={{
+            fontSize: 8,
+            color: meta.accent,
+            opacity: 0.6,
+            letterSpacing: 0.4,
+          }}
+        >
+          {meta.sub}
+        </span>
+      </div>
+      {dealRooms.map((dr) => (
+        <DealRoomCard key={dr.id} dr={dr} accent={meta.accent} />
+      ))}
+    </div>
+  );
+}
+
+function DealRoomCard({ dr, accent }: { dr: SunDealRoom; accent: string }) {
+  return (
+    <div
+      style={{
+        background: "rgba(0,20,30,0.4)",
+        border: "1px solid rgba(0,212,255,0.18)",
+        borderLeft: `3px solid ${MISSION_COLOR[dr.missao]}`,
+        borderRadius: 6,
+        padding: "8px 10px",
+        marginBottom: 8,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 4,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 9,
+            letterSpacing: 1.4,
+            color: MISSION_COLOR[dr.missao],
+            fontWeight: 700,
+          }}
+        >
+          {dr.id} · MISSÃO {dr.missao}
+        </span>
+        <span style={{ fontSize: 9, color: "#5ab8cc", letterSpacing: 0.6 }}>
+          {dr.owner}
+        </span>
+      </div>
+      <div
+        style={{
+          fontSize: 12,
+          color: "#d8f8ff",
+          fontWeight: 600,
+          marginBottom: 4,
+          lineHeight: 1.3,
+        }}
+      >
+        {dr.nome}
+      </div>
+      <div style={{ fontSize: 10, color: "#8ffcff", opacity: 0.8, marginBottom: 3 }}>
+        <span style={{ color: "#3a8a9a" }}>STATUS:</span> {dr.status}
+      </div>
+      <div style={{ fontSize: 10, color: "#ffc880", opacity: 0.85, marginBottom: 3 }}>
+        <span style={{ color: "#3a8a9a" }}>RISCO:</span> {dr.risco}
+      </div>
+      <div style={{ fontSize: 10, color: "#00ffaa", opacity: 0.9 }}>
+        <span style={{ color: "#3a8a9a" }}>PRÓXIMO:</span> {dr.proximoPasso}
+      </div>
     </div>
   );
 }

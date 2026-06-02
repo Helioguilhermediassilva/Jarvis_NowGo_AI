@@ -171,10 +171,12 @@ export default function Cockpit() {
       )
       .map((o) => `${o.nome}: ${o.acao}`)
       .join("\n");
+    const faixaLabel = (f: string) =>
+      f === "EXECUCAO" ? "Crítica de Execução" : "Estratégica de Longo Prazo";
     const dealRoomsText = s.dealRooms
       .map(
         (dr) =>
-          `${dr.id} ${dr.nome} (Missão ${dr.missao}, owner ${dr.owner}). Status: ${dr.status}. Próximo: ${dr.proximoPasso}`,
+          `${dr.id} ${dr.nome} [${faixaLabel(dr.faixa)}] (Missão ${dr.missao}, owner ${dr.owner}). Status: ${dr.status}. Risco: ${dr.risco}. Próximo: ${dr.proximoPasso}`,
       )
       .join("\n");
     const dias = s.proximos7Dias
@@ -201,7 +203,7 @@ export default function Cockpit() {
       `DESCARTADAS:`,
       descartadas,
       ``,
-      `TOP 5 DEAL ROOMS:`,
+      `DEAL ROOMS (separados em duas faixas: Críticas de Execução vs. Estratégicas de Longo Prazo):`,
       dealRoomsText,
       ``,
       `PLANO 7 DIAS:`,
