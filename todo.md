@@ -966,4 +966,14 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [x] Frontend esquerdo: portfólio ao vivo do Brain com chips de classificação (grava no Notion, otimista) + default Brain Live
 - [x] Frontend direito: deal rooms com ação "Resolver e reorganizar" já existente + default Brain Live + filtro SUN (exclui Pausada/Descartada do Top)
 - [x] Teste vitest da classificação SUN (7/7) + build (tsc EXIT 0, vite build EXIT 0)
-- [ ] Commit + push (autor Hélio Guilherme Dias Silva)
+- [x] Commit + push (autor Hélio Guilherme Dias Silva) — commit a0354ca
+
+
+## F-Snapshot-Live — Snapshot reflete classificação real do Brain (02/06/2026)
+
+- [x] Mapa nome→classificacaoSun a partir do portfólio do Brain (listarPortfolioSun)
+- [x] Overlay applySunClassificationFromBrain() sobre o snapshot estático (casa por nome, normalizado)
+- [x] /api/sun/plan aplica overlay ao vivo (com fallback ao estático se o Brain falhar)
+- [x] Mapear ClassificacaoSun (PT do Notion) → SunClass (enum do snapshot)
+- [x] Teste vitest do mapeamento de classes + normalização de nomes (9/9)
+- [ ] Build + commit/push (autor Hélio Guilherme Dias Silva)

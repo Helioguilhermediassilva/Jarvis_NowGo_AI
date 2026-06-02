@@ -528,6 +528,75 @@ export function lookupOpportunity(nameQuery: string): SunOpportunity | null {
 }
 
 /**
+ * Normaliza um nome de oportunidade para matching robusto entre o snapshot
+ * estático (SUN) e o NowGo Brain (Notion): minúsculas, sem acentos, sem
+ * pontuação e com espaços colapsados.
+ */
+export function normalizeOppName(nome: string): string {
+  return (nome || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/[^a-z0-9]+/g, " ")     // pontuação -> espaço
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Mapeia a Classificação SUN do Notion (rótulos PT do select) para o enum
+ * `SunClass` usado pelo snapshot/Snapshot UI. Valores desconhecidos ou vazios
+ * retornam null (mantém a classificação estática original).
+ */
+export function classificacaoSunToSunClass(
+  c: string | null | undefined,
+): SunClass | null {
+  switch ((c || "").trim()) {
+    case "Missão Ativa":
+      return "MISSAO_ATIVA";
+    case "Radar":
+      return "RADAR";
+    case "Pausada":
+      return "PAUSADA";
+    case "Descartada":
+      return "DESCARTADA";
+    default:
+      return null;
+  }
+}
+
+/**
+ * Aplica as classificações REAIS do Brain (Notion) sobre uma cópia do snapshot
+ * estático. Para cada oportunidade do snapshot, se existir uma oportunidade
+ * homônima no Brain com `Classificação SUN` preenchida, a classe é sobrescrita.
+ *
+ * Isso faz o Snapshot do cockpit refletir automaticamente o que o usuário
+ * altera no Brain Live / Notion, sem perder as ações operacionais estáticas.
+ *
+ * `brainOps` é a lista vinda de `listarPortfolioSun()` ({ nome, classificacaoSun }).
+ * A função é pura: não faz I/O; recebe os dados já carregados.
+ */
+export function applySunClassificationFromBrain(
+  snapshot: SunSnapshot,
+  brainOps: Array<{ nome: string; classificacaoSun?: string | null }>,
+): SunSnapshot {
+  const byName = new Map<string, SunClass>();
+  for (const op of brainOps) {
+    const cls = classificacaoSunToSunClass(op.classificacaoSun);
+    if (cls) byName.set(normalizeOppName(op.nome), cls);
+  }
+  if (byName.size === 0) return snapshot;
+
+  const oportunidades = snapshot.oportunidades.map((o) => {
+    const real = byName.get(normalizeOppName(o.nome));
+    return real && real !== o.classificacao
+      ? { ...o, classificacao: real }
+      : o;
+  });
+
+  return { ...snapshot, oportunidades };
+}
+
+/**
  * Retorna estatísticas agregadas do snapshot.
  */
 export function getSunStats(snapshot: SunSnapshot = getCurrentSunSnapshot()) {
