@@ -165,14 +165,59 @@ export async function listarOportunidadesQuentes(limit = 10): Promise<Oportunida
 }
 
 /**
- * Top N oportunidades por Score (independentemente do estágio).
+ * Peso de prioridade da Classificação SUN para o ranking dos Deal Rooms.
+ * Missão Ativa sempre vem antes de Radar; Radar antes de qualquer
+ * oportunidade sem classificação. Pausada/Descartada são excluídas a
+ * montante (no filtro do Notion), mas recebem peso negativo por segurança.
+ */
+export function pesoClassificacaoSun(classificacao?: string | null): number {
+  switch ((classificacao ?? "").trim()) {
+    case "Missão Ativa":
+      return 3;
+    case "Radar":
+      return 2;
+    case "Pausada":
+      return -1;
+    case "Descartada":
+      return -2;
+    default:
+      return 1; // sem classificação fica abaixo de Radar, acima de Pausada
+  }
+}
+
+/**
+ * Ordena (in place) um pool de oportunidades para os Deal Rooms priorizando,
+ * nesta ordem: (1) Classificação SUN (Missão Ativa > Radar > sem classificação),
+ * (2) Score desc, (3) Valor Estimado desc. Oportunidades Missão Ativa SEM Score
+ * ainda assim ficam à frente de Radar com Score alto — é a regra de negócio
+ * confirmada (ex.: Dr. Roberto, Verbal Closed, deve liderar os Deal Rooms).
+ * Função pura/testável.
+ */
+export function rankearDealRooms(opps: OportunidadeResumo[]): OportunidadeResumo[] {
+  return [...opps].sort((a, b) => {
+    const wa = pesoClassificacaoSun(a.classificacaoSun);
+    const wb = pesoClassificacaoSun(b.classificacaoSun);
+    if (wb !== wa) return wb - wa;
+    const scoreA = a.score ?? 0;
+    const scoreB = b.score ?? 0;
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return (b.valorEstimado ?? 0) - (a.valorEstimado ?? 0);
+  });
+}
+
+/**
+ * Top N oportunidades para os Deal Rooms.
+ * Diferente da versão anterior (só Score), agora prioriza a Classificação SUN:
+ * Missão Ativa primeiro — INCLUSIVE quando o campo Score está vazio — depois
+ * Radar e por fim as demais, ordenando dentro de cada faixa por Score e Valor.
+ * Não filtra mais por `score is_not_empty`, para não excluir Missões Ativas
+ * (ex.: Dr. Roberto) que ainda não tiveram Score preenchido.
  */
 export async function listarTopPorScore(limit = 5): Promise<OportunidadeResumo[]> {
   const props = BRAIN_PROPS.pipeline;
   const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
     filter: {
       and: [
-        { property: props.score, number: { is_not_empty: true } },
         // exclui fechados
         ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
           property: props.estagio,
@@ -186,9 +231,11 @@ export async function listarTopPorScore(limit = 5): Promise<OportunidadeResumo[]
       ],
     },
     sorts: [{ property: props.score, direction: "descending" }],
-    page_size: limit,
+    // pool maior para re-rankear localmente por faixa SUN
+    page_size: 50,
   });
-  return r.results.map(mapOportunidade);
+  const ranked = rankearDealRooms(r.results.map(mapOportunidade));
+  return ranked.slice(0, limit);
 }
 
 /**
@@ -413,19 +460,20 @@ export async function listarTopDealRooms(limit = 5): Promise<OportunidadeResumo[
 /**
  * F30 — Calcula a próxima oportunidade candidata ao Top 5 Deal Rooms após
  * a resolução de um deal atual. Exclui as oportunidades atualmente no
- * Top 5 (currentTopIds) e as fechadas (Ganho/Perdido). Ranking interno:
- * (valorEstimado || 0) × (score / 100), com fallback para score puro
- * quando o valor não está preenchido.
+ * Top 5 (currentTopIds) e as fechadas (Ganho/Perdido). Usa a MESMA regra de
+ * priorização dos Deal Rooms (`rankearDealRooms`): Classificação SUN primeiro
+ * (Missão Ativa > Radar > sem classificação), depois Score e Valor Estimado.
+ * Não filtra por `score is_not_empty`, para que Missões Ativas sem Score
+ * também possam subir ao slot vago.
  */
 export async function proximoDealRoomCandidato(
   currentTopIds: string[],
 ): Promise<OportunidadeResumo | null> {
   const props = BRAIN_PROPS.pipeline;
-  // Busca um pool maior (20) para depois filtrar e re-rankear localmente.
+  // Busca um pool maior para depois filtrar e re-rankear localmente.
   const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
     filter: {
       and: [
-        { property: props.score, number: { is_not_empty: true } },
         ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
           property: props.estagio,
           select: { does_not_equal: s },
@@ -437,21 +485,13 @@ export async function proximoDealRoomCandidato(
       ],
     },
     sorts: [{ property: props.score, direction: "descending" }],
-    page_size: 20,
+    page_size: 50,
   });
-  const all = r.results.map(mapOportunidade);
-  const eligible = all.filter((o) => !currentTopIds.includes(o.id));
+  const eligible = r.results
+    .map(mapOportunidade)
+    .filter((o) => !currentTopIds.includes(o.id));
   if (eligible.length === 0) return null;
-  // Re-rank por (valor × score/100) descendente.
-  eligible.sort((a, b) => {
-    const sa = (a.score ?? 0) / 100;
-    const sb = (b.score ?? 0) / 100;
-    const wa = (a.valorEstimado ?? 0) * sa;
-    const wb = (b.valorEstimado ?? 0) * sb;
-    if (wb !== wa) return wb - wa;
-    return (b.score ?? 0) - (a.score ?? 0);
-  });
-  return eligible[0];
+  return rankearDealRooms(eligible)[0];
 }
 
 /**

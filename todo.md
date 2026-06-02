@@ -976,4 +976,25 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [x] /api/sun/plan aplica overlay ao vivo (com fallback ao estático se o Brain falhar)
 - [x] Mapear ClassificacaoSun (PT do Notion) → SunClass (enum do snapshot)
 - [x] Teste vitest do mapeamento de classes + normalização de nomes (9/9)
-- [ ] Build + commit/push (autor Hélio Guilherme Dias Silva)
+- [x] Build + commit/push (autor Hélio Guilherme Dias Silva) — commit eff3dbc
+
+
+## F-Reavaliacao-SUN — Rodar blueprint operacional sobre portfólio real (02/06/2026)
+
+- [ ] Extrair portfólio completo do Brain (nome, estágio, score, valor, probabilidade, urgência, follow-up, impacto estratégico, fortalece tese, classificação SUN atual)
+- [ ] Derivar temperatura comercial (Quente/Morno/Frio) de Estágio + Urgência + Follow-up
+- [ ] Cruzar Score estratégico (blueprint) x Temperatura comercial → recomendação de Classificação SUN
+- [ ] Identificar missões críticas (Deal Rooms) = Quente + Score alto + Missão Ativa
+- [ ] Gerar relatório de priorização (tabela por oportunidade + matriz)
+- [ ] Revisar com o usuário antes de aplicar mudanças no Brain
+- [ ] Aplicar classificações aprovadas no Brain e validar no cockpit
+
+
+## F-DealRoom-Ranking — Priorizar Missão Ativa nos Deal Rooms (02/jun/2026)
+
+- [x] Reescrever listarTopPorScore: incluir Missão Ativa mesmo sem Score; priorizar SUN (Missão Ativa > Radar) e depois Score/valor
+- [x] Ajustar proximoDealRoomCandidato com a mesma lógica de priorização SUN
+- [x] Garantir que Dr. Roberto (Missão Ativa, SCP pendente) apareça no topo dos Deal Rooms (regra de negócio coberta por teste)
+- [x] Teste vitest da nova ordenação de Deal Rooms (6/6 passam)
+- [x] Build + commit/push (autor Hélio Guilherme Dias Silva)
+- [ ] Aguardar deploy Vercel READY
