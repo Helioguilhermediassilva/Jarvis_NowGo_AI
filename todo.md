@@ -994,7 +994,7 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 
 - [x] Reescrever listarTopPorScore: incluir Missão Ativa mesmo sem Score; priorizar SUN (Missão Ativa > Radar) e depois Score/valor
 - [x] Ajustar proximoDealRoomCandidato com a mesma lógica de priorização SUN
-- [x] Garantir que Dr. Roberto (Missão Ativa, SCP pendente) apareça no topo dos Deal Rooms (regra de negócio coberta por teste)
+- [x] Garantir que Dr. Roberto (Missão Ativa, SCP pendente) apareça no topo dos Deal Rooms (Score 95 = fechamento iminente; agora pos. 1 no Top 5 lendo o Brain)
 - [x] Teste vitest da nova ordenação de Deal Rooms (6/6 passam)
 - [x] Build + commit/push (autor Hélio Guilherme Dias Silva)
-- [ ] Aguardar deploy Vercel READY
+- [x] Aguardar deploy Vercel READY (commit 3921798 READY no team NOWGO)
