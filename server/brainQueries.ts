@@ -104,6 +104,8 @@ export interface OportunidadeResumo {
   decisor?: string | null;
   /** F30 — contato do decisor (cargo + canal + telefone/e-mail). */
   contatoDecisor?: string | null;
+  /** Classificação SUN — eixo estratégico (Missão Ativa/Radar/Pausada/Descartada). */
+  classificacaoSun?: string | null;
 }
 
 function mapOportunidade(page: any): OportunidadeResumo {
@@ -129,6 +131,7 @@ function mapOportunidade(page: any): OportunidadeResumo {
     projetoIds: readRelationCount(p[props.projeto]),
     decisor: readRichText(p[(props as any).decisor]) || null,
     contatoDecisor: readRichText(p[(props as any).contatoDecisor]) || null,
+    classificacaoSun: readSelect(p[(props as any).classificacaoSun]),
   };
 }
 
@@ -171,6 +174,33 @@ export async function listarTopPorScore(limit = 5): Promise<OportunidadeResumo[]
       and: [
         { property: props.score, number: { is_not_empty: true } },
         // exclui fechados
+        ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
+          property: props.estagio,
+          select: { does_not_equal: s },
+        })),
+        // exclui oportunidades fora de foco (eixo SUN)
+        ...["Pausada", "Descartada"].map((c) => ({
+          property: props.classificacaoSun,
+          select: { does_not_equal: c },
+        })),
+      ],
+    },
+    sorts: [{ property: props.score, direction: "descending" }],
+    page_size: limit,
+  });
+  return r.results.map(mapOportunidade);
+}
+
+/**
+ * Portfólio classificado pelo eixo SUN. Retorna todas as oportunidades vivas
+ * (exclui Fechado-Ganho/Perdido) com sua classificação estratégica, ordenadas
+ * por Score desc. Oportunidades sem classificação caem em "Radar" por default.
+ */
+export async function listarPortfolioSun(limit = 100): Promise<OportunidadeResumo[]> {
+  const props = BRAIN_PROPS.pipeline;
+  const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
+    filter: {
+      and: [
         ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
           property: props.estagio,
           select: { does_not_equal: s },
@@ -399,6 +429,10 @@ export async function proximoDealRoomCandidato(
         ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
           property: props.estagio,
           select: { does_not_equal: s },
+        })),
+        ...["Pausada", "Descartada"].map((c) => ({
+          property: props.classificacaoSun,
+          select: { does_not_equal: c },
         })),
       ],
     },

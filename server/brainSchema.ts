@@ -90,6 +90,18 @@ export const PIPELINE_HOT_STAGES: PipelineStage[] = ["Proposta", "Negociação"]
 export const URGENCIA = ["Alta", "Média", "Baixa"] as const;
 export type Urgencia = (typeof URGENCIA)[number];
 
+/**
+ * Classificação SUN — eixo estratégico do founder (independente do estágio comercial).
+ * Define se uma oportunidade merece foco agora. Espelhada no Notion (select).
+ */
+export const CLASSIFICACAO_SUN = [
+  "Missão Ativa",
+  "Radar",
+  "Pausada",
+  "Descartada",
+] as const;
+export type ClassificacaoSun = (typeof CLASSIFICACAO_SUN)[number];
+
 /** Impacto estratégico. */
 export const IMPACTO = ["Alto", "Médio", "Baixo"] as const;
 export type Impacto = (typeof IMPACTO)[number];
@@ -144,6 +156,7 @@ export const BRAIN_PROPS = {
     projeto: "Projeto",
     decisor: "Decisor",                  // F30 — nome do decisor do cliente
     contatoDecisor: "Contato Decisor",   // F30 — cargo/canal/telefone
+    classificacaoSun: "Classificação SUN", // eixo estratégico SUN (Missão Ativa/Radar/Pausada/Descartada)
   },
   projetos: {
     title: "Nome",

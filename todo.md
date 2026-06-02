@@ -954,4 +954,16 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [x] Renderizar separação visual em SunControlPanel.tsx (duas seções de Deal Rooms)
 - [x] Build local + verificar typecheck (tsc EXIT 0, vite build EXIT 0)
 - [x] Teste vitest de faixas (6/6 passou)
-- [ ] Commit + push para Helioguilhermediassilva/Jarvis_NowGo_AI
+- [x] Commit + push para Helioguilhermediassilva/Jarvis_NowGo_AI (commit 1f92840)
+
+
+## F-Interativo — Cockpit bidirecional com NowGo Brain (02/06/2026)
+
+- [x] Criar propriedade "Classificação SUN" (select: Missão Ativa/Radar/Pausada/Descartada) no banco Pipeline do Notion
+- [x] Adicionar classificacaoSun a BRAIN_PROPS.pipeline + constante CLASSIFICACAO_SUN em brainSchema.ts
+- [x] Mapear classificacaoSun em brainQueries (OportunidadeResumo) e expor no GET /api/brain/opportunities (mode=portfolio)
+- [x] Adicionar campo classificacaoSun em atualizarOportunidade (brainMutations) + endpoint PATCH
+- [x] Frontend esquerdo: portfólio ao vivo do Brain com chips de classificação (grava no Notion, otimista) + default Brain Live
+- [x] Frontend direito: deal rooms com ação "Resolver e reorganizar" já existente + default Brain Live + filtro SUN (exclui Pausada/Descartada do Top)
+- [x] Teste vitest da classificação SUN (7/7) + build (tsc EXIT 0, vite build EXIT 0)
+- [ ] Commit + push (autor Hélio Guilherme Dias Silva)

@@ -47,6 +47,28 @@ const STAGE_COLOR: Record<Stage, string> = {
   "Fechado-Perdido": "#ff7799",
 };
 
+const CLASSIFICACAO_SUN = [
+  "Missão Ativa",
+  "Radar",
+  "Pausada",
+  "Descartada",
+] as const;
+type ClassSun = (typeof CLASSIFICACAO_SUN)[number];
+
+const CLASS_COLOR: Record<ClassSun, string> = {
+  "Missão Ativa": "#00ffaa",
+  Radar: "#00d4ff",
+  Pausada: "#ffcc00",
+  Descartada: "#ff7799",
+};
+
+/** Oportunidade sem classificação cai em Radar por default. */
+function classDefault(c: string | null | undefined): ClassSun {
+  return (c && (CLASSIFICACAO_SUN as readonly string[]).includes(c)
+    ? c
+    : "Radar") as ClassSun;
+}
+
 interface Opp {
   id: string;
   nome: string;
@@ -57,6 +79,7 @@ interface Opp {
   probabilidade: number | null;
   urgencia: string | null;
   proximoFollowUp: string | null;
+  classificacaoSun: string | null;
 }
 
 interface Props {
@@ -78,9 +101,10 @@ export default function BrainPipelineLive({ role }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const r = await fetch("/api/brain/opportunities?mode=top&limit=50", {
-        credentials: "include",
-      });
+      const r = await fetch(
+        "/api/brain/opportunities?mode=portfolio&limit=100",
+        { credentials: "include" },
+      );
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
         throw new Error(j?.error ?? `Falha ${r.status}`);
@@ -126,6 +150,41 @@ export default function BrainPipelineLive({ role }: Props) {
       window.dispatchEvent(new CustomEvent("cockpit:refresh"));
     } catch (e: any) {
       alert(`Erro ao arquivar: ${e.message}`);
+    }
+  };
+
+  /** Atualiza a Classificação SUN de uma oportunidade (otimista + grava no Brain). */
+  const handleClassify = async (op: Opp, novaClasse: ClassSun) => {
+    if (!canWrite) return;
+    if (classDefault(op.classificacaoSun) === novaClasse) return;
+    const anterior = op.classificacaoSun;
+    // otimista
+    setOpps((prev) =>
+      prev.map((o) =>
+        o.id === op.id ? { ...o, classificacaoSun: novaClasse } : o,
+      ),
+    );
+    try {
+      const r = await fetch("/api/brain/opportunities", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ pageId: op.id, classificacaoSun: novaClasse }),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j?.error ?? `Falha ${r.status}`);
+      }
+      // sincroniza outros painéis (deal rooms / missões) com o Brain
+      window.dispatchEvent(new CustomEvent("cockpit:refresh"));
+    } catch (e: any) {
+      // rollback
+      setOpps((prev) =>
+        prev.map((o) =>
+          o.id === op.id ? { ...o, classificacaoSun: anterior } : o,
+        ),
+      );
+      alert(`Erro ao classificar: ${e.message}`);
     }
   };
 
@@ -274,13 +333,14 @@ export default function BrainPipelineLive({ role }: Props) {
             const stageColor = op.estagio
               ? STAGE_COLOR[op.estagio] ?? C.TXT_DIM
               : C.TXT_DIM;
+            const classColor = CLASS_COLOR[classDefault(op.classificacaoSun)];
             return (
               <div
                 key={op.id}
                 style={{
                   background: "rgba(8,20,32,0.72)",
                   border: `1px solid ${C.BORDER_DIM}`,
-                  borderLeft: `3px solid ${stageColor}`,
+                  borderLeft: `3px solid ${classColor}`,
                   borderRadius: 6,
                   padding: "8px 10px",
                   marginBottom: 6,
@@ -385,6 +445,53 @@ export default function BrainPipelineLive({ role }: Props) {
                     <span>📅 {op.proximoFollowUp.slice(0, 10)}</span>
                   )}
                 </div>
+
+                {/* Classificação SUN — chips clicáveis (grava no Brain) */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 4,
+                    flexWrap: "wrap",
+                    marginTop: 2,
+                    paddingTop: 6,
+                    borderTop: `1px dashed ${C.BORDER_DIM}`,
+                  }}
+                >
+                  {CLASSIFICACAO_SUN.map((cls) => {
+                    const active = classDefault(op.classificacaoSun) === cls;
+                    const col = CLASS_COLOR[cls];
+                    return (
+                      <button
+                        key={cls}
+                        disabled={!canWrite}
+                        onClick={() => void handleClassify(op, cls)}
+                        title={
+                          canWrite
+                            ? `Classificar como ${cls}`
+                            : "Sem permissão"
+                        }
+                        style={{
+                          background: active ? `${col}22` : "transparent",
+                          border: active
+                            ? `1px solid ${col}aa`
+                            : `1px solid ${C.BORDER_DIM}`,
+                          color: active ? col : C.TXT_FAINT,
+                          fontSize: 8.5,
+                          letterSpacing: 0.8,
+                          padding: "3px 7px",
+                          borderRadius: 20,
+                          cursor: canWrite ? "pointer" : "default",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          transition: "all 140ms cubic-bezier(0.23,1,0.32,1)",
+                          opacity: !canWrite && !active ? 0.4 : 1,
+                        }}
+                      >
+                        {cls}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             );
           })
@@ -456,6 +563,9 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
     op?.proximoFollowUp ? op.proximoFollowUp.slice(0, 10) : "",
   );
   const [empresa, setEmpresa] = useState("");
+  const [classSun, setClassSun] = useState<ClassSun>(
+    classDefault(op?.classificacaoSun),
+  );
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -487,6 +597,7 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
       if (score.trim()) payload.score = Number(score);
       if (followUp.trim()) payload.proximoFollowUp = followUp;
       if (empresa.trim()) payload.empresa = empresa.trim();
+      if (mode === "edit") payload.classificacaoSun = classSun;
 
       const r = await fetch("/api/brain/opportunities", {
         method: mode === "edit" ? "PATCH" : "POST",
@@ -580,7 +691,7 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
           />
         </Field>
 
-        <Field label="Estágio">
+        <Field label="Estágio (comercial)">
           <select
             value={estagio}
             onChange={(e) => setEstagio(e.target.value as Stage)}
@@ -593,6 +704,22 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
             ))}
           </select>
         </Field>
+
+        {mode === "edit" && (
+          <Field label="Classificação SUN (estratégica)">
+            <select
+              value={classSun}
+              onChange={(e) => setClassSun(e.target.value as ClassSun)}
+              style={inputStyle()}
+            >
+              {CLASSIFICACAO_SUN.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <Field label="Valor estimado (R$)">

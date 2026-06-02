@@ -35,7 +35,7 @@ interface Props {
 }
 
 export default function ControlPanelRightColumn(props: Props) {
-  const [view, setView] = useState<View>("snapshot");
+  const [view, setView] = useState<View>("live");
   const { role, ...snapshotProps } = props;
 
   return (

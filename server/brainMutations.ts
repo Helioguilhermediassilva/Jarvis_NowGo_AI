@@ -15,7 +15,9 @@ import {
   BRAIN_DATABASES,
   BRAIN_PROPS,
   PIPELINE_STAGES,
+  CLASSIFICACAO_SUN,
   type PipelineStage,
+  type ClassificacaoSun,
 } from "./brainSchema.js";
 
 // ---------------------------------------------------------------------------
@@ -59,6 +61,7 @@ export interface AtualizarOportunidadeInput {
   pontoTensao?: string;
   criterioProximaFase?: string;
   notas?: string;
+  classificacaoSun?: ClassificacaoSun;
   confirmedByUser: true;
 }
 
@@ -407,6 +410,13 @@ export async function atualizarOportunidade(
   if (input.notas !== undefined) {
     properties[p.notas] = propRichText(input.notas);
     updated.push("notas");
+  }
+  if (input.classificacaoSun) {
+    if (!CLASSIFICACAO_SUN.includes(input.classificacaoSun)) {
+      throw new Error(`Classificação SUN inválida: ${input.classificacaoSun}`);
+    }
+    properties[(p as any).classificacaoSun] = propSelect(input.classificacaoSun);
+    updated.push("classificacaoSun");
   }
 
   if (updated.length === 0) {

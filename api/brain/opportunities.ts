@@ -22,8 +22,9 @@ import {
 import {
   listarOportunidadesQuentes,
   listarTopPorScore,
+  listarPortfolioSun,
 } from "../../server/brainQueries.js";
-import { PIPELINE_STAGES } from "../../server/brainSchema.js";
+import { PIPELINE_STAGES, CLASSIFICACAO_SUN } from "../../server/brainSchema.js";
 
 async function readJsonBody(req: any): Promise<any> {
   if (req.body && typeof req.body === "object") return req.body;
@@ -77,9 +78,11 @@ export default async function handler(req: any, res: any) {
       );
 
       const opps =
-        mode === "top"
-          ? await listarTopPorScore(limit)
-          : await listarOportunidadesQuentes(limit);
+        mode === "portfolio"
+          ? await listarPortfolioSun(limit)
+          : mode === "top"
+            ? await listarTopPorScore(limit)
+            : await listarOportunidadesQuentes(limit);
 
       return res.status(200).json({ opportunities: opps, mode, limit });
     }
@@ -130,6 +133,14 @@ export default async function handler(req: any, res: any) {
       if (body.estagio && !PIPELINE_STAGES.includes(body.estagio)) {
         return res.status(400).json({ error: "Estágio inválido." });
       }
+      if (
+        body.classificacaoSun &&
+        !CLASSIFICACAO_SUN.includes(body.classificacaoSun)
+      ) {
+        return res.status(400).json({
+          error: `Classificação SUN inválida. Use: ${CLASSIFICACAO_SUN.join(", ")}`,
+        });
+      }
 
       const result = await atualizarOportunidade({
         pageId,
@@ -144,6 +155,7 @@ export default async function handler(req: any, res: any) {
         pontoTensao: body.pontoTensao,
         criterioProximaFase: body.criterioProximaFase,
         notas: body.notas,
+        classificacaoSun: body.classificacaoSun,
         confirmedByUser: true,
       });
 

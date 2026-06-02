@@ -34,7 +34,7 @@ export default function PipelineLeftColumn({
   onAsk,
   role,
 }: Props) {
-  const [view, setView] = useState<View>("snapshot");
+  const [view, setView] = useState<View>("live");
 
   return (
     <div
