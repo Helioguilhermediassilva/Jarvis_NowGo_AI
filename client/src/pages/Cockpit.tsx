@@ -295,7 +295,7 @@ export default function Cockpit() {
                   letterSpacing: 1,
                 }}
               >
-                {sun ? `SUN v${sun.snapshot.versao} · ${sun.stats.totalOportunidades} oportunidades · ${sun.stats.totalMissoesAtivas} missões ativas · ${sun.stats.totalDealRooms} deal rooms` : "Sincronizando contexto..."}
+                {sun ? `SUN ${sun.snapshot.versao} · ${sun.stats.totalOportunidades} oportunidades · ${sun.stats.totalMissoesAtivas} missões ativas · ${Math.min(5, sun.stats.totalDealRooms)} deal rooms` : "Sincronizando contexto..."}
               </span>
             </div>
           </div>

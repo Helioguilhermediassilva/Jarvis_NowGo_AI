@@ -611,11 +611,106 @@ export function getSunStats(snapshot: SunSnapshot = getCurrentSunSnapshot()) {
   for (const op of snapshot.oportunidades) {
     byClass[op.classificacao]++;
   }
+  // Missões ativas refletem as oportunidades realmente classificadas como
+  // Missão Ativa no Brain (não o array estático de blueprint 3+1).
+  const totalMissoesAtivas =
+    byClass.MISSAO_ATIVA > 0 ? byClass.MISSAO_ATIVA : snapshot.missoes.length;
   return {
     totalOportunidades: snapshot.oportunidades.length,
     porClassificacao: byClass,
-    totalMissoesAtivas: snapshot.missoes.length,
+    totalMissoesAtivas,
     totalDealRooms: snapshot.dealRooms.length,
     totalRituais: snapshot.rituais.length,
+  };
+}
+
+// ============================================================================
+// Snapshot DINÂMICO a partir do NowGo Brain (F-Snapshot-Live)
+// ============================================================================
+
+/**
+ * Ação operacional padrão por classe, usada quando uma oportunidade vinda do
+ * Brain não tem correspondente no snapshot estático (logo, não herda diretriz).
+ */
+const DEFAULT_ACTION_BY_CLASS: Record<SunClass, string> = {
+  MISSAO_ATIVA:
+    "Missão Ativa: conduzir como prioridade de execução; manter próximo passo claro e dono definido.",
+  RADAR:
+    "Radar: monitorar até haver janela ou decisão clara; não consumir foco do founder agora.",
+  RADAR_CONDICIONADO:
+    "Radar condicionado: avançar apenas se o critério de ativação for atendido.",
+  PAUSADA:
+    "Pausada: aguardar dados, parceiro ou condição externa antes de reativar.",
+  DESCARTADA:
+    "Descartada: fora do foco atual; não alocar esforço.",
+  DESCARTADA_AGORA:
+    "Descartada agora: reavaliar apenas em ciclo futuro de planejamento.",
+};
+
+/**
+ * Forma mínima de uma oportunidade do Brain consumida pelo builder do snapshot.
+ * Compatível com `OportunidadeResumo` de `server/brainQueries.ts`.
+ */
+export interface BrainOpInput {
+  nome: string;
+  classificacaoSun?: string | null;
+}
+
+/**
+ * Constrói o Snapshot do cockpit DINAMICAMENTE a partir das oportunidades vivas
+ * do NowGo Brain (Notion), em vez de usar a lista estática v1.0.
+ *
+ * Regras:
+ *  - Cada oportunidade viva do Brain vira um item do snapshot.
+ *  - A classificação vem da `Classificação SUN` real do Notion. Se estiver
+ *    vazia/desconhecida, herda a classe do item estático homônimo; se não houver
+ *    homônimo, assume RADAR (item visível, porém sem foco de execução).
+ *  - A "ação operacional" e o "contexto" (portfolio/smart_city_2036) são
+ *    herdados do snapshot estático quando o nome casa (normalizeOppName); caso
+ *    contrário usa-se a ação-padrão da classe e contexto "portfolio".
+ *  - O Snapshot reflete EXATAMENTE as oportunidades vivas do Brain (o pipeline
+ *    real). Itens do blueprint estático que não existem no Brain NÃO são
+ *    arrastados, para que a contagem do cockpit bata com o pipeline real.
+ *
+ * Função pura: não faz I/O; recebe `brainOps` já carregado.
+ */
+export function buildSunSnapshotFromBrain(
+  base: SunSnapshot,
+  brainOps: BrainOpInput[],
+): SunSnapshot {
+  // Index do snapshot estático por nome normalizado (para herdar ação/contexto).
+  const staticByName = new Map<string, SunOpportunity>();
+  for (const o of base.oportunidades) {
+    staticByName.set(normalizeOppName(o.nome), o);
+  }
+
+  const seen = new Set<string>();
+  const dinamicas: SunOpportunity[] = [];
+
+  for (const op of brainOps) {
+    const nome = (op.nome || "").trim();
+    if (!nome) continue;
+    const key = normalizeOppName(nome);
+    if (seen.has(key)) continue; // de-dup defensivo
+    seen.add(key);
+
+    const staticMatch = staticByName.get(key);
+    const fromBrain = classificacaoSunToSunClass(op.classificacaoSun);
+    const classificacao: SunClass =
+      fromBrain ?? staticMatch?.classificacao ?? "RADAR";
+
+    const acao =
+      staticMatch?.acao ?? DEFAULT_ACTION_BY_CLASS[classificacao];
+    const contexto = staticMatch?.contexto ?? "portfolio";
+
+    dinamicas.push({ nome, classificacao, acao, contexto });
+  }
+
+  return {
+    ...base,
+    versao: "Live",
+    fonte: "auto_jarvis",
+    geradoEm: new Date().toISOString(),
+    oportunidades: dinamicas,
   };
 }

@@ -25,7 +25,7 @@
 import {
   getCurrentSunSnapshot,
   getSunStats,
-  applySunClassificationFromBrain,
+  buildSunSnapshotFromBrain,
 } from "../../server/sunPlan.js";
 import { listarPortfolioSun } from "../../server/brainQueries.js";
 
@@ -33,12 +33,14 @@ export default async function handler(req: any, res: any) {
   try {
     const base = getCurrentSunSnapshot();
 
-    // Overlay ao vivo da classificação real do Brain (com fail-safe).
+    // Snapshot DINÂMICO: construído a partir das oportunidades vivas do Brain
+    // (todas as linhas, classificações e atualizações reais). Fail-safe: se o
+    // Brain estiver indisponível, cai no snapshot estático v1.0.
     let snapshot = base;
     let live = false;
     try {
       const brainOps = await listarPortfolioSun(200);
-      snapshot = applySunClassificationFromBrain(base, brainOps);
+      snapshot = buildSunSnapshotFromBrain(base, brainOps);
       live = true;
     } catch (brainErr: any) {
       console.warn(
