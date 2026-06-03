@@ -998,3 +998,12 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [x] Teste vitest da nova ordenação de Deal Rooms (6/6 passam)
 - [x] Build + commit/push (autor Hélio Guilherme Dias Silva)
 - [x] Aguardar deploy Vercel READY (commit 3921798 READY no team NOWGO)
+
+
+## F-Snapshot-Sync — Snapshot e Brain Live sincronizados em tempo real
+- [x] Refresh imediato + tardio no Cockpit ao receber cockpit:refresh
+- [x] Snapshot e Brain Live refletirem a mesma contagem viva do Brain (ambos via listarPortfolioSun; teste de paridade 1:1)
+- [x] Edição/classificação na Brain Live refletir no Snapshot sem recarregar a página (refresh imediato)
+- [x] no-cache no index.html (vercel.json) para evitar bundle velho
+- [x] Testes vitest passando + build
+- [ ] Commit/push (autor Hélio Guilherme Dias Silva) e deploy Vercel READY

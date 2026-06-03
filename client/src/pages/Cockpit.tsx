@@ -138,8 +138,11 @@ export default function Cockpit() {
   // Auto-refresh quando o Jarvis executar uma mutação no Brain.
   useEffect(() => {
     function onRefresh() {
-      // Pequeno delay para o Notion propagar a escrita.
-      setTimeout(() => loadData(true), 1500);
+      // Recarrega imediatamente (feedback rápido) e de novo após 1,5s para
+      // capturar a propagação eventual da escrita no Notion. Assim o Snapshot
+      // e o contador do topo acompanham edições feitas na aba Brain Live.
+      void loadData(true);
+      setTimeout(() => loadData(true), 1800);
     }
     window.addEventListener("cockpit:refresh", onRefresh);
     return () => window.removeEventListener("cockpit:refresh", onRefresh);

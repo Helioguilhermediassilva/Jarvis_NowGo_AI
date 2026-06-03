@@ -124,6 +124,23 @@ describe("buildSunSnapshotFromBrain", () => {
   });
 });
 
+describe("paridade Snapshot x Brain Live", () => {
+  it("produz exatamente uma oportunidade por linha viva do Brain (sem perdas)", () => {
+    const brain = [
+      { nome: "Alfa", classificacaoSun: "Missão Ativa" },
+      { nome: "Beta", classificacaoSun: "Radar" },
+      { nome: "Gama", classificacaoSun: "Pausada" },
+      { nome: "Delta", classificacaoSun: null },
+    ];
+    const out = buildSunSnapshotFromBrain(base, brain);
+    // A contagem do Snapshot bate 1:1 com o nº de linhas vivas do Brain.
+    expect(out.oportunidades.length).toBe(brain.length);
+    for (const b of brain) {
+      expect(out.oportunidades.some((o) => o.nome === b.nome)).toBe(true);
+    }
+  });
+});
+
 describe("getSunStats no snapshot dinâmico", () => {
   it("totalOportunidades e totalMissoesAtivas refletem o Brain", () => {
     const out = buildSunSnapshotFromBrain(base, [
