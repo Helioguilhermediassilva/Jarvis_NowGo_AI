@@ -16,8 +16,12 @@ import {
   BRAIN_PROPS,
   PIPELINE_STAGES,
   CLASSIFICACAO_SUN,
+  CRM_IA_STATUS,
+  CRM_IA_PRIORITY,
   type PipelineStage,
   type ClassificacaoSun,
+  type CrmIaStatus,
+  type CrmIaPriority,
 } from "./brainSchema.js";
 
 // ---------------------------------------------------------------------------
@@ -589,6 +593,137 @@ export async function resolverDealAtivoCrm(
       ataPageId = ata.pageId;
     } catch {
       // Não bloqueia a resolução do deal se o registro da ata falhar.
+    }
+  }
+  clearCache();
+  return { pageId: input.pageId, ataPageId };
+}
+
+// ---------------------------------------------------------------------------
+// ATIVOS CRM IA — write-back (fonte de verdade operacional do funil)
+// ---------------------------------------------------------------------------
+
+export interface AtualizarAtivoCrmInput {
+  pageId: string;
+  status?: CrmIaStatus;          // rótulo EXATO do Notion (com emoji quando houver)
+  priority?: CrmIaPriority;      // Low | Medium | High
+  estimatedValueBrl?: number;    // valor estimado (BRL)
+  expectedClose?: string;        // ISO yyyy-mm-dd
+  type?: string;                 // segmento/tipo (select livre no Notion)
+  decisor?: string;              // Decision Maker (rich_text)
+  contato?: string;              // Decision Maker Contact (rich_text)
+  notas?: string;                // anexa em Notas se existir no schema; senão ignora
+  confirmedByUser: true;
+}
+
+/**
+ * Atualiza um ativo na base ATIVOS CRM IA — usado pelo write-back do cockpit.
+ * A classificação SUN NÃO é gravada: ela é derivada pelo classificador do
+ * blueprint a cada leitura. Aqui gravamos apenas os campos de origem
+ * (status, prioridade, valor, prazo, tipo, decisor) que alimentam o cálculo.
+ */
+export async function atualizarAtivoCrm(
+  input: AtualizarAtivoCrmInput,
+): Promise<{ pageId: string; updatedFields: string[] }> {
+  if (!input.confirmedByUser) {
+    throw new Error("atualizarAtivoCrm requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+
+  const p = BRAIN_PROPS.ativosCrmIa as Record<string, string>;
+  const properties: Record<string, unknown> = {};
+  const updated: string[] = [];
+
+  if (input.status) {
+    if (!CRM_IA_STATUS.includes(input.status)) {
+      throw new Error(`Status CRM inválido: ${input.status}`);
+    }
+    properties[p.status] = propSelect(input.status);
+    updated.push("status");
+  }
+  if (input.priority) {
+    if (!CRM_IA_PRIORITY.includes(input.priority)) {
+      throw new Error(`Prioridade CRM inválida: ${input.priority}`);
+    }
+    properties[p.priority] = propSelect(input.priority);
+    updated.push("priority");
+  }
+  if (typeof input.estimatedValueBrl === "number") {
+    if (input.estimatedValueBrl < 0) {
+      throw new Error("Valor estimado não pode ser negativo.");
+    }
+    properties[p.estimatedValue] = propNumber(input.estimatedValueBrl);
+    updated.push("estimatedValue");
+  }
+  if (input.expectedClose) {
+    properties[p.expectedClose] = propDate(input.expectedClose);
+    updated.push("expectedClose");
+  }
+  if (input.type) {
+    properties[p.type] = propSelect(input.type);
+    updated.push("type");
+  }
+  if (typeof input.decisor === "string") {
+    properties[p.decisionMaker] = propRichText(input.decisor);
+    updated.push("decisor");
+  }
+  if (typeof input.contato === "string") {
+    properties[p.decisionMakerContact] = propRichText(input.contato);
+    updated.push("contato");
+  }
+
+  if (updated.length === 0) {
+    throw new Error("Nenhum campo fornecido para atualizar.");
+  }
+
+  await updatePage(input.pageId, properties);
+  clearCache();
+  return { pageId: input.pageId, updatedFields: updated };
+}
+
+export interface ResolverAtivoCrmInput {
+  pageId: string;
+  ganho?: boolean;               // true = Closed 💪 (default); false = Lost
+  notaFinal?: string;
+  confirmedByUser: true;
+}
+
+/**
+ * Marca um ativo da base ATIVOS CRM IA como resolvido (Closed 💪 ou Lost).
+ * Libera espaço no Top 5 Deal Rooms; a próxima oportunidade entra
+ * automaticamente pelo ranking na próxima leitura.
+ */
+export async function resolverAtivoCrmIa(
+  input: ResolverAtivoCrmInput,
+): Promise<{ pageId: string; ataPageId: string | null }> {
+  if (!input.confirmedByUser) {
+    throw new Error("resolverAtivoCrmIa requer confirmedByUser=true");
+  }
+  if (!input.pageId) {
+    throw new Error("pageId é obrigatório.");
+  }
+  const ganho = input.ganho !== false; // default ganho
+  const p = BRAIN_PROPS.ativosCrmIa as Record<string, string>;
+  const properties: Record<string, unknown> = {
+    [p.status]: propSelect(ganho ? "Closed 💪" : "Lost"),
+  };
+  await updatePage(input.pageId, properties);
+
+  let ataPageId: string | null = null;
+  if (input.notaFinal && input.notaFinal.trim().length > 0) {
+    try {
+      const ata = await registrarAta({
+        titulo: `Resolução de deal (CRM IA) — ${new Date().toISOString().slice(0, 10)}`,
+        resumo: input.notaFinal.trim().slice(0, 1800),
+        tipo: "Ata",
+        tags: [ganho ? "Closed" : "Lost", "CRM-IA"],
+        confirmedByUser: true,
+      });
+      ataPageId = ata.pageId;
+    } catch {
+      // não bloqueia
     }
   }
   clearCache();

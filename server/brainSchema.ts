@@ -102,6 +102,24 @@ export const CLASSIFICACAO_SUN = [
 ] as const;
 export type ClassificacaoSun = (typeof CLASSIFICACAO_SUN)[number];
 
+/**
+ * Status do funil da base ATIVOS CRM IA (rótulos EXATOS do Notion, com emojis).
+ * Fonte de verdade operacional do CRM tradicional.
+ */
+export const CRM_IA_STATUS = [
+  "Lead",
+  "Qualified",
+  "Proposal 👀",
+  "Negotiation",
+  "Closed 💪",
+  "Lost",
+] as const;
+export type CrmIaStatus = (typeof CRM_IA_STATUS)[number];
+
+/** Prioridade da base ATIVOS CRM IA. */
+export const CRM_IA_PRIORITY = ["Low", "Medium", "High"] as const;
+export type CrmIaPriority = (typeof CRM_IA_PRIORITY)[number];
+
 /** Impacto estratégico. */
 export const IMPACTO = ["Alto", "Médio", "Baixo"] as const;
 export type Impacto = (typeof IMPACTO)[number];

@@ -15,6 +15,7 @@ import {
   PIPELINE_ACTIVE_STAGES,
   type PipelineStage,
 } from "./brainSchema.js";
+import { classificarAtivoSun } from "./sunClassifier.js";
 
 // ---------------------------------------------------------------------------
 // Helpers de extração de propriedades do payload Notion
@@ -193,15 +194,31 @@ export function pesoClassificacaoSun(classificacao?: string | null): number {
  * confirmada (ex.: Dr. Roberto, Verbal Closed, deve liderar os Deal Rooms).
  * Função pura/testável.
  */
+/**
+ * Agrupa o score em faixas de 10 pontos. Dentro da mesma faixa, o valor
+ * estimado decide — assim contratos maiores sobem quando os scores são
+ * próximos, sem que um deal minúsculo ultrapasse um grande por 1-2 pontos.
+ */
+function faixaDeScore(score: number | null | undefined): number {
+  return Math.floor((score ?? 0) / 10);
+}
+
 export function rankearDealRooms(opps: OportunidadeResumo[]): OportunidadeResumo[] {
   return [...opps].sort((a, b) => {
+    // (1) Classe SUN (Missão Ativa > Radar > sem classe > Pausada > Descartada)
     const wa = pesoClassificacaoSun(a.classificacaoSun);
     const wb = pesoClassificacaoSun(b.classificacaoSun);
     if (wb !== wa) return wb - wa;
-    const scoreA = a.score ?? 0;
-    const scoreB = b.score ?? 0;
-    if (scoreB !== scoreA) return scoreB - scoreA;
-    return (b.valorEstimado ?? 0) - (a.valorEstimado ?? 0);
+    // (2) Faixa de score (buckets de 10) — prioridade estratégica do blueprint
+    const fa = faixaDeScore(a.score);
+    const fb = faixaDeScore(b.score);
+    if (fb !== fa) return fb - fa;
+    // (3) Valor estimado desc — Deal Rooms são as salas dos maiores negócios
+    const va = a.valorEstimado ?? 0;
+    const vb = b.valorEstimado ?? 0;
+    if (vb !== va) return vb - va;
+    // (4) Desempate final: score exato desc
+    return (b.score ?? 0) - (a.score ?? 0);
   });
 }
 
@@ -454,7 +471,14 @@ function mapProjeto(page: any): ProjetoResumo {
  * Fechado-Ganho/Perdido, a próxima de maior score sobe para o slot vago.
  */
 export async function listarTopDealRooms(limit = 5): Promise<OportunidadeResumo[]> {
-  return listarTopPorScore(limit);
+  // Fonte única: ATIVOS CRM IA, já classificada pelo Blueprint SUN.
+  // Exclui Descartada (Lost) e mantém a regra de ranking SUN (Missão Ativa
+  // primeiro, depois Score e Valor).
+  const todos = await listarOportunidadesDeAtivosCrmIa();
+  const elegiveis = todos.filter(
+    (o) => o.classificacaoSun !== "Descartada",
+  );
+  return rankearDealRooms(elegiveis).slice(0, limit);
 }
 
 /**
@@ -469,27 +493,14 @@ export async function listarTopDealRooms(limit = 5): Promise<OportunidadeResumo[
 export async function proximoDealRoomCandidato(
   currentTopIds: string[],
 ): Promise<OportunidadeResumo | null> {
-  const props = BRAIN_PROPS.pipeline;
-  // Busca um pool maior para depois filtrar e re-rankear localmente.
-  const r = await queryDatabase(BRAIN_DATABASES.pipeline.id, {
-    filter: {
-      and: [
-        ...["Fechado-Ganho", "Fechado-Perdido"].map((s) => ({
-          property: props.estagio,
-          select: { does_not_equal: s },
-        })),
-        ...["Pausada", "Descartada"].map((c) => ({
-          property: props.classificacaoSun,
-          select: { does_not_equal: c },
-        })),
-      ],
-    },
-    sorts: [{ property: props.score, direction: "descending" }],
-    page_size: 50,
-  });
-  const eligible = r.results
-    .map(mapOportunidade)
-    .filter((o) => !currentTopIds.includes(o.id));
+  // Fonte única: ATIVOS CRM IA, já classificada pelo Blueprint SUN. Exclui as
+  // oportunidades atualmente no Top 5 (currentTopIds) e as Descartadas (Lost),
+  // usando a MESMA regra de ranking dos Deal Rooms.
+  const todos = await listarOportunidadesDeAtivosCrmIa();
+  const eligible = todos.filter(
+    (o) =>
+      !currentTopIds.includes(o.id) && o.classificacaoSun !== "Descartada",
+  );
   if (eligible.length === 0) return null;
   return rankearDealRooms(eligible)[0];
 }
@@ -777,14 +788,26 @@ function mapAtivoStatusToStage(status: string | null): PipelineStage | null {
  * primária do cockpit financeiro.
  */
 export function ativoCrmToOportunidade(a: AtivoCrmResumo): OportunidadeResumo {
+  // Aplica o Blueprint Operacional SUN na leitura: cada ativo da ATIVOS CRM IA
+  // recebe Score (0-100) e Classificação SUN calculados a partir da fórmula
+  // oficial dos 6 vetores. Assim, qualquer ativo novo/editado no Brain passa
+  // automaticamente pela classificação quando o cockpit é carregado/atualizado.
+  const sun = classificarAtivoSun({
+    status: a.status,
+    priority: a.priority,
+    estimatedValueBrl: a.estimatedValueBrl,
+    expectedClose: a.expectedClose,
+    type: a.type,
+    company: a.company,
+  });
   return {
     id: a.id,
     nome: a.company || "(sem nome)",
     idHumano: null,
     estagio: mapAtivoStatusToStage(a.status),
-    score: null,
+    score: sun.score,
     valorEstimado: a.estimatedValueBrl ?? null,
-    probabilidade: null,
+    probabilidade: sun.vetores.P,
     urgencia: null,
     proximoFollowUp: a.expectedClose ?? a.lastContact ?? null,
     agenteResponsavel: null,
@@ -796,6 +819,7 @@ export function ativoCrmToOportunidade(a: AtivoCrmResumo): OportunidadeResumo {
     empresaIds: 0,
     projetoIds: 0,
     dataCriacao: a.addedAt ?? null,
+    classificacaoSun: sun.classe,
   };
 }
 

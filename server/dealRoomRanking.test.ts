@@ -73,12 +73,22 @@ describe("rankearDealRooms", () => {
     expect(ranked[1].id).toBe("radar");
   });
 
-  it("dentro da mesma faixa SUN, ordena por Score desc e depois Valor desc", () => {
-    const a = opp({ id: "a", classificacaoSun: "Missão Ativa", score: 80, valorEstimado: 100000 });
-    const b = opp({ id: "b", classificacaoSun: "Missão Ativa", score: 90, valorEstimado: 100000 });
-    const c = opp({ id: "c", classificacaoSun: "Missão Ativa", score: 90, valorEstimado: 300000 });
+  it("faixas de score distintas: faixa maior vence independentemente do valor", () => {
+    const a = opp({ id: "a", classificacaoSun: "Missão Ativa", score: 75, valorEstimado: 100000 });
+    const b = opp({ id: "b", classificacaoSun: "Missão Ativa", score: 85, valorEstimado: 100000 });
+    const c = opp({ id: "c", classificacaoSun: "Missão Ativa", score: 88, valorEstimado: 300000 });
+    // c e b estão na faixa 8x; a na faixa 7x → a fica por último.
+    // Entre c (faixa 8, R$300k) e b (faixa 8, R$100k): valor decide → c > b.
     const ranked = rankearDealRooms([a, b, c]);
     expect(ranked.map((o) => o.id)).toEqual(["c", "b", "a"]);
+  });
+
+  it("dentro da MESMA faixa de score, contrato de maior valor lidera", () => {
+    const grande = opp({ id: "grande", classificacaoSun: "Missão Ativa", score: 79, valorEstimado: 840000 });
+    const pequeno = opp({ id: "pequeno", classificacaoSun: "Missão Ativa", score: 72, valorEstimado: 91000 });
+    // 79 e 72 caem em faixas diferentes (7? ambos faixa 7) → mesma faixa → valor decide.
+    const ranked = rankearDealRooms([pequeno, grande]);
+    expect(ranked[0].id).toBe("grande");
   });
 
   it("Dr. Roberto (Missão Ativa) aparece no Top 5 mesmo cercado de Radares fortes", () => {

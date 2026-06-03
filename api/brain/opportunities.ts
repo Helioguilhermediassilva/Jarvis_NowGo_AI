@@ -18,6 +18,7 @@ import {
   criarOportunidade,
   atualizarOportunidade,
   arquivarOportunidade,
+  atualizarAtivoCrm,
 } from "../../server/brainMutations.js";
 import {
   listarOportunidadesQuentes,
@@ -129,6 +130,31 @@ export default async function handler(req: any, res: any) {
       const pageId = String(body.pageId ?? "").trim();
       if (!pageId) {
         return res.status(400).json({ error: "pageId é obrigatório." });
+      }
+
+      // Write-back na ATIVOS CRM IA (fonte de verdade do funil). O frontend
+      // envia source="crm-ia" ao editar um ativo do portfólio classificado.
+      if (body.source === "crm-ia") {
+        const result = await atualizarAtivoCrm({
+          pageId,
+          status: body.status,
+          priority: body.priority,
+          estimatedValueBrl:
+            typeof body.estimatedValueBrl === "number"
+              ? body.estimatedValueBrl
+              : typeof body.valorEstimado === "number"
+                ? body.valorEstimado
+                : undefined,
+          expectedClose: body.expectedClose,
+          type: body.type,
+          decisor: body.decisor,
+          contato: body.contato,
+          confirmedByUser: true,
+        });
+        console.log(
+          `[opportunities] UPDATE(crm-ia) by ${claims.sub}: ${pageId} (${result.updatedFields.join(",")})`,
+        );
+        return res.status(200).json(result);
       }
       if (body.estagio && !PIPELINE_STAGES.includes(body.estagio)) {
         return res.status(400).json({ error: "Estágio inválido." });

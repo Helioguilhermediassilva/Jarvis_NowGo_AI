@@ -62,6 +62,19 @@ const CLASS_COLOR: Record<ClassSun, string> = {
   Descartada: "#ff7799",
 };
 
+/**
+ * Mapeia o estágio comercial exibido (PT) para o status EXATO da base
+ * ATIVOS CRM IA no Notion (com emojis). Fonte de verdade do funil.
+ */
+const STAGE_TO_CRM_STATUS: Record<Stage, string> = {
+  Lead: "Lead",
+  Qualificado: "Qualified",
+  Proposta: "Proposal 👀",
+  "Negociação": "Negotiation",
+  "Fechado-Ganho": "Closed 💪",
+  "Fechado-Perdido": "Lost",
+};
+
 /** Oportunidade sem classificação cai em Radar por default. */
 function classDefault(c: string | null | undefined): ClassSun {
   return (c && (CLASSIFICACAO_SUN as readonly string[]).includes(c)
@@ -150,41 +163,6 @@ export default function BrainPipelineLive({ role }: Props) {
       window.dispatchEvent(new CustomEvent("cockpit:refresh"));
     } catch (e: any) {
       alert(`Erro ao arquivar: ${e.message}`);
-    }
-  };
-
-  /** Atualiza a Classificação SUN de uma oportunidade (otimista + grava no Brain). */
-  const handleClassify = async (op: Opp, novaClasse: ClassSun) => {
-    if (!canWrite) return;
-    if (classDefault(op.classificacaoSun) === novaClasse) return;
-    const anterior = op.classificacaoSun;
-    // otimista
-    setOpps((prev) =>
-      prev.map((o) =>
-        o.id === op.id ? { ...o, classificacaoSun: novaClasse } : o,
-      ),
-    );
-    try {
-      const r = await fetch("/api/brain/opportunities", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ pageId: op.id, classificacaoSun: novaClasse }),
-      });
-      if (!r.ok) {
-        const j = await r.json().catch(() => ({}));
-        throw new Error(j?.error ?? `Falha ${r.status}`);
-      }
-      // sincroniza outros painéis (deal rooms / missões) com o Brain
-      window.dispatchEvent(new CustomEvent("cockpit:refresh"));
-    } catch (e: any) {
-      // rollback
-      setOpps((prev) =>
-        prev.map((o) =>
-          o.id === op.id ? { ...o, classificacaoSun: anterior } : o,
-        ),
-      );
-      alert(`Erro ao classificar: ${e.message}`);
     }
   };
 
@@ -446,51 +424,50 @@ export default function BrainPipelineLive({ role }: Props) {
                   )}
                 </div>
 
-                {/* Classificação SUN — chips clicáveis (grava no Brain) */}
+                {/* Classificação SUN — automática (derivada do blueprint, somente leitura) */}
                 <div
                   style={{
                     display: "flex",
-                    gap: 4,
+                    gap: 6,
+                    alignItems: "center",
                     flexWrap: "wrap",
                     marginTop: 2,
                     paddingTop: 6,
                     borderTop: `1px dashed ${C.BORDER_DIM}`,
                   }}
+                  title="Classificação calculada automaticamente pelo Blueprint SUN a partir de status, valor, prazo e segmento. Para mudar a classe, ajuste o status do funil ao editar o ativo."
                 >
-                  {CLASSIFICACAO_SUN.map((cls) => {
-                    const active = classDefault(op.classificacaoSun) === cls;
+                  {(() => {
+                    const cls = classDefault(op.classificacaoSun);
                     const col = CLASS_COLOR[cls];
                     return (
-                      <button
-                        key={cls}
-                        disabled={!canWrite}
-                        onClick={() => void handleClassify(op, cls)}
-                        title={
-                          canWrite
-                            ? `Classificar como ${cls}`
-                            : "Sem permissão"
-                        }
+                      <span
                         style={{
-                          background: active ? `${col}22` : "transparent",
-                          border: active
-                            ? `1px solid ${col}aa`
-                            : `1px solid ${C.BORDER_DIM}`,
-                          color: active ? col : C.TXT_FAINT,
+                          background: `${col}22`,
+                          border: `1px solid ${col}aa`,
+                          color: col,
                           fontSize: 8.5,
                           letterSpacing: 0.8,
-                          padding: "3px 7px",
+                          padding: "3px 8px",
                           borderRadius: 20,
-                          cursor: canWrite ? "pointer" : "default",
                           fontWeight: 700,
                           textTransform: "uppercase",
-                          transition: "all 140ms cubic-bezier(0.23,1,0.32,1)",
-                          opacity: !canWrite && !active ? 0.4 : 1,
                         }}
                       >
                         {cls}
-                      </button>
+                      </span>
                     );
-                  })}
+                  })()}
+                  <span
+                    style={{
+                      fontSize: 8,
+                      letterSpacing: 0.6,
+                      color: C.TXT_FAINT,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    auto · blueprint
+                  </span>
                 </div>
               </div>
             );
@@ -587,24 +564,39 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
     }
     setSubmitting(true);
     try {
-      const payload: any = {
-        nome: nome.trim(),
-        estagio,
-      };
-      if (mode === "edit" && op) payload.pageId = op.id;
-      if (valor.trim()) payload.valorEstimado = Number(valor);
-      if (probabilidade.trim()) payload.probabilidade = Number(probabilidade);
-      if (score.trim()) payload.score = Number(score);
-      if (followUp.trim()) payload.proximoFollowUp = followUp;
-      if (empresa.trim()) payload.empresa = empresa.trim();
-      if (mode === "edit") payload.classificacaoSun = classSun;
-
-      const r = await fetch("/api/brain/opportunities", {
-        method: mode === "edit" ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      let r: Response;
+      if (mode === "edit" && op) {
+        // Write-back na ATIVOS CRM IA (fonte de verdade). A classe SUN NÃO
+        // é enviada — é derivada pelo blueprint a cada leitura. Mudar o
+        // status do funil reclassifica automaticamente.
+        const payload: any = {
+          source: "crm-ia",
+          pageId: op.id,
+          status: STAGE_TO_CRM_STATUS[estagio],
+        };
+        if (valor.trim()) payload.estimatedValueBrl = Number(valor);
+        if (followUp.trim()) payload.expectedClose = followUp;
+        r = await fetch("/api/brain/opportunities", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+      } else {
+        // Criação segue na Pipeline (fluxo legado de cadastro).
+        const payload: any = { nome: nome.trim(), estagio };
+        if (valor.trim()) payload.valorEstimado = Number(valor);
+        if (probabilidade.trim()) payload.probabilidade = Number(probabilidade);
+        if (score.trim()) payload.score = Number(score);
+        if (followUp.trim()) payload.proximoFollowUp = followUp;
+        if (empresa.trim()) payload.empresa = empresa.trim();
+        r = await fetch("/api/brain/opportunities", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+      }
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
         throw new Error(j?.error ?? `Falha ${r.status}`);
@@ -706,19 +698,31 @@ function OppEditModal({ op, mode, onClose, onSaved }: ModalProps) {
         </Field>
 
         {mode === "edit" && (
-          <Field label="Classificação SUN (estratégica)">
-            <select
-              value={classSun}
-              onChange={(e) => setClassSun(e.target.value as ClassSun)}
-              style={inputStyle()}
+          <div
+            style={{
+              background: `${CLASS_COLOR[classSun]}14`,
+              border: `1px solid ${CLASS_COLOR[classSun]}55`,
+              borderRadius: 8,
+              padding: "8px 10px",
+              fontSize: 11,
+              color: C.TXT_DIM,
+              lineHeight: 1.4,
+            }}
+          >
+            <span
+              style={{
+                color: CLASS_COLOR[classSun],
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: 1,
+              }}
             >
-              {CLASSIFICACAO_SUN.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </Field>
+              Classe SUN: {classSun}
+            </span>
+            <br />
+            Calculada automaticamente pelo Blueprint a partir de status, valor,
+            prazo e segmento. Ajuste o <strong>status</strong> para reclassificar.
+          </div>
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>

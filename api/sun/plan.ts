@@ -27,7 +27,7 @@ import {
   getSunStats,
   buildSunSnapshotFromBrain,
 } from "../../server/sunPlan.js";
-import { listarPortfolioSun } from "../../server/brainQueries.js";
+import { listarOportunidadesDeAtivosCrmIa } from "../../server/brainQueries.js";
 
 export default async function handler(req: any, res: any) {
   try {
@@ -39,7 +39,9 @@ export default async function handler(req: any, res: any) {
     let snapshot = base;
     let live = false;
     try {
-      const brainOps = await listarPortfolioSun(200);
+      // Fonte única: ATIVOS CRM IA, já classificada pelo Blueprint SUN
+      // (Score 0-100 + classe) dentro de ativoCrmToOportunidade.
+      const brainOps = await listarOportunidadesDeAtivosCrmIa();
       snapshot = buildSunSnapshotFromBrain(base, brainOps);
       live = true;
     } catch (brainErr: any) {

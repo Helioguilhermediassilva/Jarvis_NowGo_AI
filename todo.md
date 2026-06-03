@@ -1006,4 +1006,31 @@ Banco: continua sendo o `nowgo-brain` (PostgreSQL, env `NOWGO_BRAIN_PG_URL`, sch
 - [x] Edição/classificação na Brain Live refletir no Snapshot sem recarregar a página (refresh imediato)
 - [x] no-cache no index.html (vercel.json) para evitar bundle velho
 - [x] Testes vitest passando + build
+- [x] Commit/push (autor Hélio Guilherme Dias Silva) e deploy Vercel READY (commit 9d87fc4)
+
+
+## F-Fonte-Unica — ATIVOS CRM IA como fonte única do cockpit
+- [ ] /api/sun/plan: construir Snapshot a partir de ATIVOS CRM IA (não mais Pipeline canônica)
+- [ ] Topo "SUN Live · N oportunidades" deve refletir ATIVOS CRM IA (96 ativas / 104 total)
+- [ ] Painel Brain Live (/api/brain/opportunities) ler ATIVOS CRM IA
+- [ ] Manter classificação SUN real (Missão Ativa/Radar/Pausada/Descartada) a partir de ATIVOS CRM IA
+- [ ] Testes vitest + build
 - [ ] Commit/push (autor Hélio Guilherme Dias Silva) e deploy Vercel READY
+
+
+## F-Blueprint-SUN — Classificador SUN (fórmula oficial) sobre ATIVOS CRM IA
+- [ ] Criar server/sunClassifier.ts: função pura calcularScoreSun(opp) com 6 vetores (U,IF,IE,R,D,P) e pesos oficiais
+- [ ] Mapear vetores a partir de ATIVOS CRM IA (status→P, valor→IF, expectedClose→U, segmento/type→IE c/ Governo-Cidades-Saúde=100, priority→R, D default)
+- [ ] Converter score→categoria SUN: >85 Missão Ativa, 60-85 Radar, <60 Pausada, Lost→Descartada
+- [ ] ativoCrmToOportunidade passa a preencher score e classificacaoSun via classificador
+- [ ] /api/sun/plan e Snapshot/topo derivarem de ATIVOS CRM IA classificada (96 ativas/104 total)
+- [ ] Deal Rooms (Top 5) e Brain Live refletirem a mesma base classificada
+- [ ] Testes vitest do classificador (faixas, IE missão/visão, mapeamento categorias)
+- [ ] Build + commit/push (autor Hélio Guilherme Dias Silva) + deploy Vercel READY
+
+
+## F-CRMIA-WriteBack — Edições do cockpit gravam na ATIVOS CRM IA
+- [ ] Criar mutations para atualizar ATIVOS CRM IA (status/valor) via Notion
+- [ ] Endpoint /api/brain/opportunities (mode=ativosCrmIa) suportar PATCH na ATIVOS CRM IA
+- [ ] Brain Live: editar/classificar grava na ATIVOS CRM IA e dispara refresh
+- [ ] Testes vitest do write-back
