@@ -10,6 +10,21 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-para-advogados",
+    title:
+      "Inteligência Artificial para Advogados: como a IA já atua no direito — e como adotar com segurança",
+    excerpt:
+      "Jurisprudência, contratos, prazos e atendimento: onde a IA gera resultado no jurídico, os limites das ferramentas gratuitas e como proteger o sigilo profissional.",
+    tag: "IA nas Profissões",
+  },
+  {
+    slug: "/blog/agentes-de-inteligencia-artificial",
+    title: "Agentes de IA: o que são, como funcionam e o que muda para empresas e governos",
+    excerpt:
+      "O chatbot responde; o agente executa. Os três níveis de autonomia, a anatomia de um agente e a governança necessária para usá-los com segurança.",
+    tag: "Conceitos Técnicos",
+  },
+  {
     slug: "/blog/inteligencia-artificial-na-saude",
     title:
       "Inteligência Artificial na Saúde: aplicações reais em hospitais, clínicas e operadoras",

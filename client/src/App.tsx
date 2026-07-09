@@ -17,6 +17,8 @@ import Imprensa from "@/pages/Imprensa";
 import Blog from "@/pages/Blog";
 import BlogInteligenciaArtificial from "@/pages/BlogInteligenciaArtificial";
 import BlogIaNaSaude from "@/pages/BlogIaNaSaude";
+import BlogAgentesDeIa from "@/pages/BlogAgentesDeIa";
+import BlogIaParaAdvogados from "@/pages/BlogIaParaAdvogados";
 import RequireAuth from "@/components/RequireAuth";
 import { LangProvider } from "@/landing/useLang";
 
@@ -63,6 +65,8 @@ function Router() {
       <Route path={"/blog"} component={Blog} />
       <Route path={"/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
       <Route path={"/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
+      <Route path={"/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
+      <Route path={"/blog/inteligencia-artificial-para-advogados"} component={BlogIaParaAdvogados} />
 
       <Route path={"/imprensa"} component={Imprensa} />
       <Route path={"/press"} component={Imprensa} />
