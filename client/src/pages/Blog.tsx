@@ -10,6 +10,27 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-no-brasil",
+    title: "Inteligência Artificial no Brasil: por que soberania é a decisão estratégica da década",
+    excerpt:
+      "A corrida geopolítica da IA, as dependências e os ativos do Brasil, e a arquitetura soberana que empresas e governos podem construir agora.",
+    tag: "IA e Sociedade",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-e-machine-learning",
+    title: "Inteligência Artificial e Machine Learning: qual a diferença — e o que isso muda na prática",
+    excerpt:
+      "IA, machine learning, deep learning e IA generativa como camadas de um mesmo campo, com exemplos reais e a regra prática para escolher a técnica certa.",
+    tag: "Conceitos Técnicos",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-gasta-agua",
+    title: "Por que a inteligência artificial gasta água (e energia)? A explicação completa",
+    excerpt:
+      "De onde vem o consumo de água e energia da IA, o que o influencia — e por que processar IA no Brasil pode ser mais soberano e mais sustentável.",
+    tag: "IA e Sociedade",
+  },
+  {
     slug: "/blog/inteligencia-artificial-para-advogados",
     title:
       "Inteligência Artificial para Advogados: como a IA já atua no direito — e como adotar com segurança",

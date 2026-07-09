@@ -19,6 +19,9 @@ import BlogInteligenciaArtificial from "@/pages/BlogInteligenciaArtificial";
 import BlogIaNaSaude from "@/pages/BlogIaNaSaude";
 import BlogAgentesDeIa from "@/pages/BlogAgentesDeIa";
 import BlogIaParaAdvogados from "@/pages/BlogIaParaAdvogados";
+import BlogIaEMachineLearning from "@/pages/BlogIaEMachineLearning";
+import BlogIaNoBrasil from "@/pages/BlogIaNoBrasil";
+import BlogIaGastaAgua from "@/pages/BlogIaGastaAgua";
 import RequireAuth from "@/components/RequireAuth";
 import { LangProvider } from "@/landing/useLang";
 
@@ -67,6 +70,9 @@ function Router() {
       <Route path={"/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
       <Route path={"/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
       <Route path={"/blog/inteligencia-artificial-para-advogados"} component={BlogIaParaAdvogados} />
+      <Route path={"/blog/inteligencia-artificial-e-machine-learning"} component={BlogIaEMachineLearning} />
+      <Route path={"/blog/inteligencia-artificial-no-brasil"} component={BlogIaNoBrasil} />
+      <Route path={"/blog/inteligencia-artificial-gasta-agua"} component={BlogIaGastaAgua} />
 
       <Route path={"/imprensa"} component={Imprensa} />
       <Route path={"/press"} component={Imprensa} />
