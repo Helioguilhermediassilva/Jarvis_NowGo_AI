@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /cockpit
+Disallow: /admin/
+Disallow: /login
+Disallow: /mfa/
+
+Sitemap: https://www.nowgoai.com/sitemap.xml
