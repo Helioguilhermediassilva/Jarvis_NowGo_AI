@@ -10,6 +10,14 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-na-saude",
+    title:
+      "Inteligência Artificial na Saúde: aplicações reais em hospitais, clínicas e operadoras",
+    excerpt:
+      "Agentes de voz para agendamento e triagem, apoio à radiologia, backoffice hospitalar, LGPD e soberania de dados — e o roteiro de implantação que funciona.",
+    tag: "IA nas Profissões",
+  },
+  {
     slug: "/blog/inteligencia-artificial",
     title:
       "Inteligência Artificial: o que é, como funciona e como aplicá-la em empresas, governos e cidades",

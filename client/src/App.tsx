@@ -16,6 +16,7 @@ import Carreiras from "@/pages/Carreiras";
 import Imprensa from "@/pages/Imprensa";
 import Blog from "@/pages/Blog";
 import BlogInteligenciaArtificial from "@/pages/BlogInteligenciaArtificial";
+import BlogIaNaSaude from "@/pages/BlogIaNaSaude";
 import RequireAuth from "@/components/RequireAuth";
 import { LangProvider } from "@/landing/useLang";
 
@@ -61,6 +62,7 @@ function Router() {
       {/* Blog — cluster de conteúdo SEO/AEO */}
       <Route path={"/blog"} component={Blog} />
       <Route path={"/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
+      <Route path={"/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
 
       <Route path={"/imprensa"} component={Imprensa} />
       <Route path={"/press"} component={Imprensa} />

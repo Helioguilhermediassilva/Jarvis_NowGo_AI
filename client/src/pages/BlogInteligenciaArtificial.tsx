@@ -1,5 +1,6 @@
 import LandingShell from "@/landing/LandingShell";
 import Seo from "@/components/Seo";
+import BlogCtaCard, { CAL_URL, waLink as WA } from "@/components/BlogCtaCard";
 import "@/landing/styles/blog.css";
 
 /**
@@ -9,9 +10,6 @@ import "@/landing/styles/blog.css";
  * com deep link contextual para WhatsApp e agendamento (cal.com); fundo de
  * funil direciona para a landing (www.nowgoai.com).
  */
-
-const CAL_URL = "https://cal.com/helio-guilherme-jnrivp";
-const WA = (msg: string) => `https://wa.me/5561999708833?text=${encodeURIComponent(msg)}`;
 
 const WA_GERAL = WA(
   "Olá! Li o guia de Inteligência Artificial da NowGo AI e quero avaliar como aplicar IA na minha organização.",
@@ -93,23 +91,6 @@ const JSON_LD: Record<string, unknown>[] = [
     ],
   },
 ];
-
-function CtaCard({ title, text, wa, waLabel }: { title: string; text: string; wa: string; waLabel: string }) {
-  return (
-    <div className="ng-blog-cta">
-      <h3>{title}</h3>
-      <p>{text}</p>
-      <div className="ng-blog-cta-actions">
-        <a href={wa} target="_blank" rel="noreferrer" className="btn-primary">
-          {waLabel}
-        </a>
-        <a href={CAL_URL} target="_blank" rel="noreferrer" className="btn-secondary">
-          Agendar diagnóstico
-        </a>
-      </div>
-    </div>
-  );
-}
 
 export default function BlogInteligenciaArtificial() {
   return (
@@ -230,7 +211,7 @@ export default function BlogInteligenciaArtificial() {
               </p>
             </article>
 
-            <CtaCard
+            <BlogCtaCard
               title="IA para hospitais e operadoras de saúde"
               text="A NowGo AI implanta agentes de voz e automação hospitalar como módulos de uma infraestrutura integrada — não como softwares isolados."
               wa={WA_SAUDE}
@@ -247,7 +228,7 @@ export default function BlogInteligenciaArtificial() {
               </p>
             </article>
 
-            <CtaCard
+            <BlogCtaCard
               title="IA soberana para governos e cidades"
               text="Infraestrutura operacional soberana, modular e interoperável para gestão pública — do atendimento ao cidadão à orquestração de dados urbanos."
               wa={WA_GOV}
@@ -275,7 +256,7 @@ export default function BlogInteligenciaArtificial() {
               </p>
             </article>
 
-            <CtaCard
+            <BlogCtaCard
               title="IA para indústria, educação e empresas"
               text="Diagnóstico do processo, desenho da arquitetura e implantação com metas mensuráveis — a IA integrada à sua operação, não mais um software na prateleira."
               wa={WA_IND}
