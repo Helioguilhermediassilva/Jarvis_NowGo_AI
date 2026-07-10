@@ -10,6 +10,27 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-de-voz",
+    title: "IA de Voz: como funcionam os agentes que atendem e ligam por telefone",
+    excerpt:
+      "A diferença para a URA, o mecanismo da conversa em tempo real, casos em saúde, governo e empresas — e por que voz é a tecnologia de IA mais inclusiva que existe.",
+    tag: "Voice AI",
+  },
+  {
+    slug: "/blog/como-usar-inteligencia-artificial",
+    title: "Como usar inteligência artificial: do primeiro acesso ao uso profissional",
+    excerpt:
+      "Começar de graça, dominar os comandos, evitar os erros de iniciante e dar o salto do uso pessoal para a operação da organização.",
+    tag: "Fundamentos",
+  },
+  {
+    slug: "/blog/historia-da-inteligencia-artificial",
+    title: "História da Inteligência Artificial: de 1956 à era dos agentes",
+    excerpt:
+      "Turing, Dartmouth, os invernos da IA, o deep learning e o momento ChatGPT — a linha do tempo completa e as lições para quem decide hoje.",
+    tag: "História da IA",
+  },
+  {
     slug: "/blog/inteligencia-artificial-para-empresas",
     title: "Inteligência Artificial para Empresas: aplicações na indústria, nas finanças e nos negócios",
     excerpt:
