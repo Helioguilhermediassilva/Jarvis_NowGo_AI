@@ -10,6 +10,27 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-para-empresas",
+    title: "Inteligência Artificial para Empresas: aplicações na indústria, nas finanças e nos negócios",
+    excerpt:
+      "Previsão, indústria 4.0, backoffice financeiro, atendimento e decisão — as aplicações que passam na régua do retorno mensurável, e os quatro erros que matam projetos.",
+    tag: "IA nas Profissões",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-na-educacao",
+    title: "Inteligência Artificial na Educação: guia para professores, gestores e instituições",
+    excerpt:
+      "IA que amplia o professor, o uso certo para estudar, o dilema da redação e do plágio, e a operação acadêmica — com governança de dados de alunos por desenho.",
+    tag: "IA para Estudo e Trabalho",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-generativa",
+    title: "IA Generativa: o que é, como funciona e exemplos de uso profissional",
+    excerpt:
+      "O mecanismo dos LLMs, fine-tuning e RAG, os usos que geram valor em organizações e a arquitetura que mitiga alucinações.",
+    tag: "Conceitos Técnicos",
+  },
+  {
     slug: "/blog/inteligencia-artificial-no-brasil",
     title: "Inteligência Artificial no Brasil: por que soberania é a decisão estratégica da década",
     excerpt:
