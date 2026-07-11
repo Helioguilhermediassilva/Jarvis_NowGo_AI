@@ -13,6 +13,46 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuthV2 } from "@/contexts/AuthV2Context";
+import { useLang } from "@/landing/useLang";
+import type { Lang } from "@/landing/copy";
+
+/** Rótulos trilíngues dos botões/menus de autenticação (segue copy.ts). */
+const AUTH_LABELS: Record<
+  Lang,
+  {
+    signup: string;
+    signupAria: string;
+    loginAria: string;
+    mfa: string;
+    manage: string;
+    logout: string;
+  }
+> = {
+  pt: {
+    signup: "Cadastro",
+    signupAria: "Cadastro por convite",
+    loginAria: "Login restrito",
+    mfa: "Ativar MFA (recomendado)",
+    manage: "Gerenciar usuários",
+    logout: "Sair",
+  },
+  en: {
+    signup: "Sign up",
+    signupAria: "Sign up by invitation",
+    loginAria: "Restricted login",
+    mfa: "Enable MFA (recommended)",
+    manage: "Manage users",
+    logout: "Sign out",
+  },
+  es: {
+    signup: "Registro",
+    signupAria: "Registro por invitación",
+    loginAria: "Acceso restringido",
+    mfa: "Activar MFA (recomendado)",
+    manage: "Gestionar usuarios",
+    logout: "Salir",
+  },
+};
 
 export default function AuthHeaderButtons({
   cockpitLabel = "Cockpit",
@@ -20,6 +60,8 @@ export default function AuthHeaderButtons({
   cockpitLabel?: string;
 }) {
   const { authenticated, user, logout, loading } = useAuthV2();
+  const { lang } = useLang();
+  const t = AUTH_LABELS[lang];
   const [, navigate] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -53,16 +95,16 @@ export default function AuthHeaderButtons({
         <Link
           href="/cadastro"
           className="ng-header-login"
-          aria-label="Cadastro por convite"
+          aria-label={t.signupAria}
           style={{
             background: "transparent",
             color: "var(--accent-cyan, #33D2FF)",
             borderColor: "var(--accent-cyan, #33D2FF)",
           }}
         >
-          Cadastro
+          {t.signup}
         </Link>
-        <Link href="/login" className="ng-header-login" aria-label="Login restrito">
+        <Link href="/login" className="ng-header-login" aria-label={t.loginAria}>
           <span aria-hidden="true" className="ng-header-login-lock">▢</span>
           Login
         </Link>
@@ -157,7 +199,7 @@ export default function AuthHeaderButtons({
                 navigate("/mfa/configurar");
               }}
             >
-              Ativar MFA (recomendado)
+              {t.mfa}
             </MenuItem>
           )}
           {canManage && (
@@ -167,7 +209,7 @@ export default function AuthHeaderButtons({
                 navigate("/admin/usuarios");
               }}
             >
-              Gerenciar usuários
+              {t.manage}
             </MenuItem>
           )}
           <div
@@ -185,7 +227,7 @@ export default function AuthHeaderButtons({
               }}
               danger
             >
-              Sair
+              {t.logout}
             </MenuItem>
           </div>
         </div>

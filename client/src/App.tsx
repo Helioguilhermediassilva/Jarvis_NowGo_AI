@@ -67,6 +67,8 @@ function Router() {
       {/* Blog — cluster de conteúdo SEO/AEO */}
       <Route path={"/blog"} component={Blog} />
       <Route path={"/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
+      <Route path={"/en/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
+      <Route path={"/es/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
       <Route path={"/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
       <Route path={"/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
       <Route path={"/blog/inteligencia-artificial-para-advogados"} component={BlogIaParaAdvogados} />

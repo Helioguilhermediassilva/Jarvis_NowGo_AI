@@ -13,6 +13,8 @@ type Props = {
   canonical: string;
   /** Objetos schema.org a injetar como <script type="application/ld+json"> */
   jsonLd?: Record<string, unknown>[];
+  /** Versões alternativas por idioma (hreflang), incluindo a própria página */
+  alternates?: { hrefLang: string; href: string }[];
 };
 
 const DEFAULT_TITLE = "NowGo AI — Sovereign Enterprise AI";
@@ -26,7 +28,7 @@ function setMeta(selector: string, attr: string, value: string) {
   if (el) el.setAttribute(attr, value);
 }
 
-export default function Seo({ title, description, canonical, jsonLd }: Props) {
+export default function Seo({ title, description, canonical, jsonLd, alternates }: Props) {
   useEffect(() => {
     if (typeof document === "undefined") return;
 
@@ -40,6 +42,17 @@ export default function Seo({ title, description, canonical, jsonLd }: Props) {
 
     const link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (link) link.href = canonical;
+
+    const altLinks: HTMLLinkElement[] = [];
+    (alternates ?? []).forEach((alt) => {
+      const l = document.createElement("link");
+      l.rel = "alternate";
+      l.hreflang = alt.hrefLang;
+      l.href = alt.href;
+      l.setAttribute("data-seo-alt", "true");
+      document.head.appendChild(l);
+      altLinks.push(l);
+    });
 
     const scripts: HTMLScriptElement[] = [];
     (jsonLd ?? []).forEach((obj) => {
@@ -61,8 +74,9 @@ export default function Seo({ title, description, canonical, jsonLd }: Props) {
       setMeta('meta[name="twitter:description"]', "content", DEFAULT_DESCRIPTION);
       if (link) link.href = DEFAULT_CANONICAL;
       scripts.forEach((s) => s.remove());
+      altLinks.forEach((l) => l.remove());
     };
-  }, [title, description, canonical, jsonLd]);
+  }, [title, description, canonical, jsonLd, alternates]);
 
   return null;
 }
