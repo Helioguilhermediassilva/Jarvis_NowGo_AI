@@ -10,6 +10,48 @@ import "@/landing/styles/blog.css";
 
 const POSTS = [
   {
+    slug: "/blog/inteligencia-artificial-de-voz",
+    title: "IA de Voz: como funcionam os agentes que atendem e ligam por telefone",
+    excerpt:
+      "A diferença para a URA, o mecanismo da conversa em tempo real, casos em saúde, governo e empresas — e por que voz é a tecnologia de IA mais inclusiva que existe.",
+    tag: "Voice AI",
+  },
+  {
+    slug: "/blog/como-usar-inteligencia-artificial",
+    title: "Como usar inteligência artificial: do primeiro acesso ao uso profissional",
+    excerpt:
+      "Começar de graça, dominar os comandos, evitar os erros de iniciante e dar o salto do uso pessoal para a operação da organização.",
+    tag: "Fundamentos",
+  },
+  {
+    slug: "/blog/historia-da-inteligencia-artificial",
+    title: "História da Inteligência Artificial: de 1956 à era dos agentes",
+    excerpt:
+      "Turing, Dartmouth, os invernos da IA, o deep learning e o momento ChatGPT — a linha do tempo completa e as lições para quem decide hoje.",
+    tag: "História da IA",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-para-empresas",
+    title: "Inteligência Artificial para Empresas: aplicações na indústria, nas finanças e nos negócios",
+    excerpt:
+      "Previsão, indústria 4.0, backoffice financeiro, atendimento e decisão — as aplicações que passam na régua do retorno mensurável, e os quatro erros que matam projetos.",
+    tag: "IA nas Profissões",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-na-educacao",
+    title: "Inteligência Artificial na Educação: guia para professores, gestores e instituições",
+    excerpt:
+      "IA que amplia o professor, o uso certo para estudar, o dilema da redação e do plágio, e a operação acadêmica — com governança de dados de alunos por desenho.",
+    tag: "IA para Estudo e Trabalho",
+  },
+  {
+    slug: "/blog/inteligencia-artificial-generativa",
+    title: "IA Generativa: o que é, como funciona e exemplos de uso profissional",
+    excerpt:
+      "O mecanismo dos LLMs, fine-tuning e RAG, os usos que geram valor em organizações e a arquitetura que mitiga alucinações.",
+    tag: "Conceitos Técnicos",
+  },
+  {
     slug: "/blog/inteligencia-artificial-no-brasil",
     title: "Inteligência Artificial no Brasil: por que soberania é a decisão estratégica da década",
     excerpt:

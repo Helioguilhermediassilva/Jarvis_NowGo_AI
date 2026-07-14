@@ -22,6 +22,12 @@ import BlogIaParaAdvogados from "@/pages/BlogIaParaAdvogados";
 import BlogIaEMachineLearning from "@/pages/BlogIaEMachineLearning";
 import BlogIaNoBrasil from "@/pages/BlogIaNoBrasil";
 import BlogIaGastaAgua from "@/pages/BlogIaGastaAgua";
+import BlogIaNaEducacao from "@/pages/BlogIaNaEducacao";
+import BlogIaParaEmpresas from "@/pages/BlogIaParaEmpresas";
+import BlogIaGenerativa from "@/pages/BlogIaGenerativa";
+import BlogIaDeVoz from "@/pages/BlogIaDeVoz";
+import BlogHistoriaDaIa from "@/pages/BlogHistoriaDaIa";
+import BlogComoUsarIa from "@/pages/BlogComoUsarIa";
 import RequireAuth from "@/components/RequireAuth";
 import { LangProvider } from "@/landing/useLang";
 
@@ -75,6 +81,12 @@ function Router() {
       <Route path={"/blog/inteligencia-artificial-e-machine-learning"} component={BlogIaEMachineLearning} />
       <Route path={"/blog/inteligencia-artificial-no-brasil"} component={BlogIaNoBrasil} />
       <Route path={"/blog/inteligencia-artificial-gasta-agua"} component={BlogIaGastaAgua} />
+      <Route path={"/blog/inteligencia-artificial-na-educacao"} component={BlogIaNaEducacao} />
+      <Route path={"/blog/inteligencia-artificial-para-empresas"} component={BlogIaParaEmpresas} />
+      <Route path={"/blog/inteligencia-artificial-generativa"} component={BlogIaGenerativa} />
+      <Route path={"/blog/inteligencia-artificial-de-voz"} component={BlogIaDeVoz} />
+      <Route path={"/blog/historia-da-inteligencia-artificial"} component={BlogHistoriaDaIa} />
+      <Route path={"/blog/como-usar-inteligencia-artificial"} component={BlogComoUsarIa} />
 
       <Route path={"/imprensa"} component={Imprensa} />
       <Route path={"/press"} component={Imprensa} />
