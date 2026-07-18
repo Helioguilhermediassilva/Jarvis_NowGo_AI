@@ -70,6 +70,8 @@ function Router() {
       <Route path={"/en/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
       <Route path={"/es/blog/inteligencia-artificial"} component={BlogInteligenciaArtificial} />
       <Route path={"/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
+      <Route path={"/en/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
+      <Route path={"/es/blog/inteligencia-artificial-na-saude"} component={BlogIaNaSaude} />
       <Route path={"/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
       <Route path={"/en/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
       <Route path={"/es/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
@@ -77,6 +79,8 @@ function Router() {
       <Route path={"/es/blog/agentes-de-inteligencia-artificial"} component={BlogAgentesDeIa} />
       <Route path={"/blog/inteligencia-artificial-para-advogados"} component={BlogIaParaAdvogados} />
       <Route path={"/blog/inteligencia-artificial-e-machine-learning"} component={BlogIaEMachineLearning} />
+      <Route path={"/en/blog/inteligencia-artificial-e-machine-learning"} component={BlogIaEMachineLearning} />
+      <Route path={"/es/blog/inteligencia-artificial-e-machine-learning"} component={BlogIaEMachineLearning} />
       <Route path={"/blog/inteligencia-artificial-no-brasil"} component={BlogIaNoBrasil} />
       <Route path={"/en/blog/inteligencia-artificial-no-brasil"} component={BlogIaNoBrasil} />
       <Route path={"/es/blog/inteligencia-artificial-no-brasil"} component={BlogIaNoBrasil} />
