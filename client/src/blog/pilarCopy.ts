@@ -1,4 +1,5 @@
 import type { Lang } from "@/landing/copy";
+import type { ArticleCopy } from "@/blog/ArticleI18n";
 
 /**
  * Conteúdo trilíngue (PT/EN/ES) da página pilar do blog.
@@ -6,31 +7,8 @@ import type { Lang } from "@/landing/copy";
  * Parágrafos aceitam HTML inline seguro (<strong>, <a>) — conteúdo estático.
  */
 
-export type PillarSection =
-  | { kind: "text"; id: string; heading: string; paragraphs: string[] }
-  | { kind: "cta"; title: string; text: string; waMsg: string; waLabel: string };
 
-export type PillarCopy = {
-  seoTitle: string;
-  seoDescription: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  tocLabel: string;
-  toc: { href: string; label: string }[];
-  sections: PillarSection[];
-  faqTitle: string;
-  faq: { q: string; a: string }[];
-  finalTitle: string;
-  finalSub: string;
-  ctaSchedule: string;
-  ctaWhatsapp: string;
-  ctaPlatform: string;
-  ctaDiagnosis: string;
-  finalWaMsg: string;
-};
-
-export const pilarCopy: Record<Lang, PillarCopy> = {
+export const pilarCopy: Record<Lang, ArticleCopy> = {
   /* ------------------------------------------------------------------ PT */
   pt: {
     seoTitle:
