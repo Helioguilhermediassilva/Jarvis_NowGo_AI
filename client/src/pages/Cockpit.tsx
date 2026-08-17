@@ -387,17 +387,19 @@ export default function Cockpit() {
           />
         )}
 
-        {/* Faixa de Missões Ativas */}
+        {/* Faixa de Missões Ativas + Dashboard de Impacto */}
         {sun && (
-          <section style={{ padding: "0 24px 14px" }}>
-            <SunMissionsBar missions={sun.snapshot.missoes} onAsk={onAskMission} />
-          </section>
-        )}
+          <>
+            <section style={{ padding: "0 24px 14px" }}>
+              <SunMissionsBar missions={sun.snapshot.missoes} onAsk={onAskMission} />
+            </section>
 
-        {/* Dashboard de Impacto — Números que Importam */}
-        <section style={{ padding: "0 24px 14px" }}>
-          <ImpactDashboard />
-        </section>
+            {/* Dashboard de Impacto — Números que Importam */}
+            <section style={{ padding: "0 24px 14px" }}>
+              <ImpactDashboard />
+            </section>
+          </>
+        )}
         {/* Faixa do Revenue Cockpit — KPIs financeiros NowGo */}
         <section style={{ padding: "0 24px 14px" }}>
           <FinancialKpisBar />
