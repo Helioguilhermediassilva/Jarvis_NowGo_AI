@@ -70,7 +70,9 @@ function getDriveClient(): drive_v3.Drive | null {
       key: sa.private_key.replace(/\\n/g, "\n"),
       scopes: ["https://www.googleapis.com/auth/drive"],
     });
-    driveClient = google.drive({ version: "v3", auth });
+    // A versão atual de googleapis expõe tipos incompatíveis entre JWT e Drive.
+    // O JWT é aceito em runtime; o cast limita a incompatibilidade ao ponto de adaptação.
+    driveClient = google.drive({ version: "v3", auth: auth as any });
     return driveClient;
   } catch (e) {
     driveError = `Drive client init falhou: ${(e as Error).message}`;
@@ -277,7 +279,7 @@ export async function listRecentFiles(
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     });
-    const files = (list.data.files || []).map((f) => ({
+    const files = (list.data.files || []).map((f: drive_v3.Schema$File) => ({
       id: f.id || "",
       name: f.name || "",
       mimeType: f.mimeType || "",
