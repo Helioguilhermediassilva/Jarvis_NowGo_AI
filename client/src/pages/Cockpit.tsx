@@ -394,14 +394,13 @@ export default function Cockpit() {
           </section>
         )}
 
-        {/* Faixa do Revenue Cockpit — KPIs financeiros NowGo */}
-        <section style={{ padding: "0 24px 14px" }}>
-          <FinancialKpisBar />
-        </section>
-
         {/* Dashboard de Impacto — Números que Importam */}
         <section style={{ padding: "0 24px 14px" }}>
           <ImpactDashboard />
+        </section>
+        {/* Faixa do Revenue Cockpit — KPIs financeiros NowGo */}
+        <section style={{ padding: "0 24px 14px" }}>
+          <FinancialKpisBar />
         </section>
 
         {/* Grid principal */}
