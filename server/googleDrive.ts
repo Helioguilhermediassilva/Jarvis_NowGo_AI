@@ -72,7 +72,7 @@ function getDriveClient(): drive_v3.Drive | null {
     });
     // A versão atual de googleapis expõe tipos incompatíveis entre JWT e Drive.
     // O JWT é aceito em runtime; o cast limita a incompatibilidade ao ponto de adaptação.
-    driveClient = google.drive({ version: "v3", auth: auth as any });
+    driveClient = google.drive({ version: "v3", auth } as any) as unknown as drive_v3.Drive;
     return driveClient;
   } catch (e) {
     driveError = `Drive client init falhou: ${(e as Error).message}`;
