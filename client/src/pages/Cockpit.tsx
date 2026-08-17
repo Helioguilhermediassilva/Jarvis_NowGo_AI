@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
 import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
+import ImpactDashboard from "@/components/cockpit/ImpactDashboard";
 import UserManagementDrawer from "@/components/cockpit/UserManagementDrawer";
 import PipelineLeftColumn from "@/components/cockpit/PipelineLeftColumn";
 import ControlPanelRightColumn from "@/components/cockpit/ControlPanelRightColumn";
@@ -396,6 +397,11 @@ export default function Cockpit() {
         {/* Faixa do Revenue Cockpit — KPIs financeiros NowGo */}
         <section style={{ padding: "0 24px 14px" }}>
           <FinancialKpisBar />
+        </section>
+
+        {/* Dashboard de Impacto — Números que Importam */}
+        <section style={{ padding: "0 24px 14px" }}>
+          <ImpactDashboard />
         </section>
 
         {/* Grid principal */}
