@@ -33,6 +33,7 @@ import RedefinirSenhaPage from "@/pages/RedefinirSenha";
 import MfaDesafioPage from "@/pages/MfaDesafio";
 import MfaConfigurarPage from "@/pages/MfaConfigurar";
 import AdminUsuariosPage from "@/pages/AdminUsuarios";
+import BillingPage from "@/pages/Billing";
 import RequireAuthV2 from "@/components/auth/RequireAuthV2";
 
 function Router() {
@@ -100,6 +101,13 @@ function Router() {
       <Route path={"/redefinir-senha/:token"} component={RedefinirSenhaPage} />
       <Route path={"/mfa/desafio"} component={MfaDesafioPage} />
       <Route path={"/mfa/configurar"} component={MfaConfigurarPage} />
+
+      {/* Billing da Plataforma de Inteligência Soberana — sessão V2 + platformAccess */}
+      <Route path={"/billing"}>
+        <RequireAuthV2>
+          <BillingPage />
+        </RequireAuthV2>
+      </Route>
 
       {/* F47 Fase 5.3 — Admin (exige sessão V2 + papel administrativo) */}
       <Route path={"/admin/usuarios"}>

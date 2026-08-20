@@ -103,6 +103,82 @@ export const auditLog = nowgoBrain.table("audit_log", {
 });
 
 // ---------------------------------------------------------------------------
+// platform billing — fonte local de entitlements e créditos; Stripe é a fonte
+// de verdade para customer, assinatura, pagamento e invoice.
+// ---------------------------------------------------------------------------
+export const stripeCustomers = nowgoBrain.table("stripe_customers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .unique(),
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  email: text("email"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const billingSubscriptions = nowgoBrain.table(
+  "billing_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    stripeCustomerId: text("stripe_customer_id").notNull(),
+    stripeSubscriptionId: text("stripe_subscription_id").notNull().unique(),
+    stripePriceId: text("stripe_price_id").notNull(),
+    planCode: text("plan_code").notNull(),
+    status: text("status").notNull(),
+    currentPeriodStart: timestamp("current_period_start", { withTimezone: true }),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byTenant: index("idx_billing_subscriptions_tenant").on(t.tenantId),
+    byCustomer: index("idx_billing_subscriptions_customer").on(t.stripeCustomerId),
+  }),
+);
+
+export const creditLedger = nowgoBrain.table(
+  "credit_ledger",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    amount: integer("amount").notNull(),
+    source: text("source").notNull(),
+    planCode: text("plan_code"),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    idempotencyKey: text("idempotency_key").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    metadata: jsonb("metadata").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byTenantCreated: index("idx_credit_ledger_tenant_created").on(t.tenantId, t.createdAt),
+    byTenantExpiry: index("idx_credit_ledger_tenant_expiry").on(t.tenantId, t.expiresAt),
+  }),
+);
+
+export const billingEvents = nowgoBrain.table(
+  "billing_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    stripeEventId: text("stripe_event_id").notNull().unique(),
+    eventType: text("event_type").notNull(),
+    payload: jsonb("payload").notNull(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+);
+
+// ---------------------------------------------------------------------------
 // opportunities  (espelha base Notion "pipeline")
 // ---------------------------------------------------------------------------
 export const opportunities = nowgoBrain.table(
@@ -332,6 +408,18 @@ export type NewTenantMember = typeof tenantMembers.$inferInsert;
 
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type NewAuditLogEntry = typeof auditLog.$inferInsert;
+
+export type StripeCustomerRow = typeof stripeCustomers.$inferSelect;
+export type NewStripeCustomerRow = typeof stripeCustomers.$inferInsert;
+
+export type BillingSubscriptionRow = typeof billingSubscriptions.$inferSelect;
+export type NewBillingSubscriptionRow = typeof billingSubscriptions.$inferInsert;
+
+export type CreditLedgerRow = typeof creditLedger.$inferSelect;
+export type NewCreditLedgerRow = typeof creditLedger.$inferInsert;
+
+export type BillingEventRow = typeof billingEvents.$inferSelect;
+export type NewBillingEventRow = typeof billingEvents.$inferInsert;
 
 export type OpportunityRow = typeof opportunities.$inferSelect;
 export type NewOpportunityRow = typeof opportunities.$inferInsert;

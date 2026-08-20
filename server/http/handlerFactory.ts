@@ -20,6 +20,7 @@ import { MfaError } from "../auth/mfaTotp.js";
 import { PasswordError } from "../auth/passwordCredentials.js";
 import { SessionError } from "../auth/sessions.js";
 import { EmailDeliveryError } from "../email/resendClient.js";
+import { BillingError } from "../billing/errors.js";
 
 // ---------------------------------------------------------------------------
 // Tipos públicos
@@ -133,6 +134,12 @@ const ERR_STATUS_MAP: Record<string, number> = {
   missing_subject: 400,
   missing_body: 400,
   provider_error: 502,
+  // BillingError
+  offer_invalid: 400,
+  platform_access_required: 403,
+  billing_not_configured: 500,
+  billing_customer_missing: 404,
+  stripe_provider_error: 502,
   // genérico
   internal_error: 500,
 };
@@ -144,13 +151,15 @@ function isTypedError(
   | MfaError
   | PasswordError
   | SessionError
-  | EmailDeliveryError {
+  | EmailDeliveryError
+  | BillingError {
   return (
     err instanceof InvitationError ||
     err instanceof MfaError ||
     err instanceof PasswordError ||
     err instanceof SessionError ||
-    err instanceof EmailDeliveryError
+    err instanceof EmailDeliveryError ||
+    err instanceof BillingError
   );
 }
 

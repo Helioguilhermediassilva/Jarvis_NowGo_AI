@@ -399,3 +399,43 @@ export async function mfaSetupConfirmV2(input: {
     },
   );
 }
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Billing da Plataforma de Inteligência Soberana
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface BillingCheckoutResponse {
+  ok: true;
+  sessionId: string;
+  url: string;
+}
+
+export interface BillingSummary {
+  ok: true;
+  subscription: {
+    planCode: string;
+    status: string;
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+  } | null;
+  creditBalance: number;
+}
+
+export async function createBillingCheckoutSession(offerCode: string): Promise<BillingCheckoutResponse> {
+  return request<BillingCheckoutResponse>("/api/billing/checkout", {
+    method: "POST",
+    body: JSON.stringify({ offerCode }),
+  });
+}
+
+export async function createBillingPortalSession(): Promise<{ ok: true; url: string }> {
+  return request<{ ok: true; url: string }>("/api/billing/portal", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+export async function fetchBillingSummary(): Promise<BillingSummary> {
+  return request<BillingSummary>("/api/billing/summary", { method: "GET" });
+}

@@ -6,6 +6,7 @@ import { useLang } from "@/landing/useLang";
 import { copy } from "@/landing/copy";
 import CompanyDropdown from "@/landing/CompanyDropdown";
 import AuthHeaderButtons from "@/components/auth/AuthHeaderButtons";
+import SovereignPricing from "@/landing/SovereignPricing";
 
 /**
  * LandingPage — landing pública da NowGo AI em cockpitcrmnowgoai.com (rota /).
@@ -334,6 +335,11 @@ export default function LandingPage() {
             <span className="tagline">{t.pricing.eyebrow}</span>
             <h2 className="ng-h2">{t.pricing.title}</h2>
             <p className="ng-section-sub">{t.pricing.subtitle}</p>
+          </div>
+          <SovereignPricing content={t.pricing.selfService} />
+          <div className="ng-enterprise-pricing-head reveal">
+            <span className="tagline">{t.pricing.enterpriseEyebrow}</span>
+            <h3>{t.pricing.enterpriseTitle}</h3>
           </div>
           <div className="ng-pricing-grid">
             {t.pricing.tiers.map((tier, i) => (

@@ -1302,3 +1302,94 @@
   .nowgoai-landing .ng-founder-linkedin { transition: none; }
   .nowgoai-landing .ng-founder-linkedin:active { transform: none; }
 }
+
+
+/* SELF-SERVICE BILLING */
+.nowgoai-landing .ng-self-service { margin: 3.5rem 0 5rem; }
+.nowgoai-landing .ng-self-service-head { max-width: 760px; margin-bottom: 2rem; }
+.nowgoai-landing .ng-self-service-title {
+  font-family: "Outfit", sans-serif; font-size: clamp(1.45rem, 2.4vw, 2rem);
+  line-height: 1.15; font-weight: 500; color: var(--text-main); margin: 0 0 0.75rem;
+}
+.nowgoai-landing .ng-self-service-plans {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem;
+}
+.nowgoai-landing .ng-self-service-plan { min-height: 560px; }
+.nowgoai-landing .ng-self-service-credits {
+  color: var(--accent-cyan); font-size: 0.85rem; letter-spacing: 0.04em; margin: -0.4rem 0 1rem;
+}
+.nowgoai-landing .ng-tier > button { margin-top: auto; cursor: pointer; }
+.nowgoai-landing .ng-tier > button:disabled,
+.nowgoai-landing .ng-credit-pack button:disabled { opacity: 0.55; cursor: wait; }
+.nowgoai-landing .ng-billing-notice {
+  border: 1px solid rgba(255, 180, 80, 0.4); background: rgba(255, 180, 80, 0.08);
+  border-radius: 0.75rem; color: var(--text-main); padding: 0.85rem 1rem; margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+.nowgoai-landing .ng-credit-packs { margin-top: 4rem; }
+.nowgoai-landing .ng-credit-packs-head { margin-bottom: 1.5rem; }
+.nowgoai-landing .ng-credit-packs-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem;
+}
+.nowgoai-landing .ng-credit-pack {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;
+  min-height: 190px; padding: 1.5rem; border: 1px solid var(--border-soft);
+  border-radius: 0.9rem; background: rgba(255, 255, 255, 0.018);
+}
+.nowgoai-landing .ng-credit-pack h4 {
+  color: var(--text-main); font-family: "Outfit", sans-serif; font-size: 1rem; font-weight: 500; margin: 0 0 0.75rem;
+}
+.nowgoai-landing .ng-credit-pack strong {
+  display: block; color: var(--text-main); font-family: "Outfit", sans-serif; font-size: 1.55rem; font-weight: 500;
+}
+.nowgoai-landing .ng-credit-pack span { display: block; color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem; }
+.nowgoai-landing .ng-credit-pack button { align-self: flex-start; cursor: pointer; }
+.nowgoai-landing .ng-enterprise-pricing-head { margin: 1rem 0 2rem; }
+.nowgoai-landing .ng-enterprise-pricing-head h3 {
+  margin: 0; color: var(--text-main); font-family: "Outfit", sans-serif; font-size: clamp(1.35rem, 2vw, 1.75rem); font-weight: 500;
+}
+
+@media (max-width: 980px) {
+  .nowgoai-landing .ng-self-service-plans,
+  .nowgoai-landing .ng-credit-packs-grid { grid-template-columns: 1fr; }
+  .nowgoai-landing .ng-self-service-plan { min-height: 0; }
+}
+
+
+/* BILLING PAGE */
+.nowgoai-landing .ng-billing-page,
+.ng-billing-page {
+  min-height: 100vh; padding: 7rem 1.25rem 5rem; color: var(--text-main, #f2f7fb);
+  background: var(--bg-base, #071018); font-family: "Inter", sans-serif;
+}
+.ng-billing-shell { max-width: 1100px; margin: 0 auto; }
+.ng-billing-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; }
+.ng-billing-header h1 { margin: 0.5rem 0 0.75rem; font-family: "Outfit", sans-serif; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 500; }
+.ng-billing-header p { margin: 0; color: var(--text-dim, rgba(255,255,255,0.65)); max-width: 600px; }
+.ng-billing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.ng-billing-card { border: 1px solid var(--border-soft, rgba(255,255,255,0.12)); border-radius: 1rem; padding: 1.5rem; background: rgba(255,255,255,0.03); }
+.ng-billing-card > span { display: block; color: var(--text-muted, rgba(255,255,255,0.5)); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.ng-billing-card > strong { display: block; margin: 0.8rem 0 0.45rem; color: var(--text-main, #f2f7fb); font-family: "Outfit", sans-serif; font-size: 1.5rem; font-weight: 500; }
+.ng-billing-card > small { color: var(--text-dim, rgba(255,255,255,0.65)); }
+.ng-billing-status { border: 1px solid rgba(255, 180, 80, 0.4); background: rgba(255, 180, 80, 0.08); border-radius: 0.75rem; padding: 0.9rem 1rem; margin-bottom: 1.25rem; }
+.ng-billing-status-success { border-color: rgba(51, 210, 255, 0.35); background: rgba(51, 210, 255, 0.08); }
+.ng-billing-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+.ng-billing-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (max-width: 760px) {
+  .ng-billing-header { flex-direction: column; align-items: flex-start; }
+  .ng-billing-grid { grid-template-columns: 1fr; }
+  .ng-billing-actions { justify-content: flex-start; }
+}
+
+
+.ng-billing-page .btn-primary,
+.ng-billing-page .btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: "Outfit", sans-serif; font-weight: 500; font-size: 0.92rem;
+  padding: 0.75rem 1.5rem; border-radius: 999px; text-decoration: none;
+  white-space: nowrap; border: none; cursor: pointer; transition: transform 0.25s ease, background 0.25s ease;
+}
+.ng-billing-page .btn-primary { background: #fff; color: var(--bg-base, #071018); }
+.ng-billing-page .btn-secondary { background: rgba(255,255,255,0.04); color: var(--text-main, #f2f7fb); border: 1px solid rgba(255,255,255,0.16); }
+.ng-billing-page .btn-primary:hover,
+.ng-billing-page .btn-secondary:hover { transform: translateY(-1px); }
