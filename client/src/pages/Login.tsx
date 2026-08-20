@@ -72,6 +72,13 @@ const LOGIN_COPY: Record<Lang, {
   },
 };
 
+const PENDING_BILLING_OFFER_KEY = "nowgo.pendingBillingOffer";
+const PENDING_BILLING_RETURN_KEY = "nowgo.pendingBillingReturnTo";
+
+function isSafeBillingOffer(value: string | null): value is string {
+  return Boolean(value && /^[a-z0-9_]{1,80}$/.test(value));
+}
+
 const ERROR_LABELS: Record<string, Record<Lang, string>> = {
   invalid_credentials: {
     pt: "E-mail ou senha incorretos.",
@@ -117,11 +124,20 @@ export default function LoginPage() {
     try {
       const result = await loginV2({ email: email.trim().toLowerCase(), password });
 
-      const requested = new URLSearchParams(window.location.search).get("returnTo");
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get("returnTo");
       const requestedReturnTo = requested && requested.startsWith("/") && !requested.startsWith("//")
         ? requested
         : "/";
-      const billingReturnTo = sessionStorage.getItem("nowgo.pendingBillingReturnTo");
+      const billingOffer = params.get("billingOffer");
+      if (isSafeBillingOffer(billingOffer)) {
+        // URL fallback complements sessionStorage for cross-navigation and MFA.
+        sessionStorage.setItem(PENDING_BILLING_OFFER_KEY, billingOffer);
+        if (requestedReturnTo !== "/") {
+          sessionStorage.setItem(PENDING_BILLING_RETURN_KEY, requestedReturnTo);
+        }
+      }
+      const billingReturnTo = sessionStorage.getItem(PENDING_BILLING_RETURN_KEY);
       const safeBillingReturnTo = billingReturnTo && billingReturnTo.startsWith("/") && !billingReturnTo.startsWith("//")
         ? billingReturnTo
         : null;

@@ -12,6 +12,21 @@ type Props = {
   content: SelfServiceCopy;
 };
 
+const PENDING_OFFER_KEY = "nowgo.pendingBillingOffer";
+const PENDING_RETURN_KEY = "nowgo.pendingBillingReturnTo";
+
+function currentPricingReturnTo(): string {
+  const path = window.location.pathname || "/";
+  const search = window.location.search || "";
+  const hash = window.location.hash || "#pricing";
+  return `${path}${search}${hash}`;
+}
+
+function rememberPendingCheckout(code: string): void {
+  window.sessionStorage.setItem(PENDING_OFFER_KEY, code);
+  window.sessionStorage.setItem(PENDING_RETURN_KEY, currentPricingReturnTo());
+}
+
 export default function SovereignPricing({ content }: Props) {
   const [busyCode, setBusyCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,14 +38,22 @@ export default function SovereignPricing({ content }: Props) {
 
     try {
       const result = await createBillingCheckoutSession(code);
+      window.sessionStorage.removeItem(PENDING_OFFER_KEY);
+      window.sessionStorage.removeItem(PENDING_RETURN_KEY);
       window.location.assign(result.url);
     } catch (rawError) {
       const err = rawError as ApiError;
       if (err.status === 401) {
-        const returnTo = `${window.location.pathname || "/"}#pricing`;
-        window.sessionStorage.setItem("nowgo.pendingBillingOffer", code);
-        window.sessionStorage.setItem("nowgo.pendingBillingReturnTo", returnTo);
-        window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+        // Preserve both plans and credit packs when authentication is required.
+        // If the session cookie is not immediately available after login/MFA,
+        // this branch re-saves the offer instead of losing the user's intent.
+        rememberPendingCheckout(code);
+        const returnTo = currentPricingReturnTo();
+        const loginParams = new URLSearchParams({
+          returnTo,
+          billingOffer: code,
+        });
+        window.location.assign(`/login?${loginParams.toString()}`);
         return;
       }
       if (err.status === 403) {
@@ -44,9 +67,12 @@ export default function SovereignPricing({ content }: Props) {
   }
 
   useEffect(() => {
-    const pending = window.sessionStorage.getItem("nowgo.pendingBillingOffer");
+    const pending = window.sessionStorage.getItem(PENDING_OFFER_KEY);
     if (!pending) return;
-    window.sessionStorage.removeItem("nowgo.pendingBillingOffer");
+
+    // Consume before starting to avoid duplicate Checkout Sessions under React
+    // StrictMode; a 401 inside startCheckout() persists it again for retry.
+    window.sessionStorage.removeItem(PENDING_OFFER_KEY);
     void startCheckout(pending);
     // Executa apenas o checkout pendente após o retorno do login.
     // eslint-disable-next-line react-hooks/exhaustive-deps
