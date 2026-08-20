@@ -175,6 +175,7 @@ export interface InviteEmailInput {
   tenantName: string;
   inviteUrl: string;
   expiresAt: Date;
+  platformAccess?: boolean;
 }
 
 export function renderInviteEmail(input: InviteEmailInput): {
@@ -192,12 +193,14 @@ export function renderInviteEmail(input: InviteEmailInput): {
   const html = htmlShell(
     "Você foi convidado",
     `<p>${safeInviter} convidou você para acessar o Cockpit <strong>${safeTenant}</strong> no NowGo AI.</p>
+<p style="font-size:13px;color:#475569">Permissão incluída: <strong>${input.platformAccess === false ? "sem acesso à Plataforma" : "acesso à Plataforma"}</strong>.</p>
 <p style="margin:24px 0"><a href="${safeUrl}" style="display:inline-block;padding:12px 20px;background:#0f172a;color:#fff;text-decoration:none;border-radius:8px">Aceitar convite</a></p>
 <p style="font-size:13px;color:#475569">Ou copie e cole no navegador:<br><span style="word-break:break-all">${safeUrl}</span></p>
 <p style="font-size:13px;color:#475569">Este link expira em ${escapeHtml(expires)} e só pode ser usado uma vez.</p>`,
   );
   const text =
-    `${input.inviterName} convidou você para o Cockpit ${input.tenantName}.\n\n` +
+    `${input.inviterName} convidou você para o Cockpit ${input.tenantName}.\n` +
+    `Permissão: ${input.platformAccess === false ? "sem acesso à Plataforma" : "acesso à Plataforma"}.\n\n` +
     `Aceitar: ${input.inviteUrl}\n\nLink expira em ${expires}.`;
   return { subject, html, text };
 }

@@ -18,6 +18,7 @@ import {
   date,
   smallint,
   integer,
+  boolean,
   inet,
   customType,
   uniqueIndex,
@@ -74,6 +75,7 @@ export const tenantMembers = nowgoBrain.table(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     role: text("role").notNull().default("member"),
+    platformAccess: boolean("platform_access").notNull().default(true),
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({
@@ -373,6 +375,7 @@ export const invitations = nowgoBrain.table(
       .notNull()
       .references(() => tenants.id, { onDelete: "cascade" }),
     role: text("role").notNull(),
+    platformAccess: boolean("platform_access").notNull().default(true),
     invitedBy: uuid("invited_by")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),

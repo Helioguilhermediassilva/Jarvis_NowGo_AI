@@ -14,7 +14,7 @@
  *     `validateInvitationToken` (que faz hash + lookup), antes de devolver.
  *
  * Resposta de sucesso (200):
- *   { valid: true, tenantName, role, expiresAt, email }
+ *   { valid: true, tenantName, role, platformAccess, expiresAt, email }
  *
  * Resposta de falha (410):
  *   { error: "invalid_or_expired", valid: false }
@@ -38,6 +38,7 @@ interface SuccessResponse {
   valid: true;
   tenantName: string;
   role: string;
+  platformAccess: boolean;
   expiresAt: string;
   email: string;
 }
@@ -64,6 +65,7 @@ export default createApiHandler<Input, SuccessResponse | FailureResponse>({
         valid: true,
         tenantName: tenant.name,
         role: invitation.role,
+        platformAccess: invitation.platformAccess,
         expiresAt: invitation.expiresAt.toISOString(),
         email: invitation.email,
       };

@@ -24,6 +24,7 @@ interface Output {
   role: "superadmin" | "owner" | "admin" | "member";
   tenantId: string;
   tenantSlug: string | null;
+  platformAccess: boolean;
   mfaEnabled: boolean;
 }
 
@@ -47,6 +48,7 @@ export default createApiHandler<unknown, Output>({
       role: ctx.role,
       tenantId: ctx.tenantId,
       tenantSlug: tRows[0]?.slug ?? null,
+      platformAccess: ctx.platformAccess,
       mfaEnabled: ctx.mfaEnabled,
     };
   },

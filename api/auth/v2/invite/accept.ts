@@ -23,7 +23,7 @@
  *   5. Para `mode=password`: enviar e-mail de verificação.
  *
  * Resposta de sucesso (200):
- *   { ok: true, userId, tenantId, role, requiresEmailVerification }
+ *   { ok: true, userId, tenantId, role, platformAccess, requiresEmailVerification }
  *
  * Erros importantes:
  *   • Convite inválido/expirado/usado → 410 (mapeado pelo handlerFactory).
@@ -68,6 +68,7 @@ interface Output {
   userId: string;
   tenantId: string;
   role: string;
+  platformAccess: boolean;
   requiresEmailVerification: boolean;
 }
 
@@ -146,6 +147,7 @@ export default createApiHandler<Input, Output>({
       userId: consumed.userId,
       tenantId: consumed.tenantId,
       role: consumed.role,
+      platformAccess: consumed.platformAccess,
       requiresEmailVerification,
     };
   },

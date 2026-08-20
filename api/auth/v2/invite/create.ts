@@ -32,6 +32,7 @@ const InputSchema = z.object({
   email: z.string().email(),
   tenantId: z.string().uuid(),
   role: z.enum(["owner", "admin", "member", "viewer"]),
+  platformAccess: z.boolean().default(true),
   ttlHours: z.number().int().min(1).max(168).optional(),
   /** Origem da app (frontend deve enviar `window.location.origin`). */
   origin: z.string().url(),
@@ -67,6 +68,7 @@ export default createApiHandler<Input, {
       email: input.email,
       tenantId: input.tenantId,
       role: input.role as TenantRole,
+      platformAccess: input.platformAccess,
       ttlHours: input.ttlHours,
       invitedBy: ctx.userId,
     });
@@ -79,6 +81,7 @@ export default createApiHandler<Input, {
       tenantName: tenant.name,
       inviteUrl,
       expiresAt: created.expiresAt,
+      platformAccess: input.platformAccess,
     });
     const sent = await sendEmail({
       to: input.email,

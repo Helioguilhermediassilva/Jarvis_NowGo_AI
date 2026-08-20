@@ -198,14 +198,16 @@ export default function AuthHeaderButtons({
               {user.role} · {user.tenantSlug}
             </div>
           </div>
-          <MenuItem
-            onClick={() => {
-              setMenuOpen(false);
-              openXavierHome(lang);
-            }}
-          >
-            {t.platform}
-          </MenuItem>
+          {user.platformAccess && (
+            <MenuItem
+              onClick={() => {
+                setMenuOpen(false);
+                openXavierHome(lang);
+              }}
+            >
+              {t.platform}
+            </MenuItem>
+          )}
           {user.role === "superadmin" && (
             <MenuItem onClick={() => { setMenuOpen(false); navigate("/cockpit"); }}>
               {cockpitLabel}

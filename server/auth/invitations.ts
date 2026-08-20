@@ -73,6 +73,8 @@ export interface CreateInvitationInput {
   tenantId: string;
   /** Papel inicial do convidado dentro do tenant. */
   role: TenantRole;
+  /** Permite ao convidado acessar a Plataforma NowGo/Xavier após aceitar. */
+  platformAccess?: boolean;
   /** TTL em horas (padrão 72h, mínimo 1, máximo 168 = 7 dias). */
   ttlHours?: number;
   /** UUID do user (superadmin/owner) que está emitindo o convite. */
@@ -132,6 +134,7 @@ export async function createInvitation(
       email,
       tenantId: input.tenantId,
       role: input.role,
+      platformAccess: input.platformAccess ?? true,
       invitedBy: input.invitedBy,
       expiresAt,
     })
@@ -206,6 +209,7 @@ export interface ConsumeInvitationResult {
   tenantId: string;
   userId: string;
   role: TenantRole;
+  platformAccess: boolean;
 }
 
 /**
@@ -271,6 +275,8 @@ export async function consumeInvitation(
       tenantId: updated.tenantId,
       userId: input.userId,
       role: updated.role,
+      platformAccess: updated.platformAccess,
+
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -295,6 +301,7 @@ export async function consumeInvitation(
     tenantId: updated.tenantId,
     userId: input.userId,
     role: updated.role as TenantRole,
+    platformAccess: updated.platformAccess,
   };
 }
 

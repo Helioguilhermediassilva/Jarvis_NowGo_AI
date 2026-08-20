@@ -45,6 +45,7 @@ export default function AdminUsuariosPage() {
   const { user } = useAuthV2();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("viewer");
+  const [platformAccess, setPlatformAccess] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastInvitationId, setLastInvitationId] = useState<string | null>(null);
@@ -64,6 +65,7 @@ export default function AdminUsuariosPage() {
       const res = await createInviteV2({
         email: email.trim().toLowerCase(),
         role,
+        platformAccess,
         origin: window.location.origin,
         tenantId: user.tenantId,
       });
@@ -72,6 +74,7 @@ export default function AdminUsuariosPage() {
       );
       setLastInvitationId(res.invitationId);
       setEmail("");
+      setPlatformAccess(true);
     } catch (e) {
       const err = e as ApiError;
       setError(ERROR_LABELS[err.code] ?? ERROR_LABELS.http_error);
@@ -155,12 +158,38 @@ export default function AdminUsuariosPage() {
             ))}
           </select>
         </label>
+        <label
+          className="ng-auth-field"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "flex-start",
+            gap: "0.65rem",
+            cursor: submitting ? "default" : "pointer",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={platformAccess}
+            onChange={(e) => setPlatformAccess(e.target.checked)}
+            disabled={submitting}
+            style={{ marginTop: "0.2rem" }}
+          />
+          <span>
+            <span className="ng-auth-field-label" style={{ display: "block" }}>
+              Permitir acesso à Plataforma
+            </span>
+            <span className="ng-auth-help" style={{ display: "block", marginTop: "0.2rem" }}>
+              O usuário poderá abrir a Plataforma NowGo/Xavier após aceitar o convite.
+            </span>
+          </span>
+        </label>
         <button type="submit" className="ng-auth-submit" disabled={submitting}>
           {submitting ? "Enviando convite…" : "Enviar convite"}
         </button>
         <p className="ng-auth-help">
-          O convite é válido por 7 dias. O usuário precisará verificar o e-mail
-          após criar a senha.
+          O convite é válido por 7 dias. A permissão de acesso à Plataforma é
+          registrada no vínculo do usuário e pode ser desativada antes de enviar.
         </p>
       </form>
     </AuthShell>

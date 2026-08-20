@@ -20,6 +20,7 @@ export interface AuthV2User {
   role: AuthV2Role;
   tenantId: string;
   tenantSlug: string;
+  platformAccess: boolean;
   mfaEnabled: boolean;
 }
 
@@ -214,6 +215,7 @@ export interface InviteValidationResult {
   email?: string;
   tenantSlug?: string;
   role?: AuthV2Role;
+  platformAccess?: boolean;
 }
 
 export async function validateInviteV2(token: string): Promise<InviteValidationResult> {
@@ -235,8 +237,16 @@ export interface AcceptInviteInput {
   origin: string;
 }
 
-export async function acceptInviteV2(input: AcceptInviteInput): Promise<{ ok: true; emailVerificationSent: boolean }> {
-  return request<{ ok: true; emailVerificationSent: boolean }>("/api/auth/v2/invite/accept", {
+export async function acceptInviteV2(input: AcceptInviteInput): Promise<{
+  ok: true;
+  emailVerificationSent: boolean;
+  platformAccess: boolean;
+}> {
+  return request<{
+    ok: true;
+    emailVerificationSent: boolean;
+    platformAccess: boolean;
+  }>("/api/auth/v2/invite/accept", {
     method: "POST",
     body: JSON.stringify({ mode: "password", ...input }),
   });
@@ -250,6 +260,7 @@ export interface CreateInviteInput {
   email: string;
   tenantId: string;
   role: AuthV2Role;
+  platformAccess: boolean;
   origin: string;
 }
 

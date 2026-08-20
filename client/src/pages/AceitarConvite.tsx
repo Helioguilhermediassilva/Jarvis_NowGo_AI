@@ -229,6 +229,11 @@ export default function AceitarConvitePage() {
                 {" "}com perfil <strong style={{ color: "var(--text-main)" }}>{validation.role}</strong>
               </>
             ) : null}
+            {validation.platformAccess !== undefined ? (
+              <>
+                {" "}e {validation.platformAccess ? "com acesso à Plataforma" : "sem acesso à Plataforma"}
+              </>
+            ) : null}
             .
           </>
         ) : (

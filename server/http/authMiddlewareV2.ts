@@ -31,6 +31,7 @@ export interface V2AuthContext {
   /** Role no tenant atual (para superadmin platform-wide é "superadmin"). */
   role: V2Role;
   email: string;
+  platformAccess: boolean;
   mfaEnabled: boolean;
 }
 
@@ -94,8 +95,10 @@ export async function requireV2Auth(
 
   // Resolve role no tenant (superadmin é platform-wide)
   let role: V2Role;
+  let platformAccess = false;
   if (user.role === "superadmin") {
     role = "superadmin";
+    platformAccess = true;
   } else {
     const memberRows = await db()
       .select()
@@ -112,6 +115,7 @@ export async function requireV2Auth(
       throw new SessionError("invalid_session", "no_membership");
     }
     role = member.role as V2Role;
+    platformAccess = member.platformAccess;
   }
 
   return {
@@ -119,6 +123,7 @@ export async function requireV2Auth(
     tenantId: loaded.session.tenantId,
     role,
     email: user.email,
+    platformAccess,
     mfaEnabled,
   };
 }
