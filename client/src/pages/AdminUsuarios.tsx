@@ -14,11 +14,17 @@
  * troca de role e MFA reset administrativo.
  */
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "wouter";
 import AuthShell from "@/components/auth/AuthShell";
 import { useAuthV2 } from "@/contexts/AuthV2Context";
-import { createInviteV2, type ApiError } from "@/lib/authV2Client";
+import {
+  createInviteV2,
+  listMembersV2,
+  updateMemberPlatformAccessV2,
+  type ApiError,
+  type MemberProfileV2,
+} from "@/lib/authV2Client";
 
 type InviteRole = "owner" | "admin" | "manager" | "operator" | "viewer";
 
@@ -50,6 +56,50 @@ export default function AdminUsuariosPage() {
   const [error, setError] = useState<string | null>(null);
   const [lastInvitationId, setLastInvitationId] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [members, setMembers] = useState<MemberProfileV2[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState<string | null>(null);
+  const [updatingMemberId, setUpdatingMemberId] = useState<string | null>(null);
+
+  const canManageMembers =
+    user?.role === "superadmin" || user?.role === "owner" || user?.role === "admin";
+
+  async function loadMembers() {
+    if (!canManageMembers) return;
+    setMembersLoading(true);
+    setMembersError(null);
+    try {
+      setMembers(await listMembersV2());
+    } catch {
+      setMembersError("Não foi possível carregar os perfis deste tenant.");
+    } finally {
+      setMembersLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadMembers();
+  }, [canManageMembers]);
+
+  async function handlePlatformAccessChange(member: MemberProfileV2, nextValue: boolean) {
+    setUpdatingMemberId(member.memberId);
+    setMembersError(null);
+    setMembers((current) =>
+      current.map((item) =>
+        item.memberId === member.memberId
+          ? { ...item, platformAccess: nextValue }
+          : item,
+      ),
+    );
+    try {
+      await updateMemberPlatformAccessV2(member.memberId, nextValue);
+    } catch {
+      setMembersError("Não foi possível atualizar a permissão. Tente novamente.");
+      await loadMembers();
+    } finally {
+      setUpdatingMemberId(null);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -192,6 +242,81 @@ export default function AdminUsuariosPage() {
           registrada no vínculo do usuário e pode ser desativada antes de enviar.
         </p>
       </form>
+
+      <section
+        aria-labelledby="member-profiles-title"
+        style={{
+          marginTop: "2rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid rgba(255,255,255,0.12)",
+        }}
+      >
+        <h2
+          id="member-profiles-title"
+          style={{ margin: 0, fontSize: "1.05rem", color: "rgba(255,255,255,0.92)" }}
+        >
+          Perfis e permissões
+        </h2>
+        <p className="ng-auth-help" style={{ marginTop: "0.45rem" }}>
+          Ajuste o acesso à Plataforma de cada usuário já vinculado ao tenant.
+          O acesso ao Cockpit continua exclusivo para superadmin.
+        </p>
+
+        {membersError && <div className="ng-auth-error" role="alert">{membersError}</div>}
+        {membersLoading ? (
+          <p className="ng-auth-help">Carregando perfis…</p>
+        ) : members.length === 0 ? (
+          <p className="ng-auth-help">Nenhum perfil vinculado encontrado.</p>
+        ) : (
+          <div style={{ display: "grid", gap: "0.75rem" }}>
+            {members.map((member) => (
+              <div
+                key={member.memberId}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "1rem",
+                  padding: "0.9rem 1rem",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "10px",
+                  background: "rgba(255,255,255,0.035)",
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <strong style={{ display: "block", color: "rgba(255,255,255,0.92)" }}>
+                    {member.name || member.email}
+                  </strong>
+                  <span className="ng-auth-help" style={{ display: "block", marginTop: "0.2rem" }}>
+                    {member.email} · {member.role}
+                  </span>
+                </div>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    flexShrink: 0,
+                    cursor: updatingMemberId === member.memberId ? "wait" : "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={member.platformAccess}
+                    disabled={updatingMemberId === member.memberId}
+                    onChange={(event) =>
+                      void handlePlatformAccessChange(member, event.target.checked)
+                    }
+                  />
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.82)" }}>
+                    Permitir acesso à Plataforma
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </AuthShell>
   );
 }

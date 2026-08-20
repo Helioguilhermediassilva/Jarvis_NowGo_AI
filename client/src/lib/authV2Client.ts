@@ -272,6 +272,41 @@ export async function createInviteV2(input: CreateInviteInput): Promise<{ ok: tr
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// /api/auth/v2/members — perfis e permissão de acesso à Plataforma
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface MemberProfileV2 {
+  memberId: string;
+  userId: string;
+  email: string;
+  name: string | null;
+  role: string;
+  platformAccess: boolean;
+}
+
+export async function listMembersV2(): Promise<MemberProfileV2[]> {
+  const result = await request<{ ok: true; members: MemberProfileV2[] }>(
+    "/api/auth/v2/members",
+    { method: "GET" },
+  );
+  return result.members;
+}
+
+export async function updateMemberPlatformAccessV2(
+  memberId: string,
+  platformAccess: boolean,
+): Promise<MemberProfileV2> {
+  const result = await request<{ ok: true; member: MemberProfileV2 }>(
+    "/api/auth/v2/members",
+    {
+      method: "PATCH",
+      body: JSON.stringify({ memberId, platformAccess }),
+    },
+  );
+  return result.member;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // /api/auth/v2/email/verify
 // ─────────────────────────────────────────────────────────────────────────────
 
