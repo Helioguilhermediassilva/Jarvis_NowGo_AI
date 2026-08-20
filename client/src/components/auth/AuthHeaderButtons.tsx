@@ -15,6 +15,7 @@ import { Link, useLocation } from "wouter";
 import { useAuthV2 } from "@/contexts/AuthV2Context";
 import { useLang } from "@/landing/useLang";
 import type { Lang } from "@/landing/copy";
+import { openXavierLogin } from "@/lib/xavierHandoff";
 
 /** Rótulos trilíngues dos botões/menus de autenticação (segue copy.ts). */
 const AUTH_LABELS: Record<
@@ -22,7 +23,9 @@ const AUTH_LABELS: Record<
   {
     signup: string;
     signupAria: string;
+    login: string;
     loginAria: string;
+    xavier: string;
     mfa: string;
     manage: string;
     logout: string;
@@ -31,7 +34,9 @@ const AUTH_LABELS: Record<
   pt: {
     signup: "Cadastro",
     signupAria: "Cadastro por convite",
+    login: "Login",
     loginAria: "Login restrito",
+    xavier: "Abrir Xavier",
     mfa: "Ativar MFA (recomendado)",
     manage: "Gerenciar usuários",
     logout: "Sair",
@@ -39,7 +44,9 @@ const AUTH_LABELS: Record<
   en: {
     signup: "Sign up",
     signupAria: "Sign up by invitation",
+    login: "Log in",
     loginAria: "Restricted login",
+    xavier: "Open Xavier",
     mfa: "Enable MFA (recommended)",
     manage: "Manage users",
     logout: "Sign out",
@@ -47,7 +54,9 @@ const AUTH_LABELS: Record<
   es: {
     signup: "Registro",
     signupAria: "Registro por invitación",
+    login: "Acceder",
     loginAria: "Acceso restringido",
+    xavier: "Abrir Xavier",
     mfa: "Activar MFA (recomendado)",
     manage: "Gestionar usuarios",
     logout: "Salir",
@@ -106,7 +115,7 @@ export default function AuthHeaderButtons({
         </Link>
         <Link href="/login" className="ng-header-login" aria-label={t.loginAria}>
           <span aria-hidden="true" className="ng-header-login-lock">▢</span>
-          Login
+          {t.login}
         </Link>
       </>
     );
@@ -189,6 +198,14 @@ export default function AuthHeaderButtons({
               {user.role} · {user.tenantSlug}
             </div>
           </div>
+          <MenuItem
+            onClick={() => {
+              setMenuOpen(false);
+              openXavierLogin(lang);
+            }}
+          >
+            {t.xavier}
+          </MenuItem>
           <MenuItem onClick={() => { setMenuOpen(false); navigate("/cockpit"); }}>
             {cockpitLabel}
           </MenuItem>

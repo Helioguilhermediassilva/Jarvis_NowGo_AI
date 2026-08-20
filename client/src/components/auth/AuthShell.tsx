@@ -12,6 +12,7 @@
  */
 
 import { Link } from "wouter";
+import { useLang } from "@/landing/useLang";
 import "@/landing/styles/design-system.css";
 import "./auth.css";
 import type { ReactNode } from "react";
@@ -29,7 +30,15 @@ type Props = {
   footer?: ReactNode;
 };
 
+const BACK_LABELS = {
+  pt: "Voltar à landing",
+  en: "Back to landing",
+  es: "Volver a la landing",
+} as const;
+
 export default function AuthShell({ tagline, title, subtitle, children, footer }: Props) {
+  const { lang } = useLang();
+
   return (
     <div className="nowgoai-landing">
       <div className="ambient-glow" aria-hidden="true" />
@@ -43,9 +52,9 @@ export default function AuthShell({ tagline, title, subtitle, children, footer }
             <span className="ng-brand-text">NowGo AI</span>
           </Link>
           <div className="ng-header-actions">
-            <Link href="/" className="ng-header-login" aria-label="Voltar à landing">
+            <Link href="/" className="ng-header-login" aria-label={BACK_LABELS[lang]}>
               <span aria-hidden="true" className="ng-header-login-lock">←</span>
-              Voltar
+              {lang === "pt" ? "Voltar" : lang === "en" ? "Back" : "Volver"}
             </Link>
           </div>
         </div>

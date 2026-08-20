@@ -13,21 +13,97 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import AuthShell from "@/components/auth/AuthShell";
+import { useLang } from "@/landing/useLang";
+import type { Lang } from "@/landing/copy";
+import { buildXavierLoginUrl } from "@/lib/xavierHandoff";
 import { loginV2, type ApiError } from "@/lib/authV2Client";
 
-const ERROR_LABELS: Record<string, string> = {
-  invalid_credentials: "E-mail ou senha incorretos.",
-  email_not_verified:
-    "Você precisa verificar seu e-mail antes de entrar. Confira sua caixa de entrada.",
-  password_not_set:
-    "Esta conta foi criada por convite e ainda não tem senha definida. Use o link recebido por e-mail para concluir o cadastro.",
-  rate_limited:
-    "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.",
-  http_error: "Não foi possível concluir a requisição. Tente novamente.",
+const LOGIN_COPY: Record<Lang, {
+  tagline: string;
+  titleLead: string;
+  titleAccent: string;
+  subtitle: string;
+  noAccount: string;
+  requestAccess: string;
+  forgotPassword: string;
+  submit: string;
+  submitting: string;
+  help: string;
+  xavier: string;
+}> = {
+  pt: {
+    tagline: "ACESSO · LOGIN",
+    titleLead: "Bem-vindo de volta ao",
+    titleAccent: "cockpit NowGo",
+    subtitle: "Entre com seu e-mail corporativo e senha para acessar o cockpit.",
+    noAccount: "Não tem cadastro?",
+    requestAccess: "Solicitar acesso",
+    forgotPassword: "Esqueci minha senha",
+    submit: "Entrar",
+    submitting: "Entrando…",
+    help: "Esta área é restrita aos times credenciados pelo administrador NowGo.",
+    xavier: "Acessar Xavier",
+  },
+  en: {
+    tagline: "ACCESS · LOGIN",
+    titleLead: "Welcome back to the",
+    titleAccent: "NowGo cockpit",
+    subtitle: "Enter your corporate email and password to access the cockpit.",
+    noAccount: "Do not have an account?",
+    requestAccess: "Request access",
+    forgotPassword: "Forgot my password",
+    submit: "Log in",
+    submitting: "Signing in…",
+    help: "This area is restricted to teams authorized by the NowGo administrator.",
+    xavier: "Access Xavier",
+  },
+  es: {
+    tagline: "ACCESO · LOGIN",
+    titleLead: "Bienvenido de nuevo al",
+    titleAccent: "cockpit NowGo",
+    subtitle: "Ingresa tu correo corporativo y contraseña para acceder al cockpit.",
+    noAccount: "¿No tienes una cuenta?",
+    requestAccess: "Solicitar acceso",
+    forgotPassword: "Olvidé mi contraseña",
+    submit: "Entrar",
+    submitting: "Entrando…",
+    help: "Esta área está restringida a equipos autorizados por el administrador de NowGo.",
+    xavier: "Acceder a Xavier",
+  },
+};
+
+const ERROR_LABELS: Record<string, Record<Lang, string>> = {
+  invalid_credentials: {
+    pt: "E-mail ou senha incorretos.",
+    en: "Incorrect email or password.",
+    es: "Correo o contraseña incorrectos.",
+  },
+  email_not_verified: {
+    pt: "Você precisa verificar seu e-mail antes de entrar. Confira sua caixa de entrada.",
+    en: "You must verify your email before signing in. Check your inbox.",
+    es: "Debes verificar tu correo antes de entrar. Revisa tu bandeja de entrada.",
+  },
+  password_not_set: {
+    pt: "Esta conta foi criada por convite e ainda não tem senha definida. Use o link recebido por e-mail para concluir o cadastro.",
+    en: "This account was created by invitation and does not have a password yet. Use the email link to finish setup.",
+    es: "Esta cuenta fue creada por invitación y aún no tiene contraseña. Usa el enlace recibido por correo para completar el registro.",
+  },
+  rate_limited: {
+    pt: "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.",
+    en: "Too many attempts in a short period. Wait a few minutes and try again.",
+    es: "Demasiados intentos en poco tiempo. Espera unos minutos y vuelve a intentarlo.",
+  },
+  http_error: {
+    pt: "Não foi possível concluir a requisição. Tente novamente.",
+    en: "The request could not be completed. Try again.",
+    es: "No se pudo completar la solicitud. Inténtalo de nuevo.",
+  },
 };
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
+  const { lang } = useLang();
+  const copy = LOGIN_COPY[lang];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -60,7 +136,7 @@ export default function LoginPage() {
       navigate("/mfa/configurar");
     } catch (e) {
       const err = e as ApiError;
-      setError(ERROR_LABELS[err.code] ?? ERROR_LABELS.http_error);
+      setError(ERROR_LABELS[err.code]?.[lang] ?? ERROR_LABELS.http_error[lang]);
     } finally {
       setSubmitting(false);
     }
@@ -68,18 +144,20 @@ export default function LoginPage() {
 
   return (
     <AuthShell
-      tagline="ACESSO · LOGIN"
+      tagline={copy.tagline}
       title={
         <>
-          Bem-vindo de volta ao <span className="accent">cockpit NowGo</span>
+          {copy.titleLead} <span className="accent">{copy.titleAccent}</span>
         </>
       }
-      subtitle="Entre com seu e-mail corporativo e senha para acessar o cockpit."
+      subtitle={copy.subtitle}
       footer={
         <>
-          Não tem cadastro? <Link href="/cadastro">Solicitar acesso</Link>
+          {copy.noAccount} <Link href="/cadastro">{copy.requestAccess}</Link>
           <br />
-          <Link href="/esqueci-senha">Esqueci minha senha</Link>
+          <Link href="/esqueci-senha">{copy.forgotPassword}</Link>
+          <br />
+          <a href={buildXavierLoginUrl(lang)}>{copy.xavier}</a>
         </>
       }
     >
@@ -113,10 +191,10 @@ export default function LoginPage() {
           />
         </label>
         <button type="submit" className="ng-auth-submit" disabled={submitting}>
-          {submitting ? "Entrando…" : "Entrar"}
+          {submitting ? copy.submitting : copy.submit}
         </button>
         <p className="ng-auth-help">
-          Esta área é restrita aos times credenciados pelo administrador NowGo.
+          {copy.help}
         </p>
       </form>
     </AuthShell>
