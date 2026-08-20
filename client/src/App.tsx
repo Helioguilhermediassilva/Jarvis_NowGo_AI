@@ -22,7 +22,6 @@ import BlogIaParaAdvogados from "@/pages/BlogIaParaAdvogados";
 import BlogIaEMachineLearning from "@/pages/BlogIaEMachineLearning";
 import BlogIaNoBrasil from "@/pages/BlogIaNoBrasil";
 import BlogIaGastaAgua from "@/pages/BlogIaGastaAgua";
-import RequireAuth from "@/components/RequireAuth";
 import { LangProvider } from "@/landing/useLang";
 
 // F47 Fase 5.3 — Telas de autenticação V2.
@@ -45,11 +44,11 @@ function Router() {
       {/* Versão anterior preservada em /welcome para comparação */}
       <Route path={"/welcome"} component={Welcome} />
 
-      {/* Cockpit interno NowGo — exige autenticação V1 (Google OAuth) */}
+      {/* Cockpit interno NowGo — exclusivo para superadmin na sessão V2 */}
       <Route path={"/cockpit"}>
-        <RequireAuth>
+        <RequireAuthV2 requireRole="superadmin">
           <Cockpit />
-        </RequireAuth>
+        </RequireAuthV2>
       </Route>
 
       {/* Jarvis cívico (legado, preservado em /civic) */}

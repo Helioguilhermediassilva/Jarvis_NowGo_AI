@@ -15,7 +15,7 @@ import { Link, useLocation } from "wouter";
 import { useAuthV2 } from "@/contexts/AuthV2Context";
 import { useLang } from "@/landing/useLang";
 import type { Lang } from "@/landing/copy";
-import { openXavierLogin } from "@/lib/xavierHandoff";
+import { openXavierHome } from "@/lib/xavierHandoff";
 
 /** Rótulos trilíngues dos botões/menus de autenticação (segue copy.ts). */
 const AUTH_LABELS: Record<
@@ -201,14 +201,16 @@ export default function AuthHeaderButtons({
           <MenuItem
             onClick={() => {
               setMenuOpen(false);
-              openXavierLogin(lang);
+              openXavierHome(lang);
             }}
           >
             {t.platform}
           </MenuItem>
-          <MenuItem onClick={() => { setMenuOpen(false); navigate("/cockpit"); }}>
-            {cockpitLabel}
-          </MenuItem>
+          {user.role === "superadmin" && (
+            <MenuItem onClick={() => { setMenuOpen(false); navigate("/cockpit"); }}>
+              {cockpitLabel}
+            </MenuItem>
+          )}
           {!user.mfaEnabled && (
             <MenuItem
               onClick={() => {

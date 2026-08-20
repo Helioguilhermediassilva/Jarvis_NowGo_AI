@@ -118,8 +118,13 @@ export default function LoginPage() {
       const result = await loginV2({ email: email.trim().toLowerCase(), password });
 
       if (result.kind === "session") {
-        // Backend já gravou cookie nowgo_session_v2; redireciona ao cockpit.
-        window.location.href = "/cockpit";
+        // O cookie V2 já foi gravado. Só retorna a destinos internos seguros;
+        // o acesso ao cockpit aparece depois no menu apenas para superadmin.
+        const requested = new URLSearchParams(window.location.search).get("returnTo");
+        const returnTo = requested && requested.startsWith("/") && !requested.startsWith("//")
+          ? requested
+          : "/";
+        window.location.href = returnTo;
         return;
       }
 

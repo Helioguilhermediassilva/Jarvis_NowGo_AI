@@ -309,8 +309,43 @@ export async function requireAuth(req: {
     | string
     | undefined;
   const token = readSessionFromCookieHeader(cookieHeader);
-  if (!token) return null;
-  return verifySessionJWT(token);
+  if (token) {
+    const claims = await verifySessionJWT(token);
+    if (claims) return claims;
+  }
+
+  // Compatibilidade controlada: o Cockpit agora usa a sessão V2, mas alguns
+  // endpoints legados ainda chamam este helper. Somente o superadmin V2 pode
+  // atravessar essa ponte; operadores e membros nunca recebem claims V1 aqui.
+  try {
+    const { loadSessionByRawToken, parseSessionCookie } = await import("./auth/sessions.js");
+    const rawV2Token = parseSessionCookie(cookieHeader ?? null);
+    if (!rawV2Token) return null;
+    const loaded = await loadSessionByRawToken(rawV2Token);
+    const [{ db }] = await Promise.all([import("./db/client.js")]);
+    const { users } = await import("./db/schema.js");
+    const { eq } = await import("drizzle-orm");
+    const rows = await db()
+      .select({
+        email: users.email,
+        name: users.name,
+        picture: users.avatarUrl,
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, loaded.session.userId))
+      .limit(1);
+    const user = rows[0];
+    if (!user || user.role !== "superadmin") return null;
+    return {
+      sub: user.email,
+      name: user.name ?? undefined,
+      picture: user.picture ?? undefined,
+      role: "superadmin",
+    };
+  } catch {
+    return null;
+  }
 }
 
 export function isSuperadmin(claims: NowGoSessionClaims | null): boolean {

@@ -22,7 +22,7 @@ export const copy = {
       cases: "Cases",
       ecosystem: "Ecossistema",
       pricing: "Investimento",
-      cockpitCta: "Login",
+      cockpitCta: "Acessar Cockpit",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",
@@ -281,7 +281,7 @@ export const copy = {
       cases: "Cases",
       ecosystem: "Ecosystem",
       pricing: "Investment",
-      cockpitCta: "Login",
+      cockpitCta: "Access Cockpit",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",
@@ -540,7 +540,7 @@ export const copy = {
       cases: "Casos",
       ecosystem: "Ecosistema",
       pricing: "Inversión",
-      cockpitCta: "Login",
+      cockpitCta: "Acceder al Cockpit",
     },
     hero: {
       tag: "AI NATIVE COMPANY · NVIDIA PARTNER EXPERT",

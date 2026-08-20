@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthV2 } from "@/contexts/AuthV2Context";
 import SunMissionsBar from "@/components/cockpit/SunMissionsBar";
 import FinancialKpisBar from "@/components/cockpit/FinancialKpisBar";
 import ImpactDashboard from "@/components/cockpit/ImpactDashboard";
@@ -97,7 +97,7 @@ export default function Cockpit() {
   const [brainError, setBrainError] = useState<string | null>(null);
   const [sunError, setSunError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const auth = useAuth();
+  const auth = useAuthV2();
   const [usersDrawerOpen, setUsersDrawerOpen] = useState(false);
 
   // External prompt para mandar para o JarvisCore (ex.: clique numa missão)

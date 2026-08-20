@@ -18,6 +18,10 @@ export function openXavierLogin(lang: Lang): void {
   window.location.assign(buildXavierLoginUrl(lang));
 }
 
+export function openXavierHome(lang: Lang): void {
+  window.location.assign(buildXavierHomeUrl(lang));
+}
+
 export function buildXavierHomeUrl(lang: Lang): string {
   const url = new URL("/", XAVIER_URL);
   url.searchParams.set("locale", lang);
