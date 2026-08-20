@@ -27,12 +27,13 @@ export default function SovereignPricing({ content }: Props) {
     } catch (rawError) {
       const err = rawError as ApiError;
       if (err.status === 401) {
+        const returnTo = `${window.location.pathname || "/"}#pricing`;
         window.sessionStorage.setItem("nowgo.pendingBillingOffer", code);
-        const returnTo = `${window.location.pathname}#pricing`;
+        window.sessionStorage.setItem("nowgo.pendingBillingReturnTo", returnTo);
         window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
         return;
       }
-      if (err.status === 403 || err.code === "platform_access_required") {
+      if (err.status === 403) {
         setError(content.accessDenied);
       } else {
         setError(content.unavailable);

@@ -7,6 +7,7 @@ import {
   billingSubscriptions,
   creditLedger,
   stripeCustomers,
+  tenantMembers,
 } from "../db/schema.js";
 import { BillingError } from "./errors.js";
 import {
@@ -260,6 +261,15 @@ async function syncSubscription(subscription: any): Promise<void> {
         updatedAt: new Date(),
       },
     });
+
+  // A compra self-service também é o ato que habilita o acesso à Plataforma.
+  // Mantemos estados de cobrança em atraso dentro da janela de graça; o acesso
+  // é revogado somente quando a assinatura chega a um estado encerrado.
+  const hasPlatformAccess = ["active", "trialing", "past_due"].includes(subscription.status);
+  await db()
+    .update(tenantMembers)
+    .set({ platformAccess: hasPlatformAccess })
+    .where(eq(tenantMembers.tenantId, tenantId));
 }
 
 async function grantSubscriptionCredits(invoice: any): Promise<void> {
@@ -310,6 +320,12 @@ async function grantCreditPackFromCheckout(session: any): Promise<void> {
     stripePaymentIntentId: normalizeStripeId(session.payment_intent),
     metadata: { offer_code: offer.code },
   });
+
+  // Um pacote pago também libera o acesso self-service à Plataforma.
+  await db()
+    .update(tenantMembers)
+    .set({ platformAccess: true })
+    .where(eq(tenantMembers.tenantId, tenantId));
 }
 
 export async function grantCredits(input: {

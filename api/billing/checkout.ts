@@ -17,10 +17,6 @@ export default createApiHandler<z.infer<typeof InputSchema>, Output>({
   tag: "billing.checkout",
   handler: async ({ req, res, input }) => {
     const ctx = await requireV2Auth(req, res);
-    if (!ctx.platformAccess) {
-      throw new BillingError("platform_access_required");
-    }
-
     try {
       const session = await createCheckoutSession({
         tenantId: ctx.tenantId,

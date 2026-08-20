@@ -55,9 +55,14 @@ export default function MfaDesafioPage() {
         code: code.trim(),
         method: useBackup ? "backup" : "totp",
       });
+      const storedReturnTo = sessionStorage.getItem("nowgo.mfaReturnTo");
+      const returnTo = storedReturnTo && storedReturnTo.startsWith("/") && !storedReturnTo.startsWith("//")
+        ? storedReturnTo
+        : "/cockpit";
       sessionStorage.removeItem("nowgo.mfaTicket");
       sessionStorage.removeItem("nowgo.mfaIntent");
-      window.location.href = "/cockpit";
+      sessionStorage.removeItem("nowgo.mfaReturnTo");
+      window.location.href = returnTo;
     } catch (e) {
       const err = e as ApiError;
       setError(ERROR_LABELS[err.code] ?? ERROR_LABELS.http_error);

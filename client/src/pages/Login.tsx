@@ -117,16 +117,25 @@ export default function LoginPage() {
     try {
       const result = await loginV2({ email: email.trim().toLowerCase(), password });
 
+      const requested = new URLSearchParams(window.location.search).get("returnTo");
+      const requestedReturnTo = requested && requested.startsWith("/") && !requested.startsWith("//")
+        ? requested
+        : "/";
+      const billingReturnTo = sessionStorage.getItem("nowgo.pendingBillingReturnTo");
+      const safeBillingReturnTo = billingReturnTo && billingReturnTo.startsWith("/") && !billingReturnTo.startsWith("//")
+        ? billingReturnTo
+        : null;
+
       if (result.kind === "session") {
-        // O cookie V2 já foi gravado. Só retorna a destinos internos seguros;
-        // o acesso ao cockpit aparece depois no menu apenas para superadmin.
-        const requested = new URLSearchParams(window.location.search).get("returnTo");
-        const returnTo = requested && requested.startsWith("/") && !requested.startsWith("//")
-          ? requested
-          : "/";
-        window.location.href = returnTo;
+        // O cookie V2 já foi gravado. Se o login veio de uma compra, prioriza
+        // o destino salvo junto da oferta para a landing retomar o Checkout.
+        window.location.href = safeBillingReturnTo ?? requestedReturnTo;
         return;
       }
+
+      // O ticket MFA substitui temporariamente a sessão; guarde o destino para
+      // que o desafio/configuração não descarte o Checkout pendente.
+      sessionStorage.setItem("nowgo.mfaReturnTo", safeBillingReturnTo ?? requestedReturnTo);
 
       if (result.kind === "mfa_required") {
         sessionStorage.setItem("nowgo.mfaTicket", result.mfaTicket);
