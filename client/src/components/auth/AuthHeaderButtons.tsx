@@ -25,7 +25,7 @@ const AUTH_LABELS: Record<
     signupAria: string;
     login: string;
     loginAria: string;
-    xavier: string;
+    platform: string;
     mfa: string;
     manage: string;
     logout: string;
@@ -36,7 +36,7 @@ const AUTH_LABELS: Record<
     signupAria: "Cadastro por convite",
     login: "Login",
     loginAria: "Login restrito",
-    xavier: "Abrir Xavier",
+    platform: "Abrir Plataforma",
     mfa: "Ativar MFA (recomendado)",
     manage: "Gerenciar usuários",
     logout: "Sair",
@@ -46,7 +46,7 @@ const AUTH_LABELS: Record<
     signupAria: "Sign up by invitation",
     login: "Log in",
     loginAria: "Restricted login",
-    xavier: "Open Xavier",
+    platform: "Open Platform",
     mfa: "Enable MFA (recommended)",
     manage: "Manage users",
     logout: "Sign out",
@@ -56,7 +56,7 @@ const AUTH_LABELS: Record<
     signupAria: "Registro por invitación",
     login: "Acceder",
     loginAria: "Acceso restringido",
-    xavier: "Abrir Xavier",
+    platform: "Abrir Plataforma",
     mfa: "Activar MFA (recomendado)",
     manage: "Gestionar usuarios",
     logout: "Salir",
@@ -204,7 +204,7 @@ export default function AuthHeaderButtons({
               openXavierLogin(lang);
             }}
           >
-            {t.xavier}
+            {t.platform}
           </MenuItem>
           <MenuItem onClick={() => { setMenuOpen(false); navigate("/cockpit"); }}>
             {cockpitLabel}

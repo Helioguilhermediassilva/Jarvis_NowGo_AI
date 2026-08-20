@@ -29,7 +29,7 @@ const LOGIN_COPY: Record<Lang, {
   submit: string;
   submitting: string;
   help: string;
-  xavier: string;
+  platform: string;
 }> = {
   pt: {
     tagline: "ACESSO · LOGIN",
@@ -42,7 +42,7 @@ const LOGIN_COPY: Record<Lang, {
     submit: "Entrar",
     submitting: "Entrando…",
     help: "Esta área é restrita aos times credenciados pelo administrador NowGo.",
-    xavier: "Acessar Xavier",
+    platform: "Abrir Plataforma",
   },
   en: {
     tagline: "ACCESS · LOGIN",
@@ -55,7 +55,7 @@ const LOGIN_COPY: Record<Lang, {
     submit: "Log in",
     submitting: "Signing in…",
     help: "This area is restricted to teams authorized by the NowGo administrator.",
-    xavier: "Access Xavier",
+    platform: "Open Platform",
   },
   es: {
     tagline: "ACCESO · LOGIN",
@@ -68,7 +68,7 @@ const LOGIN_COPY: Record<Lang, {
     submit: "Entrar",
     submitting: "Entrando…",
     help: "Esta área está restringida a equipos autorizados por el administrador de NowGo.",
-    xavier: "Acceder a Xavier",
+    platform: "Abrir Plataforma",
   },
 };
 
@@ -157,7 +157,7 @@ export default function LoginPage() {
           <br />
           <Link href="/esqueci-senha">{copy.forgotPassword}</Link>
           <br />
-          <a href={buildXavierLoginUrl(lang)}>{copy.xavier}</a>
+          <a href={buildXavierLoginUrl(lang)}>{copy.platform}</a>
         </>
       }
     >
