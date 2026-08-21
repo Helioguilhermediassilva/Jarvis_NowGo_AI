@@ -18,8 +18,8 @@
  *      retorna `{ requiresMfa: true, mfaTicket }` — um token curto
  *      (15min) referenciando a credencial parcial. O frontend redireciona
  *      para `/login/mfa` com o ticket.
- *   6. Se não tem MFA ativo, mas a role exige (superadmin/owner/admin),
- *      retorna `{ requiresMfaSetup: true, mfaTicket }`.
+ *   6. Se não tem MFA ativo, o login segue sem bloquear o usuário. A configuração
+ *      fica disponível posteriormente como opção de segurança.
  *   7. Caso contrário, cria sessão V2 e devolve cookie `nowgo_session_v2`.
  *
  * O `mfaTicket` é um JWT-like (HS256) curto contendo userId+tenantId+iat+exp,
@@ -130,12 +130,6 @@ interface LoginNeedSetup {
 }
 type Output = LoginOk | LoginNeedMfa | LoginNeedSetup;
 
-const ROLES_REQUIRING_MFA: ReadonlySet<string> = new Set([
-  "superadmin",
-  "owner",
-  "admin",
-]);
-
 export default createApiHandler<Input, Output>({
   methods: ["POST"],
   schema: InputSchema,
@@ -220,35 +214,6 @@ export default createApiHandler<Input, Output>({
         ok: false,
         requiresMfa: true,
         requiresMfaSetup: false,
-        mfaTicket: ticket,
-      };
-    }
-
-    // Determina role efetivo no tenant para policy MFA
-    let effectiveRole = user.role;
-    if (user.role !== "superadmin") {
-      const mRows = await db()
-        .select()
-        .from(tenantMembers)
-        .where(
-          and(
-            eq(tenantMembers.userId, user.id),
-            eq(tenantMembers.tenantId, tenantId),
-          ),
-        )
-        .limit(1);
-      effectiveRole = mRows[0]?.role ?? "member";
-    }
-    if (ROLES_REQUIRING_MFA.has(effectiveRole)) {
-      const ticket = signMfaTicket({
-        userId: user.id,
-        tenantId,
-        intent: "setup",
-      });
-      return {
-        ok: false,
-        requiresMfa: false,
-        requiresMfaSetup: true,
         mfaTicket: ticket,
       };
     }

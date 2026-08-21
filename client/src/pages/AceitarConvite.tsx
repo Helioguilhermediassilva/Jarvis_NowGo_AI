@@ -16,6 +16,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 import AuthShell from "@/components/auth/AuthShell";
+import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
+import { useLang } from "@/landing/useLang";
 import {
   acceptInviteV2,
   validateInviteV2,
@@ -51,6 +53,13 @@ function PasswordHint() {
 
 export default function AceitarConvitePage() {
   const [, navigate] = useLocation();
+  const { lang } = useLang();
+  const cadastroParams = new URLSearchParams(window.location.search);
+  const requestedParam = cadastroParams.get("returnTo");
+  const requestedReturnTo = requestedParam && requestedParam.startsWith("/") && !requestedParam.startsWith("//")
+    ? requestedParam
+    : "/";
+  const billingOffer = cadastroParams.get("billingOffer");
   const [matchToken, paramsToken] = useRoute<{ token: string }>("/aceitar-convite/:token");
   const tokenFromUrl = matchToken && paramsToken ? paramsToken.token : null;
 
@@ -174,6 +183,11 @@ export default function AceitarConvitePage() {
             .
           </p>
         </form>
+        <SocialLoginButtons
+          lang={lang}
+          returnTo={requestedReturnTo}
+          billingOffer={billingOffer}
+        />
       </AuthShell>
     );
   }

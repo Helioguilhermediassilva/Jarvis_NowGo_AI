@@ -62,6 +62,35 @@ export const users = nowgoBrain.table("users", {
 });
 
 // ---------------------------------------------------------------------------
+// social_identities
+// ---------------------------------------------------------------------------
+export const socialIdentities = nowgoBrain.table(
+  "social_identities",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(),
+    providerUserId: text("provider_user_id").notNull(),
+    email: text("email").notNull(),
+    name: text("name"),
+    avatarUrl: text("avatar_url"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    providerSubjectUnique: uniqueIndex("social_identities_provider_subject_uq").on(
+      t.provider,
+      t.providerUserId,
+    ),
+    userProviderIndex: index("idx_social_identities_user_provider").on(
+      t.userId,
+      t.provider,
+    ),
+  }),
+);
+
+// ---------------------------------------------------------------------------
 // tenant_members
 // ---------------------------------------------------------------------------
 export const tenantMembers = nowgoBrain.table(
@@ -650,3 +679,6 @@ export type NewDealRoomAuditRow = typeof dealRoomAudit.$inferInsert;
 
 export type TenantRow = typeof tenants.$inferSelect;
 export type NewTenantRow = typeof tenants.$inferInsert;
+
+export type SocialIdentityRow = typeof socialIdentities.$inferSelect;
+export type NewSocialIdentityRow = typeof socialIdentities.$inferInsert;

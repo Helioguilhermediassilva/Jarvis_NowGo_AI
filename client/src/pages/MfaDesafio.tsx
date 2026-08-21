@@ -3,9 +3,9 @@
  *
  * Tela /mfa/desafio. Acionada pelo /login quando o backend retorna mfa_required.
  *
- * Lê o `nowgo.mfaTicket` do sessionStorage, aceita um código TOTP de 6 dígitos
- * OU um backup code, chama POST /api/auth/v2/login/mfa e — em sucesso — redireciona
- * para /cockpit (cookie já gravado pelo backend).
+ * Lê o `nowgo.mfaTicket` do sessionStorage ou inicializa esse estado a partir
+ * do callback social, aceita um código TOTP de 6 dígitos OU um backup code,
+ * chama POST /api/auth/v2/login/mfa e — em sucesso — redireciona ao destino salvo.
  */
 
 import { useEffect, useState, type FormEvent } from "react";
@@ -35,6 +35,17 @@ export default function MfaDesafioPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryTicket = params.get("ticket");
+    const queryReturnTo = params.get("returnTo");
+    if (queryTicket) {
+      sessionStorage.setItem("nowgo.mfaTicket", queryTicket);
+      sessionStorage.setItem("nowgo.mfaIntent", "challenge");
+      if (queryReturnTo && queryReturnTo.startsWith("/") && !queryReturnTo.startsWith("//")) {
+        sessionStorage.setItem("nowgo.mfaReturnTo", queryReturnTo);
+      }
+    }
+
     const stored = sessionStorage.getItem("nowgo.mfaTicket");
     const intent = sessionStorage.getItem("nowgo.mfaIntent");
     if (!stored || intent !== "challenge") {

@@ -17,6 +17,7 @@ import { useLang } from "@/landing/useLang";
 import type { Lang } from "@/landing/copy";
 import { buildXavierLoginUrl } from "@/lib/xavierHandoff";
 import { loginV2, type ApiError } from "@/lib/authV2Client";
+import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
 const LOGIN_COPY: Record<Lang, {
   tagline: string;
@@ -75,6 +76,29 @@ const LOGIN_COPY: Record<Lang, {
 const PENDING_BILLING_OFFER_KEY = "nowgo.pendingBillingOffer";
 const PENDING_BILLING_RETURN_KEY = "nowgo.pendingBillingReturnTo";
 
+const SOCIAL_ERROR_LABELS: Record<string, Record<Lang, string>> = {
+  social_email_unverified: {
+    pt: "O provedor não retornou um e-mail verificado. Escolha outro método de acesso.",
+    en: "The provider did not return a verified email. Choose another sign-in method.",
+    es: "El proveedor no devolvió un correo verificado. Elige otro método de acceso.",
+  },
+  social_authorization_denied: {
+    pt: "O acesso social foi cancelado. Você pode tentar novamente ou usar e-mail e senha.",
+    en: "Social sign-in was canceled. Try again or use email and password.",
+    es: "El acceso social fue cancelado. Inténtalo de nuevo o usa correo y contraseña.",
+  },
+  social_state_invalid: {
+    pt: "A sessão de acesso social expirou. Inicie o processo novamente.",
+    en: "The social sign-in session expired. Start the process again.",
+    es: "La sesión de acceso social expiró. Inicia el proceso nuevamente.",
+  },
+  social_callback_failed: {
+    pt: "Não foi possível concluir o acesso social. Tente outro método.",
+    en: "Social sign-in could not be completed. Try another method.",
+    es: "No se pudo completar el acceso social. Prueba otro método.",
+  },
+};
+
 function isSafeBillingOffer(value: string | null): value is string {
   return Boolean(value && /^[a-z0-9_]{1,80}$/.test(value));
 }
@@ -115,6 +139,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const authParams = new URLSearchParams(window.location.search);
+  const requestedParam = authParams.get("returnTo");
+  const requestedReturnTo = requestedParam && requestedParam.startsWith("/") && !requestedParam.startsWith("//")
+    ? requestedParam
+    : "/";
+  const billingOffer = authParams.get("billingOffer");
+  const socialError = authParams.get("socialError");
+  const visibleError = error ?? SOCIAL_ERROR_LABELS[socialError ?? ""]?.[lang] ?? null;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -124,12 +156,6 @@ export default function LoginPage() {
     try {
       const result = await loginV2({ email: email.trim().toLowerCase(), password });
 
-      const params = new URLSearchParams(window.location.search);
-      const requested = params.get("returnTo");
-      const requestedReturnTo = requested && requested.startsWith("/") && !requested.startsWith("//")
-        ? requested
-        : "/";
-      const billingOffer = params.get("billingOffer");
       if (isSafeBillingOffer(billingOffer)) {
         // URL fallback complements sessionStorage for cross-navigation and MFA.
         sessionStorage.setItem(PENDING_BILLING_OFFER_KEY, billingOffer);
@@ -192,7 +218,7 @@ export default function LoginPage() {
       }
     >
       <form onSubmit={handleSubmit} noValidate>
-        {error && <div className="ng-auth-error" role="alert">{error}</div>}
+        {visibleError && <div className="ng-auth-error" role="alert">{visibleError}</div>}
         <label className="ng-auth-field">
           <span className="ng-auth-field-label">E-mail</span>
           <input
@@ -226,6 +252,11 @@ export default function LoginPage() {
         <p className="ng-auth-help">
           {copy.help}
         </p>
+        <SocialLoginButtons
+          lang={lang}
+          returnTo={requestedReturnTo}
+          billingOffer={billingOffer}
+        />
       </form>
     </AuthShell>
   );

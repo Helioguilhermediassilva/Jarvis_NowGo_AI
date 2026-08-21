@@ -213,3 +213,90 @@
   padding: 8px;
   border-radius: 8px;
 }
+
+.nowgoai-landing .ng-auth-social {
+  margin-top: 1.35rem;
+}
+
+.nowgoai-landing .ng-auth-social-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nowgoai-landing .ng-auth-social-divider::before,
+.nowgoai-landing .ng-auth-social-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--border-soft);
+}
+
+.nowgoai-landing .ng-auth-social-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+.nowgoai-landing .ng-auth-social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.65rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-main);
+  font-family: "Outfit", sans-serif;
+  font-size: 0.87rem;
+  text-decoration: none;
+  transition: border-color 180ms var(--easing-smooth), background 180ms var(--easing-smooth), transform 160ms var(--easing-smooth);
+}
+
+.nowgoai-landing .ng-auth-social-button:hover {
+  border-color: rgba(51, 210, 255, 0.45);
+  background: rgba(51, 210, 255, 0.06);
+}
+
+.nowgoai-landing .ng-auth-social-button:active {
+  transform: scale(0.98);
+}
+
+.nowgoai-landing .ng-auth-social-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  color: var(--accent-cyan);
+  font-family: "Outfit", sans-serif;
+  font-size: 0.77rem;
+  font-weight: 600;
+}
+
+.nowgoai-landing .ng-auth-social-button-compact {
+  min-height: 2.35rem;
+  font-size: 0.82rem;
+}
+
+@media (min-width: 520px) {
+  .nowgoai-landing .ng-auth-social-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .nowgoai-landing .ng-auth-social-button {
+    flex-direction: column;
+    gap: 0.2rem;
+    min-height: 4.3rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+}
