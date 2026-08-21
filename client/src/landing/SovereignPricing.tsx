@@ -4,6 +4,9 @@ import {
   createBillingCheckoutSession,
   createGuestBillingCheckoutSession,
   type ApiError,
+  type BillingCheckoutOptions,
+  type BillingInterval,
+  type BillingTrialChoice,
 } from "@/lib/authV2Client";
 import { copy } from "./copy";
 
@@ -15,6 +18,8 @@ type Props = {
 
 const PENDING_OFFER_KEY = "nowgo.pendingBillingOffer";
 const PENDING_RETURN_KEY = "nowgo.pendingBillingReturnTo";
+const PENDING_INTERVAL_KEY = "nowgo.pendingBillingInterval";
+const PENDING_TRIAL_KEY = "nowgo.pendingBillingTrial";
 
 function currentPricingReturnTo(): string {
   const path = window.location.pathname || "/";
@@ -23,9 +28,11 @@ function currentPricingReturnTo(): string {
   return `${path}${search}${hash}`;
 }
 
-function rememberPendingCheckout(code: string): void {
+function rememberPendingCheckout(code: string, options: BillingCheckoutOptions): void {
   window.sessionStorage.setItem(PENDING_OFFER_KEY, code);
   window.sessionStorage.setItem(PENDING_RETURN_KEY, currentPricingReturnTo());
+  window.sessionStorage.setItem(PENDING_INTERVAL_KEY, options.billingInterval ?? "monthly");
+  window.sessionStorage.setItem(PENDING_TRIAL_KEY, options.trialChoice ?? "pay_now");
 }
 
 export default function SovereignPricing({ content }: Props) {
@@ -35,6 +42,13 @@ export default function SovereignPricing({ content }: Props) {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestError, setGuestError] = useState<string | null>(null);
   const [guestExistingAccount, setGuestExistingAccount] = useState(false);
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
+  const [trialChoice, setTrialChoice] = useState<BillingTrialChoice>("pay_now");
+
+  function resolveCheckoutCode(code: string, interval: BillingInterval): string {
+    if (!code.startsWith("sovereign_platform_")) return code;
+    return code.replace(/_(monthly|annual)$/, `_${interval}`);
+  }
 
   function openGuestCheckout(code: string): void {
     setGuestCode(code);
@@ -50,7 +64,10 @@ export default function SovereignPricing({ content }: Props) {
     setGuestError(null);
     setGuestExistingAccount(false);
     try {
-      const result = await createGuestBillingCheckoutSession(guestEmail, guestCode);
+      const result = await createGuestBillingCheckoutSession(guestEmail, guestCode, {
+        billingInterval,
+        trialChoice,
+      });
       setGuestCode(null);
       window.location.assign(result.url);
     } catch (rawError) {
@@ -70,19 +87,23 @@ export default function SovereignPricing({ content }: Props) {
 
   function goToLoginFromGuest(): void {
     if (!guestCode) return;
-    rememberPendingCheckout(guestCode);
+    rememberPendingCheckout(guestCode, { billingInterval, trialChoice });
     const returnTo = currentPricingReturnTo();
     setGuestCode(null);
     window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }
 
-  async function startCheckout(code: string) {
+  async function startCheckout(
+    code: string,
+    options: BillingCheckoutOptions = { billingInterval, trialChoice },
+  ) {
+    const checkoutCode = resolveCheckoutCode(code, options.billingInterval ?? "monthly");
     if (busyCode) return;
-    setBusyCode(code);
+    setBusyCode(checkoutCode);
     setError(null);
 
     try {
-      const result = await createBillingCheckoutSession(code);
+      const result = await createBillingCheckoutSession(checkoutCode, options);
       window.sessionStorage.removeItem(PENDING_OFFER_KEY);
       window.sessionStorage.removeItem(PENDING_RETURN_KEY);
       window.location.assign(result.url);
@@ -91,7 +112,7 @@ export default function SovereignPricing({ content }: Props) {
       if (err.status === 401) {
         // A visitor can continue directly to Stripe after supplying a billing email.
         // Existing authenticated users still use the tenant-bound Checkout above.
-        openGuestCheckout(code);
+        openGuestCheckout(checkoutCode);
         return;
       }
       if (err.status === 403) {
@@ -110,8 +131,16 @@ export default function SovereignPricing({ content }: Props) {
 
     // Consume before starting to avoid duplicate Checkout Sessions under React
     // StrictMode; a 401 inside startCheckout() persists it again for retry.
+    const pendingInterval = window.sessionStorage.getItem(PENDING_INTERVAL_KEY);
+    const pendingTrial = window.sessionStorage.getItem(PENDING_TRIAL_KEY);
     window.sessionStorage.removeItem(PENDING_OFFER_KEY);
-    void startCheckout(pending);
+    window.sessionStorage.removeItem(PENDING_RETURN_KEY);
+    window.sessionStorage.removeItem(PENDING_INTERVAL_KEY);
+    window.sessionStorage.removeItem(PENDING_TRIAL_KEY);
+    void startCheckout(pending, {
+      billingInterval: pendingInterval === "annual" ? "annual" : "monthly",
+      trialChoice: pendingTrial === "trial" ? "trial" : "pay_now",
+    });
     // Executa apenas o checkout pendente após o retorno do login.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -202,8 +231,70 @@ export default function SovereignPricing({ content }: Props) {
         </div>
       )}
 
+      <section
+        aria-label={content.billingChoiceTitle}
+        style={{
+          display: "grid",
+          gap: 18,
+          margin: "28px 0 24px",
+          padding: "20px 22px",
+          borderRadius: 16,
+          border: "1px solid rgba(255,255,255,0.12)",
+          background: "rgba(255,255,255,0.035)",
+        }}
+      >
+        <div>
+          <strong style={{ display: "block", marginBottom: 10 }}>{content.billingChoiceTitle}</strong>
+          <div role="group" aria-label={content.billingChoiceTitle} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {(["monthly", "annual"] as const).map((interval) => {
+              const selected = billingInterval === interval;
+              return (
+                <button
+                  key={interval}
+                  type="button"
+                  className={selected ? "btn-primary" : "btn-secondary"}
+                  aria-pressed={selected}
+                  onClick={() => setBillingInterval(interval)}
+                  disabled={busyCode !== null}
+                >
+                  {interval === "monthly" ? content.monthlyOption : content.annualOption}
+                  {interval === "annual" && <span style={{ marginLeft: 8, opacity: 0.8 }}>· {content.annualBadge}</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <strong style={{ display: "block", marginBottom: 10 }}>{content.trialChoiceTitle}</strong>
+          <div role="group" aria-label={content.trialChoiceTitle} style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {(["pay_now", "trial"] as const).map((choice) => {
+              const selected = trialChoice === choice;
+              return (
+                <button
+                  key={choice}
+                  type="button"
+                  className={selected ? "btn-primary" : "btn-secondary"}
+                  aria-pressed={selected}
+                  onClick={() => setTrialChoice(choice)}
+                  disabled={busyCode !== null}
+                >
+                  {choice === "pay_now" ? content.payNowOption : content.trialOption}
+                </button>
+              );
+            })}
+          </div>
+          <p style={{ margin: "10px 0 0", opacity: 0.72 }}>
+            {trialChoice === "trial" ? content.trialDescription : content.payNowDescription}
+          </p>
+        </div>
+      </section>
+
       <div className="ng-self-service-plans">
-        {content.plans.map((plan, index) => (
+        {content.plans.map((plan, index) => {
+          const checkoutCode = resolveCheckoutCode(plan.code, billingInterval);
+          const displayPrice = billingInterval === "annual" ? plan.annualPrice : plan.price;
+          const displayPeriod = billingInterval === "annual" ? plan.annualPeriod : plan.period;
+          return (
           <article
             key={plan.code}
             className={`ng-tier ng-self-service-plan reveal${plan.highlight ? " highlight" : ""}`}
@@ -211,7 +302,7 @@ export default function SovereignPricing({ content }: Props) {
           >
             {plan.highlight && <span className="ng-tier-flag">★</span>}
             <h4 className="ng-tier-name">{plan.name}</h4>
-            <div className="ng-tier-price"><strong>{plan.price}</strong><span>{plan.period}</span></div>
+            <div className="ng-tier-price"><strong>{displayPrice}</strong><span>{displayPeriod}</span></div>
             <p className="ng-self-service-credits">{plan.credits}</p>
             <p className="ng-tier-desc">{plan.desc}</p>
             <ul className="ng-tier-features">
@@ -221,12 +312,13 @@ export default function SovereignPricing({ content }: Props) {
               type="button"
               className={plan.highlight ? "btn-primary" : "btn-secondary"}
               disabled={busyCode !== null}
-              onClick={() => void startCheckout(plan.code)}
+              onClick={() => void startCheckout(plan.code, { billingInterval, trialChoice })}
             >
-              {busyCode === plan.code ? "…" : plan.cta}
+              {busyCode === checkoutCode ? "…" : plan.cta}
             </button>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       <div className="ng-credit-packs reveal">
@@ -246,7 +338,7 @@ export default function SovereignPricing({ content }: Props) {
                 type="button"
                 className="btn-secondary"
                 disabled={busyCode !== null}
-                onClick={() => void startCheckout(pack.code)}
+                onClick={() => void startCheckout(pack.code, { billingInterval: "monthly", trialChoice: "pay_now" })}
               >
                 {busyCode === pack.code ? "…" : pack.cta}
               </button>

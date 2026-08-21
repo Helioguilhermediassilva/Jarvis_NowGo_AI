@@ -426,6 +426,15 @@ export async function mfaSetupConfirmV2(input: {
 // Billing da Plataforma de Inteligência Soberana
 // ─────────────────────────────────────────────────────────────────────────────
 
+export type BillingInterval = "monthly" | "annual";
+export type BillingTrialChoice = "trial" | "pay_now";
+
+export type BillingCheckoutOptions = {
+  billingInterval?: BillingInterval;
+  trialChoice?: BillingTrialChoice;
+  promoCode?: string;
+};
+
 export interface BillingCheckoutResponse {
   ok: true;
   sessionId: string;
@@ -443,10 +452,13 @@ export interface BillingSummary {
   creditBalance: number;
 }
 
-export async function createBillingCheckoutSession(offerCode: string): Promise<BillingCheckoutResponse> {
+export async function createBillingCheckoutSession(
+  offerCode: string,
+  options: BillingCheckoutOptions = {},
+): Promise<BillingCheckoutResponse> {
   return request<BillingCheckoutResponse>("/api/billing/checkout", {
     method: "POST",
-    body: JSON.stringify({ offerCode }),
+    body: JSON.stringify({ offerCode, ...options }),
   });
 }
 
@@ -465,10 +477,11 @@ export async function fetchBillingSummary(): Promise<BillingSummary> {
 export async function createGuestBillingCheckoutSession(
   email: string,
   offerCode: string,
+  options: BillingCheckoutOptions = {},
 ): Promise<BillingCheckoutResponse> {
   return request<BillingCheckoutResponse>("/api/billing/guest-checkout", {
     method: "POST",
-    body: JSON.stringify({ email, offerCode }),
+    body: JSON.stringify({ email, offerCode, ...options }),
   });
 }
 

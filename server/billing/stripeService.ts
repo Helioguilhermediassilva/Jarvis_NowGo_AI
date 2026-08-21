@@ -73,26 +73,81 @@ export async function createOrGetStripeCustomer(input: {
   return persisted[0]?.stripeCustomerId ?? customer.id;
 }
 
+type BillingInterval = "monthly" | "annual";
+type TrialChoice = "trial" | "pay_now";
+
+const TRIAL_PERIOD_DAYS = 14;
+
+function resolveOfferForInterval(offerCode: string, billingInterval?: BillingInterval): BillingOffer {
+  const requested = getOffer(offerCode);
+  if (!requested) throw new BillingError("offer_invalid");
+  if (requested.kind !== "subscription") return requested;
+
+  const interval = billingInterval ?? (requested.code.endsWith("_annual") ? "annual" : "monthly");
+  const plan = requested.planCode;
+  if (!plan) throw new BillingError("offer_invalid");
+  const resolved = getOffer(`${plan}_${interval}`);
+  if (!resolved || resolved.kind !== "subscription") throw new BillingError("offer_invalid");
+  return resolved;
+}
+
+function resolveTrialChoice(offer: BillingOffer, trialChoice?: TrialChoice): TrialChoice {
+  return offer.kind === "subscription" ? (trialChoice ?? "pay_now") : "pay_now";
+}
+
+function checkoutMetadata(input: {
+  tenantId?: string;
+  userId?: string;
+  offer: BillingOffer;
+  billingInterval?: BillingInterval;
+  trialChoice: TrialChoice;
+  promoCode?: string;
+  guestIntentId?: string;
+}): Record<string, string> {
+  return {
+    ...(input.tenantId ? { tenant_id: input.tenantId } : {}),
+    ...(input.userId ? { user_id: input.userId } : {}),
+    ...(input.guestIntentId ? { guest_checkout_intent_id: input.guestIntentId } : {}),
+    offer_code: input.offer.code,
+    billing_interval: input.billingInterval ?? (input.offer.code.endsWith("_annual") ? "annual" : "monthly"),
+    trial_choice: input.trialChoice,
+    ...(input.promoCode ? { promo_code: input.promoCode.trim() } : {}),
+  };
+}
+
+function subscriptionData(metadata: Record<string, string>, trialChoice: TrialChoice) {
+  return {
+    metadata,
+    ...(trialChoice === "trial" ? { trial_period_days: TRIAL_PERIOD_DAYS } : {}),
+  };
+}
+
 export async function createCheckoutSession(input: {
   tenantId: string;
   userId: string;
   email: string;
   offerCode: string;
+  billingInterval?: BillingInterval;
+  trialChoice?: TrialChoice;
+  promoCode?: string;
   req: { headers: Record<string, string | string[] | undefined> };
 }): Promise<{ id: string; url: string }> {
-  const offer = getOffer(input.offerCode);
-  if (!offer) throw new BillingError("offer_invalid");
+  const offer = resolveOfferForInterval(input.offerCode, input.billingInterval);
   const priceId = getConfiguredPriceId(offer);
   const customerId = await createOrGetStripeCustomer({
     tenantId: input.tenantId,
     email: input.email,
   });
   const origin = getAppOrigin(input.req);
-  const metadata = {
-    tenant_id: input.tenantId,
-    user_id: input.userId,
-    offer_code: offer.code,
-  };
+  const selectedTrial = resolveTrialChoice(offer, input.trialChoice);
+  const metadata = checkoutMetadata({
+    tenantId: input.tenantId,
+    userId: input.userId,
+    offer,
+    billingInterval: input.billingInterval,
+    trialChoice: selectedTrial,
+    promoCode: input.promoCode,
+  });
 
   const session = await stripeClient().checkout.sessions.create({
     mode: offer.kind === "subscription" ? "subscription" : "payment",
@@ -107,9 +162,7 @@ export async function createCheckoutSession(input: {
     ...(offer.kind === "subscription"
       ? {
           payment_method_collection: "always",
-          subscription_data: {
-            metadata,
-          },
+          subscription_data: subscriptionData(metadata, selectedTrial),
         }
       : { payment_intent_data: { metadata } }),
   });
@@ -423,6 +476,9 @@ function publicBillingOrigin(): string {
 export async function createGuestCheckoutSession(input: {
   email: string;
   offerCode: string;
+  billingInterval?: BillingInterval;
+  trialChoice?: TrialChoice;
+  promoCode?: string;
   req: { headers: Record<string, string | string[] | undefined> };
 }): Promise<{ id: string; url: string }> {
   const email = normalizeBillingEmail(input.email);
@@ -437,9 +493,9 @@ export async function createGuestCheckoutSession(input: {
     .limit(1);
   if (existingUser[0]) throw new BillingError("guest_account_exists");
 
-  const offer = getOffer(input.offerCode);
-  if (!offer) throw new BillingError("offer_invalid");
+  const offer = resolveOfferForInterval(input.offerCode, input.billingInterval);
   const priceId = getConfiguredPriceId(offer);
+  const selectedTrial = resolveTrialChoice(offer, input.trialChoice);
   const tokenPair = generateTokenPair();
   const [intent] = await db()
     .insert(guestCheckoutIntents)
@@ -449,7 +505,7 @@ export async function createGuestCheckoutSession(input: {
       status: "pending",
       claimTokenHash: tokenPair.hash,
       expiresAt: new Date(Date.now() + 24 * 60 * 60_000),
-      metadata: { source: "public_pricing" },
+      metadata: { source: "public_pricing", billing_interval: input.billingInterval ?? "monthly", trial_choice: selectedTrial },
     })
     .returning({ id: guestCheckoutIntents.id });
 
@@ -460,10 +516,13 @@ export async function createGuestCheckoutSession(input: {
       email,
       metadata: { guest_checkout_intent_id: intent.id },
     });
-    const metadata = {
-      guest_checkout_intent_id: intent.id,
-      offer_code: offer.code,
-    };
+    const metadata = checkoutMetadata({
+      guestIntentId: intent.id,
+      offer,
+      billingInterval: input.billingInterval,
+      trialChoice: selectedTrial,
+      promoCode: input.promoCode,
+    });
     const session = await stripeClient().checkout.sessions.create({
       mode: offer.kind === "subscription" ? "subscription" : "payment",
       customer: customer.id,
@@ -478,9 +537,7 @@ export async function createGuestCheckoutSession(input: {
       ...(offer.kind === "subscription"
         ? {
             payment_method_collection: "always",
-            subscription_data: {
-              metadata,
-            },
+            subscription_data: subscriptionData(metadata, selectedTrial),
           }
         : { payment_intent_data: { metadata } }),
     });

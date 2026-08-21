@@ -2,7 +2,9 @@ import { BillingError } from "./errors.js";
 
 export type BillingOfferCode =
   | "sovereign_platform_pro_monthly"
+  | "sovereign_platform_pro_annual"
   | "sovereign_platform_business_monthly"
+  | "sovereign_platform_business_annual"
   | "sovereign_credits_1000"
   | "sovereign_credits_3000"
   | "sovereign_credits_10000";
@@ -41,6 +43,22 @@ export const BILLING_CATALOG: Record<BillingOfferCode, BillingOffer> = {
     displayName: "Plataforma de Inteligência Soberana Business",
     priceEnv: "NOWGO_BILLING_PRICE_SOVEREIGN_BUSINESS_MONTHLY",
     // Franquia mensal aprovada para a oferta Business.
+    includedCredits: 15_000,
+    planCode: "sovereign_platform_business",
+  },
+  sovereign_platform_pro_annual: {
+    code: "sovereign_platform_pro_annual",
+    kind: "subscription",
+    displayName: "Plataforma de Inteligência Soberana Pro — anual",
+    priceEnv: "NOWGO_BILLING_PRICE_SOVEREIGN_PRO_ANNUAL",
+    includedCredits: 5_000,
+    planCode: "sovereign_platform_pro",
+  },
+  sovereign_platform_business_annual: {
+    code: "sovereign_platform_business_annual",
+    kind: "subscription",
+    displayName: "Plataforma de Inteligência Soberana Business — anual",
+    priceEnv: "NOWGO_BILLING_PRICE_SOVEREIGN_BUSINESS_ANNUAL",
     includedCredits: 15_000,
     planCode: "sovereign_platform_business",
   },
