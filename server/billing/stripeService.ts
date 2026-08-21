@@ -29,7 +29,6 @@ import {
 } from "./catalog.js";
 
 let _stripe: Stripe | null = null;
-const FREE_TRIAL_DAYS = 14;
 
 export function stripeClient(): Stripe {
   if (_stripe) return _stripe;
@@ -110,7 +109,6 @@ export async function createCheckoutSession(input: {
           payment_method_collection: "always",
           subscription_data: {
             metadata,
-            trial_period_days: FREE_TRIAL_DAYS,
           },
         }
       : { payment_intent_data: { metadata } }),
@@ -482,7 +480,6 @@ export async function createGuestCheckoutSession(input: {
             payment_method_collection: "always",
             subscription_data: {
               metadata,
-              trial_period_days: FREE_TRIAL_DAYS,
             },
           }
         : { payment_intent_data: { metadata } }),
