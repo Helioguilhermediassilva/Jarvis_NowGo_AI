@@ -140,6 +140,10 @@ const ERR_STATUS_MAP: Record<string, number> = {
   billing_not_configured: 500,
   billing_customer_missing: 404,
   stripe_provider_error: 502,
+  guest_email_invalid: 400,
+  guest_claim_invalid: 401,
+  guest_claim_expired: 410,
+  guest_account_exists: 409,
   // genérico
   internal_error: 500,
 };

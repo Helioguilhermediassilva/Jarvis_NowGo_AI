@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import {
   createBillingCheckoutSession,
+  createGuestBillingCheckoutSession,
   type ApiError,
 } from "@/lib/authV2Client";
 import { copy } from "./copy";
@@ -30,6 +31,50 @@ function rememberPendingCheckout(code: string): void {
 export default function SovereignPricing({ content }: Props) {
   const [busyCode, setBusyCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [guestCode, setGuestCode] = useState<string | null>(null);
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestError, setGuestError] = useState<string | null>(null);
+  const [guestExistingAccount, setGuestExistingAccount] = useState(false);
+
+  function openGuestCheckout(code: string): void {
+    setGuestCode(code);
+    setGuestEmail("");
+    setGuestError(null);
+    setGuestExistingAccount(false);
+  }
+
+  async function submitGuestCheckout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!guestCode || busyCode) return;
+    setBusyCode(guestCode);
+    setGuestError(null);
+    setGuestExistingAccount(false);
+    try {
+      const result = await createGuestBillingCheckoutSession(guestEmail, guestCode);
+      setGuestCode(null);
+      window.location.assign(result.url);
+    } catch (rawError) {
+      const err = rawError as ApiError;
+      if (err.code === "guest_account_exists") {
+        setGuestExistingAccount(true);
+        setGuestError(content.guestAccountExists);
+      } else if (err.code === "guest_email_invalid" || err.status === 400) {
+        setGuestError(content.unavailable);
+      } else {
+        setGuestError(content.unavailable);
+      }
+    } finally {
+      setBusyCode(null);
+    }
+  }
+
+  function goToLoginFromGuest(): void {
+    if (!guestCode) return;
+    rememberPendingCheckout(guestCode);
+    const returnTo = currentPricingReturnTo();
+    setGuestCode(null);
+    window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+  }
 
   async function startCheckout(code: string) {
     if (busyCode) return;
@@ -44,16 +89,9 @@ export default function SovereignPricing({ content }: Props) {
     } catch (rawError) {
       const err = rawError as ApiError;
       if (err.status === 401) {
-        // Preserve both plans and credit packs when authentication is required.
-        // If the session cookie is not immediately available after login/MFA,
-        // this branch re-saves the offer instead of losing the user's intent.
-        rememberPendingCheckout(code);
-        const returnTo = currentPricingReturnTo();
-        const loginParams = new URLSearchParams({
-          returnTo,
-          billingOffer: code,
-        });
-        window.location.assign(`/login?${loginParams.toString()}`);
+        // A visitor can continue directly to Stripe after supplying a billing email.
+        // Existing authenticated users still use the tenant-bound Checkout above.
+        openGuestCheckout(code);
         return;
       }
       if (err.status === 403) {
@@ -87,6 +125,82 @@ export default function SovereignPricing({ content }: Props) {
       </div>
 
       {error && <div className="ng-billing-notice" role="alert">{error}</div>}
+
+      {guestCode && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="guest-checkout-title"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 300,
+            display: "grid",
+            placeItems: "center",
+            padding: 20,
+            background: "rgba(3, 10, 16, 0.78)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <form
+            onSubmit={(event) => void submitGuestCheckout(event)}
+            style={{
+              width: "min(460px, 100%)",
+              padding: 28,
+              borderRadius: 16,
+              background: "#101b24",
+              border: "1px solid rgba(255,255,255,0.14)",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.38)",
+            }}
+          >
+            <h3 id="guest-checkout-title" style={{ margin: "0 0 10px" }}>{content.guestTitle}</h3>
+            <p style={{ margin: "0 0 20px", opacity: 0.8 }}>{content.guestDescription}</p>
+            <label htmlFor="guest-billing-email" style={{ display: "block", marginBottom: 8 }}>{content.guestEmailLabel}</label>
+            <input
+              id="guest-billing-email"
+              type="email"
+              required
+              autoComplete="email"
+              value={guestEmail}
+              onChange={(event) => setGuestEmail(event.target.value)}
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "12px 14px",
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.2)",
+                background: "rgba(255,255,255,0.06)",
+                color: "inherit",
+              }}
+            />
+            {guestError && <div className="ng-billing-notice" role="alert" style={{ marginTop: 14 }}>{guestError}</div>}
+            {guestExistingAccount && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={goToLoginFromGuest}
+                disabled={busyCode !== null}
+                style={{ width: "100%", marginTop: 14 }}
+              >
+                {content.guestLogin}
+              </button>
+            )}
+            <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 22 }}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setGuestCode(null)}
+                disabled={busyCode !== null}
+              >
+                {content.guestCancel}
+              </button>
+              <button type="submit" className="btn-primary" disabled={busyCode !== null}>
+                {busyCode === guestCode ? "…" : content.guestContinue}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="ng-self-service-plans">
         {content.plans.map((plan, index) => (

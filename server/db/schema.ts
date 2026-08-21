@@ -179,6 +179,34 @@ export const billingEvents = nowgoBrain.table(
 );
 
 // ---------------------------------------------------------------------------
+// guest_checkout_intents — intenção pública antes da criação da conta
+// ---------------------------------------------------------------------------
+export const guestCheckoutIntents = nowgoBrain.table(
+  "guest_checkout_intents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email").notNull(),
+    offerCode: text("offer_code").notNull(),
+    status: text("status").notNull().default("pending"),
+    claimTokenHash: text("claim_token_hash").notNull().unique(),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+    stripeCustomerId: text("stripe_customer_id"),
+    tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "set null" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    claimedAt: timestamp("claimed_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    metadata: jsonb("metadata").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    byEmail: index("idx_guest_checkout_email").on(t.email),
+    byStripeSession: index("idx_guest_checkout_stripe_session").on(t.stripeCheckoutSessionId),
+    byStatus: index("idx_guest_checkout_status").on(t.status),
+  }),
+);
+
+// ---------------------------------------------------------------------------
 // opportunities  (espelha base Notion "pipeline")
 // ---------------------------------------------------------------------------
 export const opportunities = nowgoBrain.table(
@@ -420,6 +448,9 @@ export type NewCreditLedgerRow = typeof creditLedger.$inferInsert;
 
 export type BillingEventRow = typeof billingEvents.$inferSelect;
 export type NewBillingEventRow = typeof billingEvents.$inferInsert;
+
+export type GuestCheckoutIntentRow = typeof guestCheckoutIntents.$inferSelect;
+export type NewGuestCheckoutIntentRow = typeof guestCheckoutIntents.$inferInsert;
 
 export type OpportunityRow = typeof opportunities.$inferSelect;
 export type NewOpportunityRow = typeof opportunities.$inferInsert;

@@ -1,15 +1,23 @@
 import Stripe from "stripe";
-import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "../db/client.js";
 import {
   billingEvents,
   billingSubscriptions,
   creditLedger,
+  guestCheckoutIntents,
+  passwordCredentials,
   stripeCustomers,
   tenantMembers,
+  tenants,
+  users,
 } from "../db/schema.js";
 import { BillingError } from "./errors.js";
+import { hashPassword } from "../auth/passwordCredentials.js";
+import { createSession } from "../auth/sessions.js";
+import { generateTokenPair, hashToken } from "../auth/tokens.js";
+import { renderGuestCheckoutClaimEmail, sendEmail } from "../email/resendClient.js";
 import {
   getAppOrigin,
   getBillingSecret,
@@ -195,6 +203,15 @@ async function processStripeEvent(event: Stripe.Event): Promise<void> {
 
   switch (event.type) {
     case "checkout.session.completed": {
+      const guestIntentId = typeof data.metadata?.guest_checkout_intent_id === "string"
+        ? data.metadata.guest_checkout_intent_id
+        : null;
+      if (guestIntentId) {
+        if (data.payment_status === "paid" || data.mode === "subscription") {
+          await markGuestCheckoutPaid(guestIntentId, data);
+        }
+        return;
+      }
       if (data.mode === "payment" && data.payment_status === "paid") {
         await grantCreditPackFromCheckout(data);
       }
@@ -382,3 +399,297 @@ export const _internal = {
   getOffer,
   getConfiguredPriceId,
 };
+
+
+// ---------------------------------------------------------------------------
+// Guest Checkout — pagamento antes da criação da conta
+// ---------------------------------------------------------------------------
+
+const GUEST_CLAIM_TTL_MS = 2 * 60 * 60_000;
+
+function normalizeBillingEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function publicBillingOrigin(): string {
+  return process.env.NOWGO_PUBLIC_ORIGIN ?? "https://www.nowgoai.com";
+}
+
+export async function createGuestCheckoutSession(input: {
+  email: string;
+  offerCode: string;
+  req: { headers: Record<string, string | string[] | undefined> };
+}): Promise<{ id: string; url: string }> {
+  const email = normalizeBillingEmail(input.email);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new BillingError("guest_email_invalid");
+  }
+
+  const existingUser = await db()
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+  if (existingUser[0]) throw new BillingError("guest_account_exists");
+
+  const offer = getOffer(input.offerCode);
+  if (!offer) throw new BillingError("offer_invalid");
+  const priceId = getConfiguredPriceId(offer);
+  const tokenPair = generateTokenPair();
+  const [intent] = await db()
+    .insert(guestCheckoutIntents)
+    .values({
+      email,
+      offerCode: offer.code,
+      status: "pending",
+      claimTokenHash: tokenPair.hash,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60_000),
+      metadata: { source: "public_pricing" },
+    })
+    .returning({ id: guestCheckoutIntents.id });
+
+  if (!intent) throw new BillingError("stripe_provider_error", "falha ao criar intenção guest");
+
+  try {
+    const customer = await stripeClient().customers.create({
+      email,
+      metadata: { guest_checkout_intent_id: intent.id },
+    });
+    const metadata = {
+      guest_checkout_intent_id: intent.id,
+      offer_code: offer.code,
+    };
+    const session = await stripeClient().checkout.sessions.create({
+      mode: offer.kind === "subscription" ? "subscription" : "payment",
+      customer: customer.id,
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata,
+      client_reference_id: `guest:${intent.id}`,
+      customer_update: { name: "auto", address: "auto" },
+      success_url: `${publicBillingOrigin()}/checkout-complete?intent=${encodeURIComponent(intent.id)}`,
+      cancel_url: `${publicBillingOrigin()}/#pricing`,
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      ...(offer.kind === "subscription"
+        ? { subscription_data: { metadata } }
+        : { payment_intent_data: { metadata } }),
+    });
+
+    if (!session.url) throw new Error("Stripe não retornou uma URL de Checkout");
+    await db()
+      .update(guestCheckoutIntents)
+      .set({
+        stripeCheckoutSessionId: session.id,
+        stripeCustomerId: customer.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(guestCheckoutIntents.id, intent.id));
+    return { id: session.id, url: session.url };
+  } catch (error) {
+    await db()
+      .update(guestCheckoutIntents)
+      .set({ status: "failed", updatedAt: new Date() })
+      .where(eq(guestCheckoutIntents.id, intent.id));
+    if (error instanceof BillingError) throw error;
+    console.error("[billing.guest-checkout] Stripe falhou:", error instanceof Error ? error.message : error);
+    throw new BillingError("stripe_provider_error");
+  }
+}
+
+async function persistGuestStripeCustomer(intent: any, tenantId: string): Promise<void> {
+  if (!intent.stripeCustomerId) return;
+  await db()
+    .insert(stripeCustomers)
+    .values({
+      tenantId,
+      stripeCustomerId: intent.stripeCustomerId,
+      email: intent.email,
+    })
+    .onConflictDoNothing({ target: stripeCustomers.tenantId });
+}
+
+async function reconcileGuestPurchaseAfterClaim(intent: any, session: any): Promise<void> {
+  if (!intent.tenantId) return;
+  const offer = getOffer(intent.offerCode);
+  if (!offer) return;
+  await persistGuestStripeCustomer(intent, intent.tenantId);
+
+  if (offer.creditPackAmount && session.payment_status === "paid") {
+    await grantCredits({
+      tenantId: intent.tenantId,
+      userId: intent.userId,
+      amount: offer.creditPackAmount,
+      source: "stripe_credit_pack",
+      idempotencyKey: `checkout:${session.id}`,
+      expiresAt: new Date(Date.now() + (offer.creditPackExpiryDays ?? 365) * 86_400_000),
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: normalizeStripeId(session.payment_intent),
+      metadata: { offer_code: offer.code, guest_intent_id: intent.id },
+    });
+    await db()
+      .update(tenantMembers)
+      .set({ platformAccess: true })
+      .where(eq(tenantMembers.tenantId, intent.tenantId));
+    return;
+  }
+
+  if (offer.kind === "subscription") {
+    const subscriptionId = normalizeStripeId(session.subscription);
+    if (!subscriptionId) return;
+    const subscription = await stripeClient().subscriptions.retrieve(subscriptionId, {
+      expand: ["items.data.price"],
+    });
+    const metadata = {
+      ...(subscription.metadata ?? {}),
+      tenant_id: intent.tenantId,
+      user_id: intent.userId ?? "",
+      offer_code: offer.code,
+    };
+    await stripeClient().subscriptions.update(subscription.id, { metadata });
+    await syncSubscription({ ...subscription, metadata });
+  }
+}
+
+/** Processa o pagamento guest sem criar conta antes da confirmação do Stripe. */
+export async function markGuestCheckoutPaid(intentId: string, session: any): Promise<void> {
+  const rows = await db()
+    .select()
+    .from(guestCheckoutIntents)
+    .where(eq(guestCheckoutIntents.id, intentId))
+    .limit(1);
+  const intent = rows[0];
+  if (!intent) return;
+
+  if (intent.status === "claimed" && intent.tenantId) {
+    await reconcileGuestPurchaseAfterClaim(intent, session);
+    return;
+  }
+  if (intent.status !== "pending") return;
+
+  const tokenPair = generateTokenPair();
+  const updated = await db()
+    .update(guestCheckoutIntents)
+    .set({
+      status: "paid",
+      claimTokenHash: tokenPair.hash,
+      expiresAt: new Date(Date.now() + GUEST_CLAIM_TTL_MS),
+      stripeCheckoutSessionId: session.id,
+      stripeCustomerId: normalizeStripeId(session.customer),
+      updatedAt: new Date(),
+    })
+    .where(and(eq(guestCheckoutIntents.id, intentId), eq(guestCheckoutIntents.status, "pending")))
+    .returning();
+  const paidIntent = updated[0];
+  if (!paidIntent) return;
+
+  const offer = getOffer(paidIntent.offerCode);
+  if (!offer) return;
+  const claimUrl = `${publicBillingOrigin()}/checkout-complete?claim=${encodeURIComponent(tokenPair.raw)}`;
+  try {
+    const email = renderGuestCheckoutClaimEmail({
+      to: paidIntent.email,
+      claimUrl,
+      offerName: offer.displayName,
+    });
+    await sendEmail({
+      to: paidIntent.email,
+      subject: email.subject,
+      html: email.html,
+      text: email.text,
+      tag: "billing-guest-claim",
+    });
+  } catch (error) {
+    // O pagamento continua reconciliado; o link nunca é escrito no log.
+    console.error("[billing.guest-checkout] falha no envio do claim:", error instanceof Error ? error.message : error);
+  }
+}
+
+export async function claimGuestCheckout(input: {
+  token: string;
+  password: string;
+  req: { headers: Record<string, string | string[] | undefined> };
+}): Promise<{ rawToken: string; expiresAt: Date; tenantId: string; userId: string }> {
+  if (!input.token || input.token.length < 32) throw new BillingError("guest_claim_invalid");
+  const claimHash = hashToken(input.token);
+  const rows = await db()
+    .select()
+    .from(guestCheckoutIntents)
+    .where(eq(guestCheckoutIntents.claimTokenHash, claimHash))
+    .limit(1);
+  const intent = rows[0];
+  if (!intent || intent.status !== "paid") {
+    if (intent && intent.expiresAt.getTime() <= Date.now()) throw new BillingError("guest_claim_expired");
+    throw new BillingError("guest_claim_invalid");
+  }
+  if (intent.expiresAt.getTime() <= Date.now()) throw new BillingError("guest_claim_expired");
+
+  const existingUser = await db()
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, intent.email))
+    .limit(1);
+  if (existingUser[0]) throw new BillingError("guest_account_exists");
+
+  const argon2Hash = await hashPassword(input.password);
+  const result = await db().transaction(async (tx) => {
+    const [user] = await tx
+      .insert(users)
+      .values({ email: intent.email, name: intent.email.split("@")[0] })
+      .returning({ id: users.id });
+    if (!user) throw new BillingError("stripe_provider_error", "falha ao criar usuário guest");
+
+    const [tenant] = await tx
+      .insert(tenants)
+      .values({
+        slug: `guest-${intent.id}`,
+        name: `NowGo AI — ${intent.email}`,
+        plan: "starter",
+        createdByUserId: user.id,
+      })
+      .returning({ id: tenants.id });
+    if (!tenant) throw new BillingError("stripe_provider_error", "falha ao criar tenant guest");
+
+    await tx.insert(passwordCredentials).values({
+      userId: user.id,
+      argon2Hash,
+      verifiedAt: new Date(),
+    });
+    await tx.insert(tenantMembers).values({
+      tenantId: tenant.id,
+      userId: user.id,
+      role: "owner",
+      platformAccess: false,
+    });
+    await tx
+      .update(guestCheckoutIntents)
+      .set({
+        status: "claimed",
+        tenantId: tenant.id,
+        userId: user.id,
+        claimedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(and(eq(guestCheckoutIntents.id, intent.id), eq(guestCheckoutIntents.status, "paid")));
+    return { tenantId: tenant.id, userId: user.id };
+  });
+
+  if (intent.stripeCheckoutSessionId) {
+    const session = await stripeClient().checkout.sessions.retrieve(intent.stripeCheckoutSessionId, {
+      expand: ["subscription"],
+    });
+    await reconcileGuestPurchaseAfterClaim({ ...intent, ...result, tenantId: result.tenantId, userId: result.userId }, session);
+  }
+
+  const session = await createSession({
+    userId: result.userId,
+    tenantId: result.tenantId,
+    ip: typeof input.req.headers["x-forwarded-for"] === "string" ? input.req.headers["x-forwarded-for"] : null,
+    userAgent: typeof input.req.headers["user-agent"] === "string" ? input.req.headers["user-agent"] : null,
+  });
+  return {
+    rawToken: session.rawToken,
+    expiresAt: session.expiresAt,
+    tenantId: result.tenantId,
+    userId: result.userId,
+  };
+}

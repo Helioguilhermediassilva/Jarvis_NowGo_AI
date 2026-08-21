@@ -439,3 +439,24 @@ export async function createBillingPortalSession(): Promise<{ ok: true; url: str
 export async function fetchBillingSummary(): Promise<BillingSummary> {
   return request<BillingSummary>("/api/billing/summary", { method: "GET" });
 }
+
+
+export async function createGuestBillingCheckoutSession(
+  email: string,
+  offerCode: string,
+): Promise<BillingCheckoutResponse> {
+  return request<BillingCheckoutResponse>("/api/billing/guest-checkout", {
+    method: "POST",
+    body: JSON.stringify({ email, offerCode }),
+  });
+}
+
+export async function claimGuestBillingCheckout(input: {
+  token: string;
+  password: string;
+}): Promise<{ ok: true; tenantId: string; userId: string }> {
+  return request<{ ok: true; tenantId: string; userId: string }>("/api/billing/guest-claim", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}

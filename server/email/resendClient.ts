@@ -258,3 +258,37 @@ export const _internal = {
   isProduction,
   escapeHtml,
 };
+
+export interface GuestCheckoutClaimEmailInput {
+  to: string;
+  claimUrl: string;
+  offerName: string;
+}
+
+export function renderGuestCheckoutClaimEmail(input: GuestCheckoutClaimEmailInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const subject = "Pagamento confirmado — configure seu acesso à Plataforma NowGo AI";
+  const safeUrl = escapeHtml(input.claimUrl);
+  const safeOffer = escapeHtml(input.offerName);
+  const html = htmlShell(
+    "Pagamento confirmado",
+    `<p>Recebemos seu pagamento para <strong>${safeOffer}</strong>.</p>
+<p>Para concluir seu acesso, defina uma senha clicando no botão abaixo:</p>
+<p style="margin:24px 0"><a href="${safeUrl}" style="display:inline-block;padding:12px 20px;background:#0f172a;color:#fff;text-decoration:none;border-radius:8px">Configurar acesso</a></p>
+<p style="font-size:13px;color:#475569">Este link é pessoal, expira em 2 horas e só pode ser usado uma vez. Se você não realizou esta compra, ignore este e-mail.</p>`,
+  );
+  const text =
+    `Pagamento confirmado para ${input.offerName}.\n\n` +
+    `Configure seu acesso: ${input.claimUrl}\n\n` +
+    "O link expira em 2 horas e só pode ser usado uma vez.";
+  return { subject, html, text };
+}
+
+// ---------------------------------------------------------------------------
+// Fim dos templates transacionais
+// ---------------------------------------------------------------------------
+
+// Mantém o export no fim do módulo após os templates adicionados acima.

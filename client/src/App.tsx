@@ -34,6 +34,7 @@ import MfaDesafioPage from "@/pages/MfaDesafio";
 import MfaConfigurarPage from "@/pages/MfaConfigurar";
 import AdminUsuariosPage from "@/pages/AdminUsuarios";
 import BillingPage from "@/pages/Billing";
+import GuestCheckoutClaimPage from "@/pages/GuestCheckoutClaim";
 import RequireAuthV2 from "@/components/auth/RequireAuthV2";
 
 function Router() {
@@ -99,6 +100,7 @@ function Router() {
       <Route path={"/verificar-email/:token"} component={VerificarEmailPage} />
       <Route path={"/esqueci-senha"} component={EsqueciSenhaPage} />
       <Route path={"/redefinir-senha/:token"} component={RedefinirSenhaPage} />
+      <Route path={"/checkout-complete"} component={GuestCheckoutClaimPage} />
       <Route path={"/mfa/desafio"} component={MfaDesafioPage} />
       <Route path={"/mfa/configurar"} component={MfaConfigurarPage} />
 
