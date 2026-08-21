@@ -440,6 +440,10 @@
 .nowgoai-landing .reveal.visible { opacity: 1; transform: translateY(0); }
 
 /* RESPONSIVE */
+@media (min-width: 981px) and (max-width: 1200px) {
+  .nowgoai-landing .ng-pillars { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 980px) {
   .nowgoai-landing .ng-hero { padding: 140px 1.25rem 80px; overflow: hidden; }
   .nowgoai-landing .ng-hero-text { max-width: 100%; }

@@ -33,7 +33,7 @@ const AUTH_LABELS: Record<
 > = {
   pt: {
     signup: "Cadastro",
-    signupAria: "Cadastro por convite",
+    signupAria: "Criar conta por e-mail, Google ou GitHub",
     login: "Login",
     loginAria: "Login restrito",
     platform: "Abrir Plataforma",
@@ -43,7 +43,7 @@ const AUTH_LABELS: Record<
   },
   en: {
     signup: "Sign up",
-    signupAria: "Sign up by invitation",
+    signupAria: "Create an account with email, Google or GitHub",
     login: "Log in",
     loginAria: "Restricted login",
     platform: "Open Platform",
@@ -53,7 +53,7 @@ const AUTH_LABELS: Record<
   },
   es: {
     signup: "Registro",
-    signupAria: "Registro por invitación",
+    signupAria: "Crear una cuenta con email, Google o GitHub",
     login: "Acceder",
     loginAria: "Acceso restringido",
     platform: "Abrir Plataforma",
@@ -122,7 +122,7 @@ export default function AuthHeaderButtons({
   }
 
   // Autenticado V2 → exibe menu de usuário.
-  const initials = (user.email[0] ?? "?").toUpperCase();
+  const initials = (user.email?.[0] ?? "?").toUpperCase();
   const canManage =
     user.role === "superadmin" || user.role === "owner" || user.role === "admin";
 
@@ -153,7 +153,7 @@ export default function AuthHeaderButtons({
         >
           {initials}
         </span>
-        {user.email.split("@")[0]}
+        {(user.email ?? "user").split("@")[0]}
       </button>
       {menuOpen && (
         <div
