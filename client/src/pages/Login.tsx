@@ -10,13 +10,14 @@
  * Mantém identidade visual NowGo (paleta cyan, Outfit, Inter).
  */
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import AuthShell from "@/components/auth/AuthShell";
 import { useLang } from "@/landing/useLang";
 import type { Lang } from "@/landing/copy";
 import { buildXavierLoginUrl } from "@/lib/xavierHandoff";
 import { loginV2, type ApiError } from "@/lib/authV2Client";
+import { useAuthV2 } from "@/contexts/AuthV2Context";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
 const LOGIN_COPY: Record<Lang, {
@@ -144,6 +145,7 @@ const ERROR_LABELS: Record<string, Record<Lang, string>> = {
 export default function LoginPage() {
   const [, navigate] = useLocation();
   const { lang } = useLang();
+  const { authenticated, loading: authV2Loading, user: authV2User } = useAuthV2();
   const copy = LOGIN_COPY[lang];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -157,6 +159,19 @@ export default function LoginPage() {
   const billingOffer = authParams.get("billingOffer");
   const socialError = authParams.get("socialError");
   const visibleError = error ?? SOCIAL_ERROR_LABELS[socialError ?? ""]?.[lang] ?? null;
+
+  useEffect(() => {
+    if (authV2Loading || !authenticated) return;
+    if (!authV2User?.platformAccess) {
+      const billingUrl = new URL("/billing", window.location.origin);
+      billingUrl.searchParams.set("returnTo", requestedReturnTo);
+      window.location.replace(billingUrl.toString());
+      return;
+    }
+    const handoffUrl = new URL("/api/auth/v2/xavier/start", window.location.origin);
+    handoffUrl.searchParams.set("locale", lang);
+    window.location.replace(handoffUrl.toString());
+  }, [authV2Loading, authenticated, authV2User, lang, requestedReturnTo]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

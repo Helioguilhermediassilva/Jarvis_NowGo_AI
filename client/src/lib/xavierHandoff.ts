@@ -18,8 +18,15 @@ export function openXavierLogin(lang: Lang): void {
   window.location.assign(buildXavierLoginUrl(lang));
 }
 
+export function buildXavierStartUrl(lang: Lang): string {
+  const url = new URL("/api/auth/v2/xavier/start", window.location.origin);
+  url.searchParams.set("locale", lang);
+  return url.toString();
+}
+
+/** Inicia o handoff somente para uma sessão V2 já autenticada no NowGo. */
 export function openXavierHome(lang: Lang): void {
-  window.location.assign(buildXavierHomeUrl(lang));
+  window.location.assign(buildXavierStartUrl(lang));
 }
 
 export function buildXavierHomeUrl(lang: Lang): string {
