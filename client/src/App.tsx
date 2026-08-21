@@ -48,7 +48,7 @@ function Router() {
 
       {/* Cockpit interno NowGo — exclusivo para superadmin na sessão V2 */}
       <Route path={"/cockpit"}>
-        <RequireAuthV2 requireRole="superadmin">
+        <RequireAuthV2 requireRole="superadmin" requirePlatformAccess>
           <Cockpit />
         </RequireAuthV2>
       </Route>
