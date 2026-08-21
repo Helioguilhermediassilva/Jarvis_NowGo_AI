@@ -13,40 +13,32 @@ const LABELS: Record<Lang, {
   signupDivider: string;
   google: string;
   github: string;
-  linkedin: string;
   signupGoogle: string;
   signupGithub: string;
-  signupLinkedin: string;
 }> = {
   pt: {
     divider: "ou continue com",
     signupDivider: "ou cadastre-se com",
     google: "Continuar com Google",
     github: "Continuar com GitHub",
-    linkedin: "Continuar com LinkedIn",
     signupGoogle: "Cadastrar com Google",
     signupGithub: "Cadastrar com GitHub",
-    signupLinkedin: "Cadastrar com LinkedIn",
   },
   en: {
     divider: "or continue with",
     signupDivider: "or sign up with",
     google: "Continue with Google",
     github: "Continue with GitHub",
-    linkedin: "Continue with LinkedIn",
     signupGoogle: "Sign up with Google",
     signupGithub: "Sign up with GitHub",
-    signupLinkedin: "Sign up with LinkedIn",
   },
   es: {
     divider: "o continúa con",
     signupDivider: "o regístrate con",
     google: "Continuar con Google",
     github: "Continuar con GitHub",
-    linkedin: "Continuar con LinkedIn",
     signupGoogle: "Registrarse con Google",
     signupGithub: "Registrarse con GitHub",
-    signupLinkedin: "Registrarse con LinkedIn",
   },
 };
 
@@ -77,8 +69,8 @@ export default function SocialLoginButtons({
 }: SocialLoginButtonsProps) {
   const copy = LABELS[lang];
   const labels = entry === "signup"
-    ? { google: copy.signupGoogle, github: copy.signupGithub, linkedin: copy.signupLinkedin }
-    : { google: copy.google, github: copy.github, linkedin: copy.linkedin };
+    ? { google: copy.signupGoogle, github: copy.signupGithub }
+    : { google: copy.google, github: copy.github };
   const divider = entry === "signup" ? copy.signupDivider : copy.divider;
   const className = compact ? "ng-auth-social-button ng-auth-social-button-compact" : "ng-auth-social-button";
   return (
@@ -92,10 +84,6 @@ export default function SocialLoginButtons({
         <a className={className} href={socialHref("github", returnTo, billingOffer, entry)}>
           <span className="ng-auth-social-mark" aria-hidden="true">GH</span>
           {labels.github}
-        </a>
-        <a className={className} href={socialHref("linkedin", returnTo, billingOffer, entry)}>
-          <span className="ng-auth-social-mark" aria-hidden="true">in</span>
-          {labels.linkedin}
         </a>
       </div>
     </div>

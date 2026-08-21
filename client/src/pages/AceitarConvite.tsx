@@ -181,7 +181,7 @@ export default function AceitarConvitePage() {
             Crie seu acesso à <span className="accent">Plataforma NowGo</span>
           </>
         }
-        subtitle="Cadastre-se com Google, GitHub ou LinkedIn em um clique. Se você recebeu um convite da sua organização, também pode concluir o cadastro usando o token abaixo."
+        subtitle="Cadastre-se com Google ou GitHub em um clique. Se você recebeu um convite da sua organização, também pode concluir o cadastro usando o token abaixo."
         footer={
           <>
             Já tem conta? <Link href="/login">Entrar</Link>

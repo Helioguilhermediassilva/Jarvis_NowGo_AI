@@ -12,7 +12,7 @@
  * e continua funcionando em paralelo.
  */
 
-export type AuthV2Role = "superadmin" | "owner" | "admin" | "manager" | "operator" | "viewer";
+export type AuthV2Role = "superadmin" | "owner" | "admin" | "manager" | "operator" | "member" | "viewer";
 
 export interface AuthV2User {
   userId: string;

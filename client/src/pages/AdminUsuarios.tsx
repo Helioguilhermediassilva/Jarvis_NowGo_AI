@@ -26,12 +26,11 @@ import {
   type MemberProfileV2,
 } from "@/lib/authV2Client";
 
-type InviteRole = "owner" | "admin" | "manager" | "operator" | "viewer";
+type InviteRole = "owner" | "admin" | "member" | "viewer";
 
 const ROLE_OPTIONS: Array<{ value: InviteRole; label: string }> = [
   { value: "viewer", label: "Viewer (somente leitura)" },
-  { value: "operator", label: "Operator (atuação no cockpit)" },
-  { value: "manager", label: "Manager (gestão do tenant)" },
+  { value: "member", label: "Member (acesso operacional)" },
   { value: "admin", label: "Admin (pode convidar e gerenciar)" },
   { value: "owner", label: "Owner (controle total do tenant)" },
 ];
@@ -39,11 +38,20 @@ const ROLE_OPTIONS: Array<{ value: InviteRole; label: string }> = [
 const ERROR_LABELS: Record<string, string> = {
   forbidden: "Você não tem permissão para convidar usuários neste tenant.",
   invalid_email: "E-mail inválido.",
+  invalid_ttl: "O prazo do convite precisa estar entre 1 e 168 horas.",
+  invalid_token: "O tenant selecionado não foi encontrado. Atualize a página e tente novamente.",
   user_already_member: "Este e-mail já é membro deste tenant.",
+  tenant_member_already_exists: "Este e-mail já possui acesso a este tenant.",
   invitation_already_pending:
     "Já existe um convite pendente para este e-mail. Aguarde ou revogue antes de criar um novo.",
   rate_limited:
     "Muitos convites em pouco tempo. Aguarde alguns minutos e tente novamente.",
+  invalid_role: "O perfil selecionado não é compatível com convites. Escolha Viewer, Member, Admin ou Owner.",
+  validation_failed: "Confira o e-mail, o perfil e tente novamente.",
+  provider_error:
+    "O convite não pôde ser enviado pelo serviço de e-mail. Verifique a configuração do Resend e tente novamente.",
+  internal_error: "O servidor não conseguiu concluir o convite. Tente novamente em alguns instantes.",
+  invalid_session: "Sua sessão expirou. Faça login novamente para enviar o convite.",
   http_error: "Não foi possível concluir a operação. Tente novamente.",
 };
 
@@ -127,7 +135,10 @@ export default function AdminUsuariosPage() {
       setPlatformAccess(true);
     } catch (e) {
       const err = e as ApiError;
-      setError(ERROR_LABELS[err.code] ?? ERROR_LABELS.http_error);
+      setError(
+        ERROR_LABELS[err.code] ??
+          (err.message ? `Não foi possível enviar o convite: ${err.message}` : ERROR_LABELS.http_error),
+      );
     } finally {
       setSubmitting(false);
     }

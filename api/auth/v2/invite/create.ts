@@ -20,12 +20,14 @@ import { createApiHandler } from "../../../../server/http/handlerFactory.js";
 import { requireV2Role } from "../../../../server/http/authMiddlewareV2.js";
 import {
   createInvitation,
+  revokeInvitation,
   type TenantRole,
 } from "../../../../server/auth/invitations.js";
 import { getTenantById } from "../../../../server/auth/tenants.js";
 import {
   renderInviteEmail,
   sendEmail,
+  type SendEmailResult,
 } from "../../../../server/email/resendClient.js";
 
 const InputSchema = z.object({
@@ -83,13 +85,26 @@ export default createApiHandler<Input, {
       expiresAt: created.expiresAt,
       platformAccess: input.platformAccess,
     });
-    const sent = await sendEmail({
-      to: input.email,
-      subject: tpl.subject,
-      html: tpl.html,
-      text: tpl.text,
-      tag: "f47.invite",
-    });
+    let sent: SendEmailResult;
+    try {
+      sent = await sendEmail({
+        to: input.email,
+        subject: tpl.subject,
+        html: tpl.html,
+        text: tpl.text,
+        tag: "f47.invite",
+      });
+    } catch (error) {
+      // Não deixar um convite pendente quando o provedor de e-mail rejeita o envio.
+      // Assim o administrador pode corrigir o Resend e tentar novamente sem receber
+      // um falso erro de "convite já pendente".
+      try {
+        await revokeInvitation({ invitationId: created.invitationId });
+      } catch (cleanupError) {
+        console.error("auth.v2.invite.create cleanup failed", cleanupError);
+      }
+      throw error;
+    }
 
     return {
       invitationId: created.invitationId,
