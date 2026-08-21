@@ -20,6 +20,7 @@ import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import { useLang } from "@/landing/useLang";
 import {
   acceptInviteV2,
+  registerV2,
   validateInviteV2,
   type ApiError,
   type InviteValidationResult,
@@ -104,6 +105,14 @@ export default function AceitarConvitePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState("");
+  const [registerSubmitting, setRegisterSubmitting] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     if (!tokenFromUrl) {
@@ -171,7 +180,48 @@ export default function AceitarConvitePage() {
     }
   }
 
-  // ─── Estado: sem token na URL → tela "cole aqui seu token" ───────────────
+  async function handleRegister(e: FormEvent) {
+    e.preventDefault();
+    setRegisterError(null);
+    setRegisterSuccess(null);
+
+    if (registerPassword.length < 12) {
+      setRegisterError(ERROR_LABELS.weak_password);
+      return;
+    }
+    if (registerPassword !== registerPasswordConfirm) {
+      setRegisterError("As senhas não coincidem.");
+      return;
+    }
+
+    setRegisterSubmitting(true);
+    try {
+      const result = await registerV2({
+        email: registerEmail.trim(),
+        password: registerPassword,
+        name: registerName.trim() || undefined,
+        origin: window.location.origin,
+      });
+      setRegisterSuccess(
+        result.emailVerificationSent
+          ? "Cadastro concluído. Enviamos um link para confirmar seu e-mail. Depois da confirmação, você poderá entrar e escolher um plano."
+          : "Cadastro concluído, mas não conseguimos enviar o e-mail de confirmação agora. Contate a equipe para liberar um novo envio.",
+      );
+    } catch (e) {
+      const err = e as ApiError;
+      setRegisterError(
+        err.code === "email_already_registered"
+          ? "Este e-mail já possui uma conta. Entre com sua senha ou use a recuperação de acesso."
+          : err.code === "rate_limited"
+            ? "Muitas tentativas em sequência. Aguarde alguns minutos e tente novamente."
+            : ERROR_LABELS[err.code] ?? ERROR_LABELS.http_error,
+      );
+    } finally {
+      setRegisterSubmitting(false);
+    }
+  }
+
+  // ─── Estado: sem token na URL → cadastro aberto + convite opcional ────────
   if (!tokenFromUrl) {
     return (
       <AuthShell
@@ -181,7 +231,7 @@ export default function AceitarConvitePage() {
             Crie seu acesso à <span className="accent">Plataforma NowGo</span>
           </>
         }
-        subtitle="Cadastre-se com Google ou GitHub em um clique. Se você recebeu um convite da sua organização, também pode concluir o cadastro usando o token abaixo."
+        subtitle="Escolha como deseja começar: use Google ou GitHub, crie sua conta com e-mail e senha ou aceite um convite da sua organização."
         footer={
           <>
             Já tem conta? <Link href="/login">Entrar</Link>
@@ -189,6 +239,87 @@ export default function AceitarConvitePage() {
         }
       >
         {socialErrorMessage && <div className="ng-auth-error" role="alert">{socialErrorMessage}</div>}
+
+        <SocialLoginButtons
+          lang={lang}
+          returnTo={requestedReturnTo}
+          billingOffer={billingOffer}
+          entry="signup"
+        />
+
+        <div className="ng-auth-social-divider" style={{ marginTop: "1.35rem" }}>
+          <span>ou crie sua conta com e-mail</span>
+        </div>
+        <form onSubmit={handleRegister} noValidate>
+          {registerError && <div className="ng-auth-error" role="alert">{registerError}</div>}
+          {registerSuccess && <div className="ng-auth-success" role="status">{registerSuccess}</div>}
+          <label className="ng-auth-field">
+            <span className="ng-auth-field-label">Nome (opcional)</span>
+            <input
+              type="text"
+              className="ng-auth-input"
+              value={registerName}
+              onChange={(e) => setRegisterName(e.target.value)}
+              placeholder="Como devemos chamar você?"
+              autoComplete="name"
+              maxLength={120}
+              disabled={registerSubmitting || !!registerSuccess}
+            />
+          </label>
+          <label className="ng-auth-field">
+            <span className="ng-auth-field-label">E-mail</span>
+            <input
+              type="email"
+              className="ng-auth-input"
+              value={registerEmail}
+              onChange={(e) => setRegisterEmail(e.target.value)}
+              placeholder="voce@exemplo.com"
+              autoComplete="email"
+              required
+              disabled={registerSubmitting || !!registerSuccess}
+            />
+          </label>
+          <label className="ng-auth-field">
+            <span className="ng-auth-field-label">Senha</span>
+            <input
+              type="password"
+              className="ng-auth-input"
+              value={registerPassword}
+              onChange={(e) => setRegisterPassword(e.target.value)}
+              placeholder="Mínimo 12 caracteres"
+              autoComplete="new-password"
+              required
+              minLength={12}
+              disabled={registerSubmitting || !!registerSuccess}
+            />
+          </label>
+          <label className="ng-auth-field">
+            <span className="ng-auth-field-label">Confirme a senha</span>
+            <input
+              type="password"
+              className="ng-auth-input"
+              value={registerPasswordConfirm}
+              onChange={(e) => setRegisterPasswordConfirm(e.target.value)}
+              placeholder="Repita a senha"
+              autoComplete="new-password"
+              required
+              minLength={12}
+              disabled={registerSubmitting || !!registerSuccess}
+            />
+          </label>
+          <PasswordHint />
+          <button
+            type="submit"
+            className="ng-auth-submit"
+            disabled={registerSubmitting || !!registerSuccess}
+          >
+            {registerSubmitting ? "Criando sua conta…" : "Continuar"}
+          </button>
+        </form>
+
+        <div className="ng-auth-social-divider" style={{ marginTop: "1.5rem" }}>
+          <span>ou use um convite</span>
+        </div>
         <form onSubmit={handleValidateToken} noValidate>
           <label className="ng-auth-field">
             <span className="ng-auth-field-label">Token de convite</span>
@@ -199,12 +330,11 @@ export default function AceitarConvitePage() {
               onChange={(e) => setTokenInput(e.target.value)}
               placeholder="Cole aqui o token recebido por e-mail"
               autoComplete="off"
-              required
               minLength={8}
             />
           </label>
           <button type="submit" className="ng-auth-submit">
-            Continuar
+            Continuar com convite
           </button>
           <p className="ng-auth-help">
             Para solicitar um convite, entre em contato com{" "}
@@ -214,12 +344,6 @@ export default function AceitarConvitePage() {
             .
           </p>
         </form>
-        <SocialLoginButtons
-          lang={lang}
-          returnTo={requestedReturnTo}
-          billingOffer={billingOffer}
-          entry="signup"
-        />
       </AuthShell>
     );
   }

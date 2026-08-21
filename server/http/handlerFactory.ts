@@ -118,6 +118,7 @@ const ERR_STATUS_MAP: Record<string, number> = {
   already_used: 409,
   // PasswordError
   weak_password: 400,
+  email_already_registered: 409,
   email_not_verified: 403,
   invalid_credentials: 401,
   account_locked: 423,

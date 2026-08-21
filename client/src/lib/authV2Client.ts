@@ -207,6 +207,27 @@ export async function logoutV2(): Promise<void> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// /api/auth/v2/register
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RegisterInput {
+  email: string;
+  password: string;
+  name?: string;
+  origin: string;
+}
+
+export async function registerV2(input: RegisterInput): Promise<{
+  ok: true;
+  emailVerificationSent: boolean;
+}> {
+  return request<{ ok: true; emailVerificationSent: boolean }>("/api/auth/v2/register", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // /api/auth/v2/invite/validate
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -310,10 +331,10 @@ export async function updateMemberPlatformAccessV2(
 // /api/auth/v2/email/verify
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function verifyEmailV2(token: string): Promise<{ ok: true }> {
+export async function verifyEmailV2(token: string, email: string): Promise<{ ok: true }> {
   return request<{ ok: true }>("/api/auth/v2/email/verify", {
     method: "POST",
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ token, email }),
   });
 }
 

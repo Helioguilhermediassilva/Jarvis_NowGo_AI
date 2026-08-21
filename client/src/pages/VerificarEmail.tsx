@@ -18,17 +18,21 @@ type State =
 export default function VerificarEmailPage() {
   const [, params] = useRoute<{ token: string }>("/verificar-email/:token");
   const token = params?.token ?? null;
+  const email = new URLSearchParams(window.location.search).get("email")?.trim().toLowerCase() ?? null;
   const [state, setState] = useState<State>({ kind: "loading" });
 
   useEffect(() => {
-    if (!token) {
-      setState({ kind: "error", message: "Token ausente. Use o link enviado por e-mail." });
+    if (!token || !email) {
+      setState({
+        kind: "error",
+        message: "Link incompleto. Use o link enviado por e-mail para confirmar seu endereço.",
+      });
       return;
     }
     let cancelled = false;
     void (async () => {
       try {
-        await verifyEmailV2(token);
+        await verifyEmailV2(token, email);
         if (!cancelled) setState({ kind: "success" });
       } catch (e) {
         if (cancelled) return;
@@ -43,7 +47,7 @@ export default function VerificarEmailPage() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, email]);
 
   if (state.kind === "loading") {
     return (

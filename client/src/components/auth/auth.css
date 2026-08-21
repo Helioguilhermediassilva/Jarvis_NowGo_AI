@@ -289,7 +289,7 @@
 
 @media (min-width: 520px) {
   .nowgoai-landing .ng-auth-social-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .nowgoai-landing .ng-auth-social-button {

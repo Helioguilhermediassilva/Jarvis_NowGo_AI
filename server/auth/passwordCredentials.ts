@@ -68,6 +68,7 @@ export class PasswordError extends Error {
       | "user_not_found"
       | "credential_not_found"
       | "credential_already_exists"
+      | "email_already_registered"
       | "invalid_credentials"
       | "account_locked"
       | "email_not_verified"
