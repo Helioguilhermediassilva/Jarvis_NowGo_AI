@@ -25,6 +25,34 @@ import {
   type InviteValidationResult,
 } from "@/lib/authV2Client";
 
+const SOCIAL_ERROR_LABELS: Record<string, Record<"pt" | "en" | "es", string>> = {
+  social_provider_unconfigured: {
+    pt: "Este provedor ainda não está configurado. Escolha Google ou e-mail e senha, ou tente novamente mais tarde.",
+    en: "This provider is not configured yet. Choose Google or email and password, or try again later.",
+    es: "Este proveedor aún no está configurado. Elige Google o correo y contraseña, o inténtalo más tarde.",
+  },
+  social_authorization_denied: {
+    pt: "O cadastro social foi cancelado. Você pode tentar novamente ou usar um convite.",
+    en: "Social sign-up was canceled. You can try again or use an invitation.",
+    es: "El registro social fue cancelado. Puedes intentarlo de nuevo o usar una invitación.",
+  },
+  social_state_invalid: {
+    pt: "A sessão de cadastro social expirou. Inicie o cadastro novamente.",
+    en: "The social sign-up session expired. Start the sign-up process again.",
+    es: "La sesión de registro social expiró. Inicia el registro nuevamente.",
+  },
+  social_email_unverified: {
+    pt: "O provedor não retornou um e-mail verificado. Escolha outro método de cadastro.",
+    en: "The provider did not return a verified email. Choose another sign-up method.",
+    es: "El proveedor no devolvió un correo verificado. Elige otro método de registro.",
+  },
+  social_callback_failed: {
+    pt: "Não foi possível concluir o cadastro social. Tente novamente ou use um convite.",
+    en: "Social sign-up could not be completed. Try again or use an invitation.",
+    es: "No se pudo completar el registro social. Inténtalo de nuevo o usa una invitación.",
+  },
+};
+
 const ERROR_LABELS: Record<string, string> = {
   invalid_or_expired:
     "Este convite já não está mais válido. Solicite um novo ao administrador.",
@@ -60,6 +88,8 @@ export default function AceitarConvitePage() {
     ? requestedParam
     : "/";
   const billingOffer = cadastroParams.get("billingOffer");
+  const socialError = cadastroParams.get("socialError");
+  const socialErrorMessage = socialError ? SOCIAL_ERROR_LABELS[socialError]?.[lang] : null;
   const [matchToken, paramsToken] = useRoute<{ token: string }>("/aceitar-convite/:token");
   const tokenFromUrl = matchToken && paramsToken ? paramsToken.token : null;
 
@@ -148,16 +178,17 @@ export default function AceitarConvitePage() {
         tagline="ACESSO · CADASTRO"
         title={
           <>
-            O acesso ao cockpit é por <span className="accent">convite</span>
+            Crie seu acesso à <span className="accent">Plataforma NowGo</span>
           </>
         }
-        subtitle="Você recebeu um link com seu token? Cole-o abaixo. Se ainda não tem convite, fale com o administrador da sua organização."
+        subtitle="Cadastre-se com Google, GitHub ou LinkedIn em um clique. Se você recebeu um convite da sua organização, também pode concluir o cadastro usando o token abaixo."
         footer={
           <>
             Já tem conta? <Link href="/login">Entrar</Link>
           </>
         }
       >
+        {socialErrorMessage && <div className="ng-auth-error" role="alert">{socialErrorMessage}</div>}
         <form onSubmit={handleValidateToken} noValidate>
           <label className="ng-auth-field">
             <span className="ng-auth-field-label">Token de convite</span>
@@ -187,6 +218,7 @@ export default function AceitarConvitePage() {
           lang={lang}
           returnTo={requestedReturnTo}
           billingOffer={billingOffer}
+          entry="signup"
         />
       </AuthShell>
     );

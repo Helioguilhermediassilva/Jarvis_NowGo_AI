@@ -22,6 +22,7 @@ export interface SocialState {
   provider: SocialProvider;
   returnTo: string;
   billingOffer?: string;
+  entry: "login" | "signup";
   nonce: string;
   iat: number;
   exp: number;
@@ -67,6 +68,10 @@ export function safeReturnTo(raw: unknown, fallback = "/"): string {
   if (typeof raw !== "string") return fallback;
   if (!raw.startsWith("/") || raw.startsWith("//")) return fallback;
   return raw;
+}
+
+export function safeSocialEntry(raw: unknown): "login" | "signup" {
+  return raw === "signup" ? "signup" : "login";
 }
 
 export function requestOrigin(req: ApiRequest): string {
@@ -118,9 +123,10 @@ export async function signSocialState(
   returnTo: string,
   nonce: string,
   billingOffer?: string,
+  entry: "login" | "signup" = "login",
 ): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
-  return new SignJWT({ provider, returnTo, billingOffer, nonce })
+  return new SignJWT({ provider, returnTo, billingOffer, entry, nonce })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt(now)
     .setExpirationTime(now + 300)
@@ -144,6 +150,7 @@ export async function verifySocialState(
     billingOffer: typeof payload.billingOffer === "string" && /^[a-z0-9_]{1,80}$/.test(payload.billingOffer)
       ? payload.billingOffer
       : undefined,
+    entry: safeSocialEntry(payload.entry),
     nonce: payload.nonce,
     iat: Number(payload.iat ?? 0),
     exp: Number(payload.exp ?? 0),
@@ -167,8 +174,9 @@ export function redirectWithError(
   returnTo: string,
   code: string,
   billingOffer?: string,
+  entry: "login" | "signup" = "login",
 ): void {
-  const target = new URL("/login", requestOrigin(req));
+  const target = new URL(entry === "signup" ? "/cadastro" : "/login", requestOrigin(req));
   target.searchParams.set("socialError", code);
   target.searchParams.set("returnTo", safeReturnTo(returnTo));
   if (billingOffer && /^[a-z0-9_]{1,80}$/.test(billingOffer)) {

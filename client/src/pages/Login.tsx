@@ -97,6 +97,16 @@ const SOCIAL_ERROR_LABELS: Record<string, Record<Lang, string>> = {
     en: "Social sign-in could not be completed. Try another method.",
     es: "No se pudo completar el acceso social. Prueba otro método.",
   },
+  social_provider_unconfigured: {
+    pt: "Este provedor ainda não está configurado. Tente Google ou e-mail e senha.",
+    en: "This provider is not configured yet. Try Google or email and password.",
+    es: "Este proveedor aún no está configurado. Prueba Google o correo y contraseña.",
+  },
+  social_callback_missing_parameters: {
+    pt: "O retorno do provedor ficou incompleto. Inicie o acesso social novamente.",
+    en: "The provider response was incomplete. Start social sign-in again.",
+    es: "La respuesta del proveedor quedó incompleta. Inicia el acceso social nuevamente.",
+  },
 };
 
 function isSafeBillingOffer(value: string | null): value is string {

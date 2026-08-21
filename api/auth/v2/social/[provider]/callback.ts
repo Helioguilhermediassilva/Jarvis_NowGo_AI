@@ -44,6 +44,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         canceledState.returnTo,
         "social_authorization_denied",
         canceledState.billingOffer,
+        canceledState.entry,
       );
     } catch {
       res.status(400).json({ error: "social_authorization_denied" });
@@ -92,6 +93,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       state.returnTo,
       errorCode(error),
       state.billingOffer,
+      state.entry,
     );
   }
 }

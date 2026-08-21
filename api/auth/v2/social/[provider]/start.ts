@@ -6,7 +6,9 @@ import {
   getSocialProviderConfig,
   isSocialProvider,
   redirect,
+  redirectWithError,
   safeReturnTo,
+  safeSocialEntry,
   signSocialState,
 } from "../_shared.js";
 
@@ -28,11 +30,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   const returnTo = safeReturnTo(firstQuery(req.query?.returnTo), "/");
   const billingOffer = validBillingOffer(firstQuery(req.query?.billingOffer));
+  const entry = safeSocialEntry(firstQuery(req.query?.entry));
 
   try {
     const config = getSocialProviderConfig(provider);
     const nonce = randomBytes(24).toString("base64url");
-    const state = await signSocialState(provider, returnTo, nonce, billingOffer);
+    const state = await signSocialState(provider, returnTo, nonce, billingOffer, entry);
     const redirectUri = callbackUri(req);
     const params = new URLSearchParams({
       client_id: config.clientId,
@@ -56,6 +59,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     redirect(res, `${config.authorizationEndpoint}?${params.toString()}`);
   } catch (error: any) {
     console.error(`[/api/auth/v2/social/${provider}/start]`, error?.message);
-    res.status(500).json({ error: "social_provider_unconfigured" });
+    redirectWithError(req, res, returnTo, "social_provider_unconfigured", billingOffer, entry);
   }
 }
